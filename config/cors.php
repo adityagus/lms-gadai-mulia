@@ -19,7 +19,7 @@ return [
 
     'allowed_methods' => ['*'],
 
-    'allowed_origins' => ['http://lms-gadai.test'], // Sesuaikan dengan port Vue.js
+    'allowed_origins' => ['*'], // Sesuaikan dengan port Vue.js
     // 'allowed_origins' => ['*'], // jika pengen hanya origin tertentu bisa diubah ['http:/localhost:5173'],
 
     'allowed_origins_patterns' => [],

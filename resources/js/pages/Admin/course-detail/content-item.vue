@@ -29,14 +29,15 @@
           </div>
           <div class="flex justify-end items-center gap-3">
             <RouterLink
-              to="/"
-              class="w-fit rounded-full border border-[#060A23] p-[14px_20px] font-semibold text-nowrap"
+              :to="`/admin/course/update-contents/${props.courseId}/${props.id}`"
+              class="w-fit rounded-full border border-[#060A23] p-[14px_20px] font-semibold text-nowrap hover:bg-gray-50 transition-colors"
             >
               Edit Content
             </RouterLink>
             <button
               type="button"
-              class="w-fit rounded-full p-[14px_20px] bg-[#FF435A] font-semibold text-white text-nowrap"
+              @click="$emit('delete-content', props.id)"
+              class="w-fit rounded-full p-[14px_20px] bg-[#FF435A] font-semibold text-white text-nowrap hover:bg-red-600 transition-colors"
             >
               Delete
             </button>
@@ -44,22 +45,31 @@
         </div>
 </template>
 
-<script setup lang='ts'>
+<script setup>
 import { RouterLink } from 'vue-router';
 
-interface Props {
-  id?: number
-  index?: number
-  type?: string
-  title?: string
-  courseId?: number
-}
+const props = defineProps({
+  id: {
+    type: Number,
+    default: 1
+  },
+  index: {
+    type: Number,
+    default: 1
+  },
+  type: {
+    type: String,
+    default: "Video"
+  },
+  title: {
+    type: String,
+    default: "Install VSCode di Windows"
+  },
+  courseId: {
+    type: Number,
+    default: 2
+  }
+});
 
-const props = withDefaults(defineProps<Props>(), {
-  id: 1,
-  index: 1,
-  type: "Video",
-  title: "Install VSCode di Windows",
-  courseId: 2,
-})
+const emit = defineEmits(['delete-content']);
 </script>

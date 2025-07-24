@@ -10,61 +10,55 @@
           <p class="font-semibold text-xs leading-[18px] text-white">
             GENERAL
           </p>
-          <li>
-            <a href="/admin">
-              <div
-                class="flex items-center gap-3 w-full py-2 px-5 rounded-xl transition-all duration-300 hover:shadow-[-10px_-6px_10px_0_#7F33FF_inset] shadow-[-10px_-6px_10px_0_#7F33FF_inset]">
-                <img src="/assets/images/icons/3dcube-white.svg" class="w-6 h-6" alt="icon" />
-                <span class="font-semibold text-white">Overview</span>
-              </div>
-            </a>
-
-
-          </li>
-          <li>
-            <a href="/admin/courses">
-              <div
-                class="flex items-center gap-3 w-full py-2 px-5 rounded-lg transition-all duration-300 hover:shadow-[-10px_-6px_10px_0_#7F33FF_inset]">
-                <img src="/assets/images/icons/note-favorite-white.svg" class="w-6 h-6" alt="icon" />
-                <span class="font-semibold text-white">Courses</span>
-              </div>
-            </a>
-          </li>
-          <li>
-            <a href="/admin/information-document">
-              <div
-                class="flex items-center gap-3 w-full py-2 px-5 rounded-lg transition-all duration-300 hover:shadow-[-10px_-6px_10px_0_#7F33FF_inset]">
-                <img src="/assets/images/icons/crown-white.svg" class="w-6 h-6" alt="icon" />
-                <span class="font-semibold text-white">
-                  Information & Document
-                </span>
-              </div>
-            </a>
-
-            <ul class="pl-12 mt-2 space-y-2">
-              <li>
-                <a href="/admin/overview/subitem1" class="text-white hover:text-gray-300">Pengumuman</a>
-              </li>
-              <li>
-                <a href="/admin/overview/subitem2" class="text-white hover:text-gray-300">Formulir</a>
-              </li>
-              <li>
-                <a href="/admin/overview/subitem3" class="text-white hover:text-gray-300">Report</a>
-              </li>
-            </ul>
-
-          </li>
-          <li>
-            <a href="#">
-              <div
-                class="flex items-center gap-3 w-full py-2 px-5 rounded-lg transition-all duration-300 hover:shadow-[-10px_-6px_10px_0_#7F33FF_inset]">
-                <img src="/assets/images/icons/crown-white.svg" class="w-6 h-6" alt="icon" />
-                <span class="font-semibold text-white">
-                  Categories
-                </span>
-              </div>
-            </a>
-          </li>
+<li :class="{ 'active': $route.path === '/admin' }">
+  <a href="/admin">
+    <div
+      class="flex items-center gap-3 w-full py-2 px-5 rounded-xl transition-all duration-300 hover:shadow-[-10px_-6px_10px_0_#7F33FF_inset]">
+      <img src="/assets/images/icons/3dcube-white.svg" class="w-6 h-6" alt="icon" />
+      <span class="font-semibold text-white">Overview</span>
+    </div>
+  </a>
+</li>
+<li :class="{ 'active': $route.path === '/admin/courses' }">
+  <a href="/admin/courses">
+    <div
+      class="flex items-center gap-3 w-full py-2 px-5 rounded-lg transition-all duration-300 hover:shadow-[-10px_-6px_10px_0_#7F33FF_inset]">
+      <img src="/assets/images/icons/note-favorite-white.svg" class="w-6 h-6" alt="icon" />
+      <span class="font-semibold text-white">Courses</span>
+    </div>
+  </a>
+</li>
+<li>
+  <div @click="handleParentClick('info')"
+    :class="['flex items-center gap-3 w-full py-2 px-5 rounded-lg transition-all duration-300 cursor-pointer', openMenu === 'info' ? 'active' : '']">
+    <img src="/assets/images/icons/crown-white.svg" class="" alt="icon" />
+    <span class="font-semibold text-white">Information & Document</span>
+    <svg :class="['ml-auto transition-transform w-7', openMenu === 'info' ? 'rotate-90' : '']" width="25" height="25" fill="white" stroke="currentColor" stroke-width="2"><path d="M6 9l6-3-6-3"/></svg>
+    
+  </div>
+  <ul v-if="openMenu === 'info'" class="pl-12 mt-2 space-y-2">
+    <li :class="{ 'active': activeSub === '/admin/pengumuman' }">
+      <a @click.prevent="handleSubClick('/admin/pengumuman')" href="#" class="text-white hover:text-gray-300">Pengumuman</a>
+    </li>
+    <li :class="{ 'active': activeSub === '/admin/overview/subitem2' }">
+      <a @click.prevent="handleSubClick('/admin/overview/subitem2')" href="#" class="text-white hover:text-gray-300">Formulir</a>
+    </li>
+    <li :class="{ 'active': activeSub === '/admin/overview/subitem3' }">
+      <a @click.prevent="handleSubClick('/admin/overview/subitem3')" href="#" class="text-white hover:text-gray-300">Report</a>
+    </li>
+  </ul>
+</li>
+<li :class="{ 'active': $route.path === '/admin/categories' }">
+  <a href="/admin/categories">
+    <div
+      class="flex items-center gap-3 w-full py-2 px-5 rounded-lg transition-all duration-300 hover:shadow-[-10px_-6px_10px_0_#7F33FF_inset]">
+      <img src="/assets/images/icons/crown-white.svg" class="w-6 h-6" alt="icon" />
+      <span class="font-semibold text-white">
+        Categories
+      </span>
+    </div>
+  </a>
+</li>
           <li>
             <a href="/admin/students">
               <div
@@ -297,5 +291,29 @@
 </template>
 
 <script setup>
+import { ref } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
 
+const route = useRoute();
+const router = useRouter();
+const openMenu = ref('');
+const activeSub = ref(route.path);
+
+const handleParentClick = (menu) => {
+  openMenu.value = openMenu.value === menu ? '' : menu;
+};
+
+const handleSubClick = (subPath) => {
+  activeSub.value = subPath;
+  router.push(subPath);
+};
 </script>
+
+<style>
+.active{
+  background-color: #7F33FF !important;
+  color: white !important;
+  border-radius: 10px !important;
+}
+
+</style>

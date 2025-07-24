@@ -15,7 +15,7 @@ const path = require('path');
 // const __filename = fileURLToPath(import.meta.url);
 // const __dirname = path.dirname(__filename);
  
-mix.ts('resources/js/app.ts', 'public/js')
+mix.js('resources/js/app.js', 'public/js')
     .vue()
     .postCss('resources/css/app.css', 'public/css', [
         require('tailwindcss'),
@@ -29,6 +29,6 @@ mix.ts('resources/js/app.ts', 'public/js')
                 '#': path.resolve(__dirname, 'node_modules'),
                 '&': path.resolve('public/assets')
             },
-            extensions: ['.ts', '.js', '.vue', '.json']
+            extensions: ['.js', '.vue', '.json']
         }
     }).disableNotifications();

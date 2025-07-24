@@ -34,18 +34,18 @@
         </div>
       </div>
       <div class="flex justify-end items-center gap-3">
+        <button type='button'
+          @click="deleteCourse(`${id}`)"
+          class="w-fit rounded-full border bg-red-500 text-white p-[14px_20px] font-semibold text-nowrap"
+        >
+          Delete
+        </button>
         <RouterLink
           :to="`/admin/courses/${id}`"
           class="w-fit rounded-full border border-[#060A23] p-[14px_20px] font-semibold text-nowrap"
         >
           Manage
         </RouterLink>
-        <button type='button'
-          @click="deleteCourse(`${id}`)"
-          class="w-fit rounded-full border bg-rose-400 text-red-600 p-[14px_20px] font-semibold text-nowrap"
-        >
-          Delete
-        </button>
       </div>
     </div>
   </div>

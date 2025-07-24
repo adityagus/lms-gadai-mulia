@@ -18,9 +18,9 @@
 
 
       <!-- Main content (CardCourses) when data is ready -->
-        <div v-for="item in courses" :key="item.id" v-if='!loading'>
-          <CardCourses :id="item.id" :imageUrl="'/assets/images/thumbnails/th-2.png'" :name="item.name" :totalStudent="'12'"
-            :category="'Frontend Development'" @delete-course='handleDelete' />
+      <div v-for="item in courses" :key="item.id" v-if='!loading'>
+          <CardCourses :id="item.id" :imageUrl="item.thumbnail_url" :name="item.name" :totalStudent="'12'"
+            :category="item.category?.name" @delete-course='handleDelete' />
         </div>
 
       <!-- Loading content (CardSkeleton) while data is loading -->
@@ -33,7 +33,7 @@
     <CardCourses />
     <CardCourses /> -->
 
-    <div id="Pagination" class="flex items-center gap-3">
+    <div id="Pagination" class="flex items-center gap-3" v-if='courses.length > 0'>
       <button type="button" v-for='(key) in totalPages' :key='key' @click='goToPage(key)'
         class="flex shrink-0 w-9 h-9 rounded-full items-center justify-center text-center transition-all duration-300 hover:bg-[#662FFF] hover:text-white hover:border-0 bg-[#EAEAEA] text-[#662FFF]"
         :class="{'active': key==pagination}">
@@ -51,6 +51,7 @@ import axios from 'axios'
 import { onMounted, ref } from 'vue';
 import CardSkeleton from './CardSkeleton.vue';
 import Swal from "sweetalert2";
+import { getCourses } from './../../../services/courseService.js';
 
 
 
@@ -64,14 +65,15 @@ const pagination = ref(1);
 let initSecond = ref(1000);
 
 
-const fetchCourses = async (page = 1,) => {
-  console.log('initsecond', initSecond);
+const fetchCourses = async (page = 1) => {
+  // console.log('initsecond', page);
   setTimeout( async () => {
-  
     try {
-      const result = await axios.get(`http://127.0.0.1:8000/api/courses?page=${page}`)
-      courses.value = result.data.data
-      totalPages.value = result.data.last_page
+      console.log("page", page);
+      const result = await getCourses(page)
+      console.log("result", result.data);
+      courses.value = result.data
+      totalPages.value = result.last_page
     } catch (error) {
       console.log("ERROR", error);
     } finally {

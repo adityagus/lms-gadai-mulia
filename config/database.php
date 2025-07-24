@@ -63,6 +63,25 @@ return [
             ]) : [],
         ],
 
+        // MySQL Connection kedua (sam_pos_view)
+        'sam_pos_view' => [
+            'driver' => 'mysql',
+            'host' => env('DB_HOST2', '127.0.0.1'),
+            'database' => env('DB_DATABASE2', 'sam_pos'),
+            'username' => env('DB_USERNAME2', 'root'),
+            'password' => env('DB_PASSWORD2', ''),
+            'unix_socket' => env('DB_SOCKET2', ''),
+            'charset' => 'utf8mb4',
+            'collation' => 'utf8mb4_unicode_ci',
+            'prefix' => '',
+            'prefix_indexes' => true,
+            'strict' => true,
+            'engine' => null,
+            'options' => extension_loaded('pdo_mysql') ? array_filter([
+                PDO::MYSQL_ATTR_SSL_CA => env('MYSQL_ATTR_SSL_CA'),
+            ]) : [],
+        ],
+
         'pgsql' => [
             'driver' => 'pgsql',
             'url' => env('DATABASE_URL'),
@@ -90,12 +109,8 @@ return [
             'prefix' => '',
             'prefix_indexes' => true,
         ],
-
     ],
-
-    /*
-    |--------------------------------------------------------------------------
-    | Migration Repository Table
+    /*| Migration Repository Table
     |--------------------------------------------------------------------------
     |
     | This table keeps track of all the migrations that have already run for
