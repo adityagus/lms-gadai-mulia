@@ -63,24 +63,18 @@ return [
             ]) : [],
         ],
 
-        // MySQL Connection kedua (sam_pos_view)
-        'sam_pos_view' => [
-            'driver' => 'mysql',
-            'host' => env('DB_HOST2', '127.0.0.1'),
-            'database' => env('DB_DATABASE2', 'sam_pos'),
-            'username' => env('DB_USERNAME2', 'root'),
-            'password' => env('DB_PASSWORD2', ''),
-            'unix_socket' => env('DB_SOCKET2', ''),
-            'charset' => 'utf8mb4',
-            'collation' => 'utf8mb4_unicode_ci',
-            'prefix' => '',
-            'prefix_indexes' => true,
-            'strict' => true,
-            'engine' => null,
-            'options' => extension_loaded('pdo_mysql') ? array_filter([
-                PDO::MYSQL_ATTR_SSL_CA => env('MYSQL_ATTR_SSL_CA'),
-            ]) : [],
-        ],
+    'db2' => [
+      'driver' => env('DB2_CONNECTION', 'pgsql'),
+      'host' => env('DB2_HOST', '127.0.0.1'),
+      'port' => env('DB2_PORT', '5432'),
+      'database' => env('DB2_DATABASE', 'sam'),
+      'username' => env('DB2_USERNAME', 'postgres'),
+      'password' => env('DB2_PASSWORD', ''),
+      'charset' => 'utf8',
+      'prefix' => '',
+      'schema' => 'public',
+      'sslmode' => 'prefer',
+    ],
 
         'pgsql' => [
             'driver' => 'pgsql',

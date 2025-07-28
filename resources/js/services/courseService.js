@@ -10,6 +10,16 @@ export const getCourses = async (page = 1) => {
   }
 };
 
+export const searchCourse = async () => {
+  try {
+    const response = await apiInstance.get(`/search`);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching courses:", error);
+    throw error;
+  }
+}
+
 export const deleteCourse = async (id) => {
   try {
     const response = await apiInstance.delete(`/courses/${id}`);

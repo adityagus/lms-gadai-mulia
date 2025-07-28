@@ -13,13 +13,14 @@ import SignIn from "@/pages/SignIn";
 import Main from "@/pages/landing-page/layouts/Main";
 import Home from "@/pages/landing-page/pages/home";
 import { getCategories, getCourseById } from "../services/courseService";
+import courseStudent from "@/pages/Student/courses/index.vue";
 
 console.log("masuk route");
 const routes = [
-    {
-        path: "/",
-        redirect: "/sign-in",
-    },
+    // {
+    //     path: "/",
+    //     redirect: "/sign-in",
+    // },
     // handle 404 Not Found
     {
       path: "/:catchAll(.*)",
@@ -29,15 +30,6 @@ const routes = [
     // {
     //   path: '/',
     //   component: Main,
-   {
-       path: '/',
-       name: 'LandingHome',
-       component: () => import('../pages/landing-page/pages/home.vue'),
-       meta: {
-           title: 'LMS Gadai Mulia - Platform Learning Management System Modern',
-           description: 'LMS Gadai Mulia adalah platform Learning Management System modern untuk pelatihan, kursus, dan pengembangan SDM berbasis digital.'
-       }
-   },
     //   children: [
     //     {
     //       path: '',
@@ -46,11 +38,11 @@ const routes = [
     //     }
     //   ]
     // },
-    // {
-    //   path: '/',
-    //   name: 'landingpage',
-    //   component: Main
-    // },
+    {
+      path: '/',
+      name: 'landingpage',
+      component: Home
+    },
     {
         path: "/sign-in",
         name: "sign-in",
@@ -137,11 +129,61 @@ const routes = [
             },
         ],
     },
+    {
+      path: "/student",
+      component: Layout,
+      children: [
+        {
+          path: "/student/courses",
+          name: "studentCourses",
+          component: courseStudent,
+        }
+    ]
+  }
 ];
 
 const router = createRouter({
     history: createWebHistory(),
     routes,
+});
+
+// Middleware: Cek akses berdasarkan sessionStorage (atau localStorage)
+router.beforeEach((to, from, next) => {
+  // Ambil idgrup dari localStorage
+  const idgrup = typeof window !== "undefined" && window.localStorage
+    ? localStorage.getItem('idgrup')
+    : null;
+  console.log("idgrup", idgrup)
+  
+  // Jika user akses root dan sudah login, redirect otomatis
+  if (to.path === '/sign-in' && idgrup) {
+    if (idgrup === 'JBT-032') {
+      return next({ path: '/admin' });
+    } else {
+      return next({ path: '/student/courses' });
+    }
+  }
+
+  // Jika route ke /admin, hanya boleh jika idgrup JBT-032
+  if (to.path.startsWith('/admin')) {
+    if (idgrup === 'JBT-032') {
+      next();
+    } else {
+      // Redirect ke student jika bukan admin
+      return next({ path: '/student/courses' });
+    }
+  }
+  // Jika route ke /student, hanya boleh jika idgrup bukan JBT-032
+  else if (to.path.startsWith('/student')) {
+    if (idgrup && idgrup !== 'JBT-032') {
+      next();
+    } else {
+      // Redirect ke admin jika admin
+      return next({ path: '/admin' });
+    }
+  } else {
+    next();
+  }
 });
 
 export default router;

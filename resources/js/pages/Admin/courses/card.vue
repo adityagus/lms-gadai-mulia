@@ -33,7 +33,7 @@
           </div>
         </div>
       </div>
-      <div class="flex justify-end items-center gap-3">
+      <div class="flex justify-end items-center gap-3" v-if="!readOnly">
         <button type='button'
           @click="deleteCourse(`${id}`)"
           class="w-fit rounded-full border bg-red-500 text-white p-[14px_20px] font-semibold text-nowrap"
@@ -142,5 +142,9 @@ defineProps({
     type: String,
     default: "Programming"
   },
+  readOnly: {
+    type: Boolean,
+    default: false
+  }
 })
 </script>

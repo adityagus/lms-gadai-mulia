@@ -138,21 +138,23 @@ onMounted(async () => {
     const fetchCategories = await getCategories();
     categories.value = fetchCategories;
 
-    if (route.params.courseId) {
-      const fetchedCourse = await getCourseById(route.params.courseId);
-      console.log("Fetched Course:", fetchedCourse);
-      
-      // Update course values directly
-      course.value = { ...fetchedCourse };
-
-      // Manually update form values
-      setFieldValue("name", fetchedCourse.name);
-      setFieldValue("tagline", fetchedCourse.tagline);
-      setFieldValue("thumbnail", fetchedCourse.thumbnail);
-      setFieldValue("categoryId", fetchedCourse.category_id);
-      setFieldValue("description", fetchedCourse.description);
-      setFieldValue("is_popular", fetchedCourse.is_popular);
-    }
+        if (route.params.courseId) {
+          const fetchedCourse = await getCourseById(route.params.courseId);
+          console.log("Fetched Course:", fetchedCourse);
+          
+          // Langsung assign ke field form
+          name.value = fetchedCourse.name;
+          tagline.value = fetchedCourse.tagline;
+          thumbnail.value = fetchedCourse.thumbnail;
+          categoryId.value = fetchedCourse.category_id;
+          description.value = fetchedCourse.description;
+          isPopular.value = fetchedCourse.is_popular;
+          // Untuk thumbnail preview dari server
+          if (fetchedCourse.thumbnail) {
+            imageUrl.value = fetchedCourse.thumbnail;
+            file.value = null;
+          }
+        }
 
 
   } catch (error) {

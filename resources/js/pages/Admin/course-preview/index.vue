@@ -90,8 +90,10 @@ const getContentIcon = (type) => {
       return '/assets/images/icons/video-play-white.svg';
     case 'text':
       return '/assets/images/icons/note-white.svg';
+    case 'pdf':
+      return '/assets/images/icons/pdf-white.svg';
     case 'finished':
-      return '/assets/images/icons/tick-circle-white.svg';
+      return '';
     default:
       return '/assets/images/icons/note-white.svg';
   }
@@ -207,30 +209,23 @@ watch(contents, (newContents) => {
             </aside>
 
             <!-- Main Content Area -->
-            <main class="flex flex-col flex-1 gap-[30px] p-[30px] ml-[340px]">
+            <main class="flex flex-col flex-1 gap-[30px] p-[30px] ml-[340px] mb-12">
                 <Header/>
                 
                 <div class="relative flex flex-col gap-[26px]" v-if="currentContent.id">
                     <!-- Dynamic Content Rendering -->
-                    <!-- <ContentText 
+                    <ContentText 
                         v-if="currentContent.type === 'text'" 
                         :content="currentContent"
                     />
                     <ContentVideo 
                         v-else-if="currentContent.type === 'video'" 
                         :content="currentContent"
-                    /> -->
+                    />
+                    <ContentPdf
+                        v-else-if="currentContent.type === 'pdf'" 
+                        :content="currentContent"/>
                     
-                    <ContentPdf :content="contentData"/>
-                    
-                    <!-- Default Content -->
-                    <div class="bg-white rounded-lg p-8 shadow-sm">
-                        <h1 class="text-2xl font-bold mb-4">{{ currentContent.title }}</h1>
-                        <div class="prose max-w-none" v-if="currentContent.content">
-                            <div v-html="currentContent.content"></div>
-                        </div>
-                        <p v-else class="text-gray-500">No content available</p>
-                    </div>
 
                     <!-- Action Button -->
                     <div class="fixed bottom-0 w-[calc(100%-400px)] h-[151px] flex items-end justify-end pb-5 bg-[linear-gradient(0deg,#FFFFFF_49.67%,rgba(255,255,255,0)_84.11%)]">

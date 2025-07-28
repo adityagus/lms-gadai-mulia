@@ -86,6 +86,9 @@
           class="appearance-none outline-none w-full py-3 font-semibold placeholder:font-normal placeholder:text-[#838C9D] !bg-transparent"
           placeholder="Write tagline for better copy" />
       </div>
+      <span class="error-message text-[#FF435A]">
+        {{ errors?.pdf }}
+      </span>
     </div>
     <!-- <div class="flex flex-col gap-[10px]">
                     <label for="desc" class="font-semibold">Description</label>
@@ -144,7 +147,10 @@
               initialData: "<h1>Hello from CKEditor 5!</h1>",
             }}
           /> -->
+          
+          <span class="error-message text-[#FF435A]">
         {{ errors?.text }}
+      </span>
     </div>
     <div class="flex items-center gap-[14px]">
       <button type="submit" class="w-full rounded-full border border-[#060A23] p-[14px_20px] font-semibold text-nowrap">
@@ -160,7 +166,7 @@
 <script setup>
 import { ref, reactive, watchEffect, onMounted } from 'vue';
 import CKEditor from '@ckeditor/ckeditor5-vue';
-import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
+import * as ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 import axios from 'axios';
 import { useMutation } from '@tanstack/vue-query';
 import { createContent, getContentsByCourseId, updateContent, getContentById } from '../../../services/contentService';

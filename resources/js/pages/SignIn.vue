@@ -74,16 +74,16 @@
                   <!-- Email -->
                   <div>
                     <label class="mb-1.5 block text-sm font-medium text-gray-700 ">
-                      Username<span class="text-error-500">*</span>
+                      Username<span class="text-red-500">*</span>
                     </label>
-<input type="username" id="username" name="username" placeholder="info@gmail.com"
+<input type="username" id="username" name="username" placeholder="Enter your username"
   v-model="username"
   class=" h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 shadow-theme-xs placeholder:text-gray-400 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10  " />
                   </div>
                   <!-- Password -->
                   <div>
                     <label class="mb-1.5 block text-sm font-medium text-gray-700 ">
-                      Password<span class="text-error-500">*</span>
+                      Password<span class="text-red-500">*</span>
                     </label>
                     <div class="relative">
 <input :type="showPassword ? 'text' : 'password'" placeholder="Enter your password"
@@ -127,8 +127,8 @@
                         Keep me logged in
                       </label>
                     </div>
-                    <a href="/reset-password.html" class="text-sm text-brand-500 hover:text-brand-600">Forgot
-                      password?</a>
+                    <!-- <a href="/reset-password.html" class="text-sm text-brand-500 hover:text-brand-600">Forgot
+                      password?</a> -->
                   </div>
                   <!-- Button -->
                   <div>
@@ -139,12 +139,12 @@
                   </div>
                 </div>
               </form>
-              <div class="mt-5 text-center">
+              <!-- <div class="mt-5 text-center">
                 <p class="text-sm font-normal text-center text-gray-700 ">
                   Don't have an account?
                   <a href="/signup.html" class="text-brand-500 hover:text-brand-600">Sign Up</a>
                 </p>
-              </div>
+              </div> -->
             </div>
           </div>
         </div>
@@ -174,11 +174,23 @@ const submitLogin = async () => {
     const response = await axios.post('/api/login', {
       user: username.value,
       pass: password.value
-    })
+    }).then(res => {
+      if (res.data.success) {
+        console.log('Login successful:', res.data);
+        localStorage.setItem('nama', res.data.user.nama);
+        localStorage.setItem('user', res.data.user.user);
+        localStorage.setItem('idgrup', res.data.user.idgrup);
+        localStorage.setItem('status', 'login');
+        // Redirect to the appropriate page based on user group
+        window.location.href = res.data.redirect;
+      } else {
+        alert("Username atau password salah");
+      }
+    });
     // Jika login berhasil, redirect ke home
-    router.push({ name: 'home' })
   } catch (error) {
-    alert(error)
+    console.error('Login error:', error);
+    alert("Username atau password salah");
   }
 }
 

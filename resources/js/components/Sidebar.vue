@@ -38,13 +38,19 @@
   </div>
   <ul v-if="openMenu === 'info'" class="pl-12 mt-2 space-y-2">
     <li :class="{ 'active': activeSub === '/admin/pengumuman' }">
-      <a @click.prevent="handleSubClick('/admin/pengumuman')" href="#" class="text-white hover:text-gray-300">Pengumuman</a>
+      <div @click.prevent="handleSubClick('/admin/pengumuman')" href="#" class="text-white hover:text-gray-300 px-5">
+        <span class="font-semibold text-white">Pengumuman</span>
+      </div>
     </li>
     <li :class="{ 'active': activeSub === '/admin/overview/subitem2' }">
-      <a @click.prevent="handleSubClick('/admin/overview/subitem2')" href="#" class="text-white hover:text-gray-300">Formulir</a>
+      <div @click.prevent="" href="#" class="text-white hover:text-gray-300 px-5">
+        <span class="font-semibold text-white">Formulir</span>
+      </div>
     </li>
     <li :class="{ 'active': activeSub === '/admin/overview/subitem3' }">
-      <a @click.prevent="handleSubClick('/admin/overview/subitem3')" href="#" class="text-white hover:text-gray-300">Report</a>
+      <div @click.prevent="" href="#" class="text-white hover:text-gray-300 px-5">
+        <span class="font-semibold text-white">Report</span>
+      </div>
     </li>
   </ul>
 </li>
@@ -291,7 +297,7 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 
 const route = useRoute();
@@ -307,6 +313,15 @@ const handleSubClick = (subPath) => {
   activeSub.value = subPath;
   router.push(subPath);
 };
+
+onMounted(() => {
+  // Cek jika route saat ini adalah salah satu sub-menu info
+  const infoSubs = ['/admin/pengumuman', '/admin/overview/subitem2', '/admin/overview/subitem3'];
+  if (infoSubs.includes(route.path)) {
+    openMenu.value = 'info';
+    activeSub.value = route.path;
+  }
+});
 </script>
 
 <style>

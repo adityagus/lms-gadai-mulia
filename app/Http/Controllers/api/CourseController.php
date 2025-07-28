@@ -8,6 +8,7 @@ use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
+use Algolia\AlgoliaSearch\SearchClient;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Request as FacadesRequest;
 
@@ -22,7 +23,7 @@ class CourseController extends Controller
         // Loop through the courses and append the thumbnail URL
     $courses->getCollection()->transform(function ($course) {
         // Generate the full URL for the thumbnail (assuming the thumbnail is stored in public disk)
-        $course->thumbnail_url = env('IMG_URL') . '/' . $course->thumbnail; // Use env variable for base URL
+        $course->thumbnail_url = env('MIX_IMG_URL') . $course->thumbnail; // Use env variable for base URL
         //  Storage::url($course->thumbnail); // Adjust if storage path differs
         return $course;
     });
@@ -30,6 +31,40 @@ class CourseController extends Controller
     $courses->appends(['thumbnail_url' => $page]); // Append the page number to the pagination links
     
     return response()->json($courses);
+  }
+  
+  public function search(Request $request)
+  {
+$courses = Course::with('category:id,name')->get(); // Ambil data sebagai collection
+
+    // Transform data agar sesuai dengan Algolia
+    $algoliaCourses = $courses->map(function ($course) {
+      return [
+        'objectID' => $course->id,
+        'title' => $course->name,
+        'tagline' => $course->tagline,
+        'description' => $course->description,
+        'category' => $course->category ? $course->category->name : null,
+        'thumbnail_url' => env('MIX_IMG_URL') . $course->thumbnail,
+      ];
+    })->toArray();
+
+    // Push ke Algolia
+    $client = SearchClient::create('V18ENC6M06', 'c2ca39153191af8d720b24257772d170'); // Gunakan Admin API Key
+    $index = $client->initIndex('course_gadai_mulia');
+    $index->saveObjects($algoliaCourses);
+
+    return response()->json([
+      'success' => true,
+      'uploaded' => count($algoliaCourses)
+    ]);
+    
+    // $courses = Course::with('category:id,name')->get();
+    // $courses->getCollection()->transform(function ($course) {
+    //     $course->thumbnail_url = env('MIX_IMG_URL') . $course->thumbnail; // Use env variable for base URL
+    //     return $course;
+    // });
+    // return response()->json($courses);
   }
 
   public function show(Request $request, $id)

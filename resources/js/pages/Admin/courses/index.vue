@@ -51,7 +51,7 @@ import axios from 'axios'
 import { onMounted, ref } from 'vue';
 import CardSkeleton from './CardSkeleton.vue';
 import Swal from "sweetalert2";
-import { getCourses } from './../../../services/courseService.js';
+import { deleteCourse, getCourses } from './../../../services/courseService.js';
 
 
 
@@ -90,7 +90,6 @@ const handleDelete = async (id) => {
   title: "Are you sure?",
   text: "You won't be able to revert this course!",
   icon: "warning",
-  height: 100,
   showCancelButton: true,
   confirmButtonColor: "#3085d6",
   cancelButtonColor: "#d33",
@@ -99,9 +98,9 @@ const handleDelete = async (id) => {
   if (result.isConfirmed) {
     
      try {
-      const result = await axios.delete(`http://127.0.0.1:8000/api/courses/${id}`)
-      
-      if(result.data.status == 200){
+      const result = await deleteCourse(id)
+      console.log("result", result);
+      if(result.status == 200){
         Swal.fire({
           title: "Deleted!",
           text: "Your file has been deleted.",

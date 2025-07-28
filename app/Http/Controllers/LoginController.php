@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Login;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Session;
@@ -11,51 +12,48 @@ class LoginController extends Controller
 {
     public function aksiLogin(Request $request)
     {
-        // dd($request->all()); // Debugging: tampilkan semua input yang diterima
-        $user = $request->input('user');
-        $pass = $request->input('pass');
+        // Pastikan variabel di-assign sebelum digunakan
+        $username = $request->input('user');
+        $password = $request->input('pass');
+        // Debugging line to check input
+        // dd($username, $password);
 
-        // Cek ke database utama
-        $cek = DB::table('users')
-            ->where('username', $user)
-            ->where('password', $pass)
-            ->count();
-        $u = DB::table('users')
-            ->where('username', $user)
-            ->where('password', $pass)
-            ->first();
+        // Cek user login menggunakan model Login (db2)
 
-        // Cek ke database kedua (sam_pos_view)
-        $cek2 = DB::connection('sam_pos_view')->table('users')
-            ->where('username', $user)
-            ->where('password', $pass)
-            ->count();
-        $u2 = DB::connection('sam_pos_view')->table('users')
-            ->where('username', $user)
-            ->where('password', $pass)
-            ->first();
+        $users = Login::cekLogin($username);
+        $user = null;
+        if ($users && count($users) > 0) {
+            $user = $users[0];
+        }
 
-        // Pilih hasil dari database kedua jika ada, jika tidak pakai utama
-        $finalCek = $cek2 > 0 ? $cek2 : $cek;
-        $finalU = $u2 ?: $u;
+        if ($user) {
+            if (crypt($password, $user->password) == $user->password) {
+                $nama = $user->nm_depan ?? ($user->nama ?? '');
+                if (!empty($user->nm_belakang)) {
+                    $nama .= ' ' . $user->nm_belakang;
+                }
 
-        // Debug
-        // dd($finalU);
+                $datasession = [
+                    'nama' => $nama,
+                    'user' => $user->username,
+                    'idgrup' => $user->kd_jabatan ?? ($user->id_jabatan ?? null),
+                    'status' => 'login'
+                ];
 
-        if ($finalCek > 0 && $finalU) {
-            $datasession = [
-                'username' => $user,
-                'nama' => $finalU->nama ?? '',
-                'id_area' => $finalU->id_area ?? null,
-                'id_cbg' => $finalU->id_cabang ?? null,
-                'id_jbt' => $finalU->id_jabatan ?? null,
-                'status' => 'login',
-            ];
-            Session::put($datasession);
-            return Redirect::to('home');
+                Session::put($datasession);
+
+                // Kembalikan response JSON, frontend yang handle localStorage dan redirect
+                $redirectUrl = ($datasession['idgrup'] === 'JBT-032') ? '/admin' : '/student';
+                return response()->json([
+                    'success' => true,
+                    'user' => $datasession,
+                    'redirect' => $redirectUrl
+                ]);
+            } else {
+                return back()->with('sukses', "Oops... Username/Password Salah!!!Cek");
+            }
         } else {
-            Session::flash('sukses', 'Oops... Username/password salah');
-            return Redirect::to('login');
+            return back()->with('sukses', "Oops... Username/Password Salah!!!");
         }
     }
 }

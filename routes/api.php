@@ -29,8 +29,9 @@ Route::get('session', [InformationController::class, 'session']);
 Route::get('menu2', [InformationController::class, 'menu2']);
 
 
-Route::post('/upload', [FileUploadController::class, 'upload']);
+Route::post('upload', [FileUploadController::class, 'upload']);
 Route::get('courses', [CourseController::class, 'index']);
+Route::get('search', [CourseController::class, 'search']);
 Route::get('courses/{id}', [CourseController::class, 'show']);
 Route::get('preview-course/{id}', [CourseController::class, 'preview']);
 Route::post('courses', [CourseController::class, 'store']);
