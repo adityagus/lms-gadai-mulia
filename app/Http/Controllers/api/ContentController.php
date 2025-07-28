@@ -44,14 +44,19 @@ class ContentController extends Controller
 
     
     public function store(StoreContentRequest $request){
-      // Debug: Log received data
-      \Log::info('Store Content Request:', $request->all());
+      $validated = $request->validated();
       
-      $content = Content::create($request->validated());
-      
+      // Jika type == 'pdf' dan ada file, upload file dan simpan path-nya
+      if ($request->get('type') === 'pdf' && $request->hasFile('content')) {
+          $contentPath = Content::uploadContent($request->file('content'));
+          $validated['content'] = $contentPath;
+      }
+
+      $contents = Content::create($validated);
+
       return response()->json([
-        'message' => 'Content created successfully', 
-        'data' => $content,
+        'message' => 'Content created successfully',
+        'data' => $contents,
         'status' => 201
       ]);
     }

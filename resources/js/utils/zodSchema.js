@@ -38,6 +38,7 @@ export const mutateContentSchema = z
     .superRefine((val, ctx) => {
         const parseVideoId = z.string().min(4).safeParse(val.youtubeId);
         const parseText = z.string().min(4).safeParse(val.text);
+        const parsePdf = z.any().safeParse(val.pdf);
 
         if (val.type === "video") {
             if (!parseVideoId.success) {
@@ -63,7 +64,7 @@ export const mutateContentSchema = z
         }
 
         if (val.type === "pdf") {
-            if (!parseText.success) {
+            if (!parsePdf.success) {
                 ctx.addIssue({
                     code: z.ZodIssueCode.custom,
                     message: "Upload PDF is required",

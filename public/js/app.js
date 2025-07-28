@@ -32579,9 +32579,9 @@ function _asyncToGenerator(n) { return function () { var t = this, e = arguments
     }();
     var contentData = {
       title: "Judul PDF",
-      pdf_url: "http://lms-gadai.test/storage/uploads/lampiran-course/M.2021.042-STAF_PENGGANTI_SEMENTARA.pdf",
+      pdf_url: "http://lms-gadai.test/storage/uploads/content/M.2021.042-STAF_PENGGANTI_SEMENTARA.pdf",
       content: "<p>Ini adalah konten PDF yang akan ditampilkan.</p>",
-      attachment: "http://lms-gadai.test/storage/uploads/lampiran-course/M.2021.042-STAF_PENGGANTI_SEMENTARA.pdf"
+      attachment: "http://lms-gadai.test/storage/uploads/content/M.2021.042-STAF_PENGGANTI_SEMENTARA.pdf"
     };
     var goToContent = function goToContent(index) {
       if (index >= 0 && index < contents.value.length) {

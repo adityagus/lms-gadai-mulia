@@ -142,6 +142,7 @@ onMounted(async () => {
           const fetchedCourse = await getCourseById(route.params.courseId);
           console.log("Fetched Course:", fetchedCourse);
           
+          course.value = { ...fetchedCourse };
           // Langsung assign ke field form
           name.value = fetchedCourse.name;
           tagline.value = fetchedCourse.tagline;

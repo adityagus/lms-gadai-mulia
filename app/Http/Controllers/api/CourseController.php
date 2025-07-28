@@ -76,7 +76,7 @@ $courses = Course::with('category:id,name')->get(); // Ambil data sebagai collec
     if (!$course) {
       return response()->json(['message' => 'Course not Found'], 400);
     }
-    $contents = $course->contents()->orderBy('order')->paginate(5, ['*'], 'page', $page); // 5 konten per halaman
+    $contents = $course->contents()->orderBy('order', 'asc')->paginate(5, ['*'], 'page', $page); // 5 konten per halaman
     $courseArr = $course->toArray();
     $courseArr['thumbnail_url'] = asset('storage/' . $course->thumbnail);
     return response()->json([

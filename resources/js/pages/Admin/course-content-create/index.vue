@@ -82,9 +82,9 @@
       <div
         class="flex items-center w-full rounded-full border border-[#CFDBEF] gap-3 px-5 transition-all duration-300 focus-within:ring-2 focus-within:ring-[#662FFF]">
         <img src="/assets/images/icons/bill-black.svg" class="w-6 h-6" alt="icon" />
-        <input type='file' name="pdf" id="pdf"
+        <input type='file' name="pdf" id="pdf" v-bind='pdf'
           class="appearance-none outline-none w-full py-3 font-semibold placeholder:font-normal placeholder:text-[#838C9D] !bg-transparent"
-          placeholder="Write tagline for better copy" />
+          placeholder="Write tagline for better copy" @change='onFileChange'/>
       </div>
       <span class="error-message text-[#FF435A]">
         {{ errors?.pdf }}
@@ -197,6 +197,10 @@ const { handleSubmit, isSubmitting, values, errors, defineField } = useForm({
   }
 });
 
+const file = ref(null);
+const pdfUrl = ref(null);
+const content = ref(null);
+
 const [title] = defineField('title');
 const [type] = defineField('type');
 const [pdf] = defineField('pdf');
@@ -263,6 +267,16 @@ const editorConfig = {
   ]
 };
 
+const onFileChange = (event) => {
+  console.log("File changed:", event.target.files[0]);
+  const selectedFile = event.target.files[0];
+  if (selectedFile) {
+    file.value = selectedFile;
+    pdfUrl.value = URL.createObjectURL(selectedFile);
+    content.value = selectedFile;
+  }
+};
+
 // const changeType = (event) => {
 //   console.log()
 //   const selectedType = event.target.value;
@@ -281,57 +295,50 @@ const editorConfig = {
 // };
 
 const onSubmit = handleSubmit(async () => {
+  const formData = new FormData();
   try {
-    // Validasi manual sebelum submit
-    if (!values.title) {
-      console.error('Title is required');
-      return;
-    }
     
-    if (!values.type) {
-      console.error('Type is required');
-      return;
+    formData.append('title', values.title);
+    formData.append('type', values.type);
+    formData.append('course_id', courseId); // Ensure course_id is included
+    if (values.type === 'text') {
+      formData.append('content', values.text);
+    } else if (values.type === 'video') {
+      formData.append('content', values.youtubeId);
+    } else if (values.type === 'pdf' && file.value) {
+      formData.append('content', file.value);
+    } else if (values.type === 'quiz') {
+      formData.append('content', values.quiz);
     }
+    formData.append('order', await countContent());
     
-    if (!courseId) {
-      console.error('Course ID is required');
-      return;
-    }
-
-    const contentData = {
-      title: values.title,
-      type: values.type,
-      content: values.type === 'text' ? values.text : values.type === 'video' ? values.youtubeId : values.type === 'pdf' ? values.pdf : values.quiz,
-      course_id: parseInt(courseId) // Pastikan course_id adalah integer
-    };
 
     // Debug: Log data yang akan dikirim
-    console.log('Data yang akan dikirim:', contentData);
     console.log('Is Edit Mode:', isEditMode.value);
     console.log('Content ID:', contentId);
 
     // Validasi content berdasarkan type
-    if (contentData.type === 'text' && !contentData.content) {
+    if (formData.type === 'text' && !formData.content) {
       console.error('Text content is required');
       return;
     }
     
-    if (contentData.type === 'video' && !contentData.content) {
+    if (formData.type === 'video' && !formData.content) {
       console.error('Video URL is required');
       return;
     }
 
     if (isEditMode.value) {
       // Update existing content - tidak perlu order
-      contentData.id = parseInt(contentId);
-      console.log('Updating content with data:', contentData);
-      await mutateUpdate.mutateAsync(contentData);
+      formData.id = parseInt(contentId);
+      console.log('Updating content with data:', formData);
+      await mutateUpdate.mutateAsync(formData);
       console.log('Content updated successfully');
     } else {
       // Create new content - perlu order
-      contentData.order = await countContent();
-      console.log('Creating content with data:', contentData);
-      await mutateCreate.mutateAsync(contentData);
+      formData.order = await countContent();
+      console.log('Creating content with data:', formData);
+      await mutateCreate.mutateAsync(formData);
       console.log('Content created successfully');
     }
 

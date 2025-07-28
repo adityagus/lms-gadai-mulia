@@ -32,6 +32,11 @@ class Content extends Model
     {
         return $this->updated_at->format('Y-m-d H:i:s');
     }
+    
+    public static function uploadContent($file)
+    {
+        return $file->store('uploads/content', 'public');
+    }
 
     public function course()
     {
