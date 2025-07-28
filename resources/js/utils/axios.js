@@ -2,8 +2,7 @@ import axios from "axios"
 import secureLocalStorage from "secure-ls"
 // import { STORAGE_KEY } from "./const.js"
 
-const baseURL = 'http://lms-gadai.test/api'
-console.log('Base URL:', baseURL)
+const baseURL = process.env.MIX_API_URL || "http://lms-gadai.test/api"
 export const apiInstance = axios.create({
   baseURL,
   timeout: 5000
