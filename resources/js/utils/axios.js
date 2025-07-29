@@ -1,8 +1,9 @@
 import axios from "axios"
-import secureLocalStorage from "secure-ls"
+// import secureLocalStorage from "secure-ls"
 // import { STORAGE_KEY } from "./const.js"
 
 const baseURL = process.env.MIX_API_URL
+console.log("baseURL new", baseURL);
 export const apiInstance = axios.create({
   baseURL,
   timeout: 5000

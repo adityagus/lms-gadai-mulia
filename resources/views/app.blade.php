@@ -4,7 +4,7 @@
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
 
-        <title>LMS - GADAI MULIA</title>
+        <title>Beladiri - GADAI MULIA</title>
 
         <!-- Fonts -->
         {{-- <link rel="shortcut icon" type="image/png" href="{{ public('favicon.png') }}"/> --}}

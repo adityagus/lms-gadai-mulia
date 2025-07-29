@@ -3,8 +3,8 @@
   <nav class="w-full bg-white shadow fixed top-0 left-0 z-50">
     <div class="max-w-7xl mx-auto flex items-center justify-between px-6 py-4">
       <a href="/" class="flex items-center gap-2">
-        <img src="/assets/images/logos/lms.png" alt="Logo" class="w-36">
-        <!-- <span class="font-bold text-indigo-700 text-xl">LMS Gadai Mulia</span> -->
+        <img src="/assets/images/logos/lms.png" alt="Beladiri" class="w-36">
+        <!-- <span class="font-bold text-indigo-700 text-xl">Beladiri</span> -->
       </a>
       <div class="hidden md:flex gap-8">
         <a href="#about" class="text-gray-700 hover:text-indigo-600 font-medium">Tentang Kami</a>
@@ -20,17 +20,17 @@
   <section class="landing-hero bg-gradient-to-br from-indigo-50 to-white min-h-screen flex flex-col justify-center items-center text-center px-4 pt-32" data-aos="fade-up" data-aos-duration="1500">
     <div class="max-w-2xl mx-auto py-20">
       <h1 class="text-4xl md:text-6xl font-extrabold text-indigo-800 mb-6 leading-tight">
-        Selamat Datang di <span class="text-indigo-600">LMS Gadai Mulia</span>
+        Selamat Datang di <span class="text-indigo-600">Beladiri</span>
       </h1>
       <p class="text-lg md:text-2xl text-gray-700 mb-8">
-        Platform <strong>Learning Management System</strong> modern untuk pelatihan, kursus, dan pengembangan SDM berbasis digital. Mudah, aman, dan terintegrasi.
+        Platform <strong>Belajar Mandiri</strong> (Beladiri) modern untuk pelatihan, kursus, dan pengembangan SDM berbasis digital. Mudah, aman, dan terintegrasi.
       </p>
       <a href="/sign-in" class="inline-block bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 px-8 rounded-lg shadow-lg transition-colors text-lg">
         Lihat Kursus
       </a>
     </div>
     <!-- <div class="w-full flex justify-center">
-      <img src="/assets/images/online-learning.svg" alt="LMS Gadai Mulia" class="max-w-md w-full h-auto" loading="lazy">
+      <img src="/assets/images/online-learning.svg" alt="Beladiri" class="max-w-md w-full h-auto" loading="lazy">
     </div> -->
     <div class="mt-16 max-w-3xl mx-auto text-gray-600">
       <h2 class="text-2xl font-bold mb-4 text-indigo-700">Fitur Unggulan</h2>
@@ -56,28 +56,27 @@
     <h2 class="text-3xl font-bold text-indigo-700 mb-8 text-center">Kategori Kursus</h2>
     <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8">
       <div class="bg-white rounded-lg shadow-lg flex flex-col items-center p-6">
-        <!-- <img src="/assets/images/online-learning.svg" alt="Manajemen" class="h-16 mb-4"> -->
-        <h3 class="font-semibold text-indigo-700 mb-2">Manajemen</h3>
-        <p class="text-gray-600 text-center">Kursus tentang strategi, kepemimpinan, dan pengelolaan bisnis gadai.</p>
+        <h3 class="font-semibold text-indigo-700 mb-2">Marketing</h3>
+        <p class="text-gray-600 text-center">Strategi pemasaran, branding, dan promosi digital untuk bisnis masa kini.</p>
       </div>
       <div class="bg-white rounded-lg shadow-lg flex flex-col items-center p-6">
-        <h3 class="font-semibold text-indigo-700 mb-2">SDM</h3>
-        <p class="text-gray-600 text-center">Pengembangan sumber daya manusia untuk meningkatkan kompetensi dan produktivitas.</p>
+        <h3 class="font-semibold text-indigo-700 mb-2">Programming</h3>
+        <p class="text-gray-600 text-center">Belajar coding, pengembangan aplikasi, dan teknologi software modern.</p>
       </div>
       <div class="bg-white rounded-lg shadow-lg flex flex-col items-center p-6">
-        <h3 class="font-semibold text-indigo-700 mb-2">Teknologi</h3>
-        <p class="text-gray-600 text-center">Kursus teknologi digital untuk mendukung proses bisnis dan pembelajaran.</p>
+        <h3 class="font-semibold text-indigo-700 mb-2">Design</h3>
+        <p class="text-gray-600 text-center">Desain grafis, UI/UX, dan kreativitas visual untuk kebutuhan digital.</p>
       </div>
       <div class="bg-white rounded-lg shadow-lg flex flex-col items-center p-6">
-        <h3 class="font-semibold text-indigo-700 mb-2">Sertifikasi</h3>
-        <p class="text-gray-600 text-center">Program sertifikasi untuk validasi kompetensi dan keahlian profesional.</p>
+        <h3 class="font-semibold text-indigo-700 mb-2">Finance</h3>
+        <p class="text-gray-600 text-center">Manajemen keuangan, investasi, dan akuntansi untuk masa depan.</p>
       </div>
     </div>
   </section>
   <!-- About Us Section -->
   <section id="about" class="max-w-5xl mx-auto py-20 px-4 text-center" data-aos="fade-up" data-aos-duration="1500">
     <h2 class="text-3xl font-bold text-indigo-700 mb-6">Tentang Kami</h2>
-    <p class="text-lg text-gray-700 mb-4">LMS Gadai Mulia adalah platform pembelajaran digital yang didedikasikan untuk meningkatkan kualitas SDM melalui pelatihan dan kursus online yang interaktif dan terintegrasi. Kami berkomitmen untuk memberikan pengalaman belajar terbaik dengan teknologi terkini dan dukungan penuh bagi para peserta.</p>
+    <p class="text-lg text-gray-700 mb-4">Beladiri (Belajar Mandiri) adalah platform pembelajaran digital yang didedikasikan untuk meningkatkan kualitas SDM melalui pelatihan dan kursus online yang interaktif dan terintegrasi. Kami berkomitmen untuk memberikan pengalaman belajar terbaik dengan teknologi terkini dan dukungan penuh bagi para peserta.</p>
     <div class="flex flex-col md:flex-row gap-8 justify-center items-center mt-8">
       <div class="bg-white rounded-lg shadow p-6 w-full md:w-1/3">
         <h3 class="font-semibold text-indigo-600 mb-2">Visi</h3>
@@ -94,7 +93,7 @@
   <section id="courses" class="bg-indigo-50 py-20 px-4" data-aos="fade-up" data-aos-duration="1500">
     <div class="max-w-6xl mx-auto text-center mb-12">
       <h2 class="text-3xl font-bold text-indigo-700 mb-4">Kursus Populer</h2>
-      <p class="text-gray-700">Pilih kursus terbaik sesuai kebutuhan Anda dan mulai belajar sekarang!</p>
+      <p class="text-gray-700">Pilih kursus terbaik sesuai kebutuhan Anda dan mulai belajar mandiri sekarang!</p>
     </div>
     <div class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
       <div v-for="course in courses" :key="course.id" class="w-full bg-white rounded-lg shadow-lg flex flex-col">
@@ -118,7 +117,7 @@
     <h2 class="text-3xl font-bold text-indigo-700 mb-8 text-center">Testimoni Peserta</h2>
     <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
       <div class="bg-white rounded-lg shadow p-6">
-        <p class="text-gray-700 italic mb-4">"Platform LMS Gadai Mulia sangat membantu saya dalam memahami manajemen gadai secara praktis dan mudah!"</p>
+        <p class="text-gray-700 italic mb-4">"Platform Beladiri sangat membantu saya dalam memahami materi secara praktis dan mudah!"</p>
         <div class="flex items-center gap-3">
           <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="User" class="h-10 w-10 rounded-full">
           <span class="font-semibold text-indigo-600">Budi Santoso</span>
@@ -147,8 +146,8 @@
       <h2 class="text-3xl font-bold text-indigo-700 mb-8 text-center">FAQ</h2>
       <div class="space-y-6">
         <div class="bg-white rounded-lg shadow p-6">
-          <h3 class="font-semibold text-indigo-600 mb-2">Siapa saja yang bisa mengakses LMS Gadai Mulia?</h3>
-          <p class="text-gray-700">LMS Gadai Mulia dapat diakses oleh seluruh karyawan dan peserta pelatihan yang telah terdaftar oleh admin perusahaan.</p>
+          <h3 class="font-semibold text-indigo-600 mb-2">Siapa saja yang bisa mengakses Beladiri?</h3>
+          <p class="text-gray-700">Beladiri dapat diakses oleh seluruh karyawan dan peserta pelatihan yang telah terdaftar oleh admin perusahaan.</p>
         </div>
         <div class="bg-white rounded-lg shadow p-6">
           <h3 class="font-semibold text-indigo-600 mb-2">Bagaimana cara login ke platform?</h3>
@@ -167,8 +166,8 @@
     <div class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-8 px-4">
       <!-- Logo & Deskripsi -->
       <div class="flex flex-col items-start md:items-start">
-        <img src="/assets/images/logos/lms.png" alt="LMS Gadai Mulia" class="w-32 mb-4">
-        <p class="text-sm">Platform LMS modern untuk pelatihan, kursus, dan pengembangan SDM berbasis digital.</p>
+        <img src="/assets/images/logos/lms.png" alt="Beladiri" class="w-32 mb-4">
+        <p class="text-sm">Platform Belajar Mandiri (Beladiri) modern untuk pelatihan, kursus, dan pengembangan SDM berbasis digital.</p>
       </div>
       <!-- Navigasi -->
       <div>
@@ -206,7 +205,7 @@
         </div>
       </div>
     </div>
-    <div class="border-t border-indigo-700 mt-10 pt-6 text-center text-sm text-indigo-300">&copy; 2025 LMS Gadai Mulia. All rights reserved.</div>
+    <div class="border-t border-indigo-700 mt-10 pt-6 text-center text-sm text-indigo-300">&copy; 2025 Beladiri (Belajar Mandiri). All rights reserved.</div>
   </footer>
 </template>
 
@@ -237,12 +236,12 @@ onMounted(async () => {
 if (typeof window === 'undefined') {
   // SSR
   useHead({
-    title: 'LMS Gadai Mulia - Platform Learning Management System Modern',
+    title: 'Beladiri (Belajar Mandiri) - Platform Belajar Mandiri Modern',
     meta: [
-      { name: 'description', content: 'LMS Gadai Mulia adalah platform Learning Management System modern untuk pelatihan, kursus, dan pengembangan SDM berbasis digital.' },
-      { name: 'keywords', content: 'LMS, Learning Management System, kursus online, pelatihan, sertifikat, e-learning, Gadai Mulia' },
-      { property: 'og:title', content: 'LMS Gadai Mulia - Platform Learning Management System Modern' },
-      { property: 'og:description', content: 'Platform LMS modern untuk pelatihan, kursus, dan pengembangan SDM.' },
+      { name: 'description', content: 'Beladiri (Belajar Mandiri) adalah platform belajar mandiri modern untuk pelatihan, kursus, dan pengembangan SDM berbasis digital.' },
+      { name: 'keywords', content: 'Beladiri, Belajar Mandiri, kursus online, pelatihan, sertifikat, e-learning, belajar mandiri' },
+      { property: 'og:title', content: 'Beladiri (Belajar Mandiri) - Platform Belajar Mandiri Modern' },
+      { property: 'og:description', content: 'Platform Beladiri modern untuk pelatihan, kursus, dan pengembangan SDM.' },
       { property: 'og:image', content: '/assets/images/online-learning.svg' },
       { property: 'og:type', content: 'website' },
     ]
