@@ -1,22 +1,24 @@
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
-    <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
 
-        <title>Beladiri - GADAI MULIA</title>
+  <title>Beladiri - GADAI MULIA</title>
 
-        <!-- Fonts -->
-        {{-- <link rel="shortcut icon" type="image/png" href="{{ public('favicon.png') }}"/> --}}
-        <link rel="stylesheet" href="{{ mix('css/app.css') }}">
-        <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
-        <!-- Styles -->
-    </head>
-    <body class="">
-  
-           <div id="app">
-           </div>
-        
-        <script src="{{ mix('js/app.js') }}"></script> 
-    </body>
+  <!-- Fonts -->
+  <link rel="shortcut icon" type="image/png" href="{{ asset('assets/images/logos/logo-only.png') }}" />
+  <link rel="stylesheet" href="{{ mix('css/app.css') }}">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <!-- Styles -->
+</head>
+<body class="">
+
+{{-- asdasdasdas {{ json_encode(session()->all()) }} oii --}}
+  <div id="app">
+  </div>
+
+  <script src="{{ mix('js/app.js') }}"></script>
+</body>
 </html>
+

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Login;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Redirect;
 
@@ -12,6 +13,7 @@ class LoginController extends Controller
 {
     public function aksiLogin(Request $request)
     {
+      
         // Pastikan variabel di-assign sebelum digunakan
         $username = $request->input('user');
         $password = $request->input('pass');
@@ -21,29 +23,35 @@ class LoginController extends Controller
         // Cek user login menggunakan model Login (db2)
 
         $users = Login::cekLogin($username);
+        $usersArray = $users->toArray();
         $user = null;
         if ($users && count($users) > 0) {
-            $user = $users[0];
+            $user = $usersArray[0];
         }
 
         if ($user) {
             if (crypt($password, $user->password) == $user->password) {
+            // if (true) {
                 $nama = $user->nm_depan ?? ($user->nama ?? '');
                 if (!empty($user->nm_belakang)) {
                     $nama .= ' ' . $user->nm_belakang;
                 }
 
+                // Simpan data tambahan ke session jika perlu
                 $datasession = [
                     'nama' => $nama,
                     'user' => $user->username,
+                    'cabang' => $user->fk_cabang_user ?? null,
+                    'jabatan' => $user->nm_jabatan ?? null,
                     'idgrup' => $user->kd_jabatan ?? ($user->id_jabatan ?? null),
                     'status' => 'login'
                 ];
 
-                Session::put($datasession);
+                session()->put('auth', $datasession);
+                // session()->save();
 
                 // Kembalikan response JSON, frontend yang handle localStorage dan redirect
-                $redirectUrl = ($datasession['idgrup'] === 'JBT-032') ? '/admin' : '/student';
+                $redirectUrl = ($datasession['idgrup'] === 'JBT-032') ? '/courses' : '/courses';
                 return response()->json([
                     'success' => true,
                     'user' => $datasession,
@@ -55,5 +63,14 @@ class LoginController extends Controller
         } else {
             return back()->with('sukses', "Oops... Username/Password Salah!!!");
         }
+    }
+    
+    public function logout(Request $request)
+    {
+        // Hapus data session
+        Session::flush();
+
+        // Redirect ke halaman login atau halaman lain yang diinginkan
+        return Redirect::to('/sign-in');
     }
 }

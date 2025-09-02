@@ -1,18 +1,61 @@
 <template>
   <!-- Navbar -->
-  <nav class="w-full bg-white shadow fixed top-0 left-0 z-50">
+  <nav 
+    :class="[
+      'w-full fixed top-0 left-0 z-50 transition-all duration-300',
+      isScrolled 
+        ? 'bg-white/80 backdrop-blur-md shadow-lg border-b border-white/20' 
+        : 'bg-white shadow'
+    ]"
+  >
     <div class="max-w-7xl mx-auto flex items-center justify-between px-6 py-4">
-      <a href="/" class="flex items-center gap-2">
-        <img src="/assets/images/logos/lms.png" alt="Beladiri" class="w-36">
-        <!-- <span class="font-bold text-indigo-700 text-xl">Beladiri</span> -->
+      <a href="/" class="flex items-center gap-2 transition-transform duration-300 hover:scale-105">
+        <img 
+          src="/assets/images/logos/lms.png" 
+          alt="Beladiri" 
+          :class="[
+            'transition-all duration-300',
+            isScrolled ? 'w-32' : 'w-36'
+          ]"
+        >
       </a>
       <div class="hidden md:flex gap-8">
-        <a href="#about" class="text-gray-700 hover:text-indigo-600 font-medium">Tentang Kami</a>
-        <a href="#courses" class="text-gray-700 hover:text-indigo-600 font-medium">Kursus</a>
-        <a href="#testimonial" class="text-gray-700 hover:text-indigo-600 font-medium">Testimoni</a>
-        <a href="#faq" class="text-gray-700 hover:text-indigo-600 font-medium">FAQ</a>
+        <a href="#about" :class="[
+          'font-medium transition-all duration-300',
+          isScrolled 
+            ? 'text-gray-800 hover:text-indigo-700' 
+            : 'text-gray-700 hover:text-indigo-600'
+        ]">Tentang Kami</a>
+        <a href="#courses" :class="[
+          'font-medium transition-all duration-300',
+          isScrolled 
+            ? 'text-gray-800 hover:text-indigo-700' 
+            : 'text-gray-700 hover:text-indigo-600'
+        ]">Kursus</a>
+        <a href="#testimonial" :class="[
+          'font-medium transition-all duration-300',
+          isScrolled 
+            ? 'text-gray-800 hover:text-indigo-700' 
+            : 'text-gray-700 hover:text-indigo-600'
+        ]">Testimoni</a>
+        <a href="#faq" :class="[
+          'font-medium transition-all duration-300',
+          isScrolled 
+            ? 'text-gray-800 hover:text-indigo-700' 
+            : 'text-gray-700 hover:text-indigo-600'
+        ]">FAQ</a>
       </div>
-      <a href="/sign-in" class="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2 px-6 rounded-lg shadow transition-colors">{{ idgrup ? "Dashboard" : 'Login' }}</a>
+      <a 
+        href="/sign-in" 
+        :class="[
+          'font-semibold py-2 px-6 rounded-lg shadow transition-all duration-300 transform hover:scale-105',
+          isScrolled 
+            ? 'bg-indigo-700 hover:bg-indigo-800 text-white shadow-lg' 
+            : 'bg-indigo-600 hover:bg-indigo-700 text-white'
+        ]"
+      >
+        {{ idgrup ? "Dashboard" : 'Login' }}
+      </a>
     </div>
   </nav>
 
@@ -95,17 +138,17 @@
       <h2 class="text-3xl font-bold text-indigo-700 mb-4">Kursus Populer</h2>
       <p class="text-gray-700">Pilih kursus terbaik sesuai kebutuhan Anda dan mulai belajar mandiri sekarang!</p>
     </div>
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
-      <div v-for="course in courses" :key="course.id" class="w-full bg-white rounded-lg shadow-lg flex flex-col">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto justify-items-center">
+      <div v-for="course in courses" :key="course.id" class="course-card w-full bg-white rounded-lg shadow-lg flex flex-col ">
         <img
           :src="course.thumbnail_url || '/assets/images/online-learning.svg'"
           :alt="course.name"
-          class="w-full h-48 object-cover rounded-t-lg"
+          class="w-full h-48 object-cover rounded-t-lg transition-transform duration-300 group-hover:scale-110"
         >
         <div class="p-6 flex flex-col items-center">
-          <h3 class="font-semibold text-lg text-indigo-700 mb-2">{{ course.name }}</h3>
-          <p class="text-gray-600 mb-4 text-center">{{ course.description }}</p>
-          <a :href="`/courses/${course.id}`" class="bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700">Lihat Detail</a>
+          <h3 class="font-semibold text-lg text-indigo-700 text-center group-hover:text-indigo-800 transition-colors duration-300">{{ course.name }}</h3>
+          <p class="text-gray-600 mb-4 text-center text-sm my-4 group-hover:text-gray-700 transition-colors duration-300">{{ truncateDescription(course.description, 20) }}</p>
+          <router-link :to="{path:`/detail-course/${course.id}`, hash:'#details'}" class="bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700 transition-all duration-300 transform group-hover:scale-105 group-hover:shadow-lg">Lihat Detail</router-link>
         </div>
       </div>
       <div v-if="courses.length === 0" class="col-span-3 text-center text-gray-500 py-10">Belum ada kursus populer.</div>
@@ -210,15 +253,32 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, onUnmounted } from 'vue';
 import AOS from 'aos';
 import 'aos/dist/aos.css';
-const idgrup = ref(localStorage.getItem('idgrup'));
 
+const idgrup = ref(localStorage.getItem('idgrup'));
 const courses = ref([]);
+const isScrolled = ref(false);
+
+// Function to handle scroll event
+const handleScroll = () => {
+  isScrolled.value = window.scrollY > 50;
+};
+
+// Function to truncate description to specified word count
+const truncateDescription = (text, maxWords) => {
+  if (!text) return '';
+  const words = text.split(' ');
+  if (words.length <= maxWords) return text;
+  return words.slice(0, maxWords).join(' ') + '...';
+};
 
 onMounted(async () => {
   AOS.init({ once: true });
+  
+  // Add scroll event listener
+  window.addEventListener('scroll', handleScroll);
   
   try {
     const res = await fetch('/api/courses?is_popular=1');
@@ -230,6 +290,11 @@ onMounted(async () => {
   } catch (e) {
     courses.value = [];
   }
+});
+
+onUnmounted(() => {
+  // Remove scroll event listener
+  window.removeEventListener('scroll', handleScroll);
 });
 
 // SEO meta tags
@@ -244,21 +309,134 @@ if (typeof window === 'undefined') {
       { property: 'og:description', content: 'Platform Beladiri modern untuk pelatihan, kursus, dan pengembangan SDM.' },
       { property: 'og:image', content: '/assets/images/online-learning.svg' },
       { property: 'og:type', content: 'website' },
+      // Cache control meta tags
+      { 'http-equiv': 'Cache-Control', content: 'no-cache, no-store, must-revalidate' },
+      { 'http-equiv': 'Pragma', content: 'no-cache' },
+      { 'http-equiv': 'Expires', content: '0' },
     ]
   });
 }
 </script>
 
 <style scoped>
-/* *{
-  scroll-behavior: smooth;
-} */
-/* scroll smooth while click */
+/* Scroll smooth */
 html {
   scroll-behavior: smooth;
 }
 
 .landing-hero {
   background: linear-gradient(135deg, #eef2ff 0%, #fff 100%);
+}
+
+/* Navbar blur effects */
+nav {
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  /* Fallback for browsers that don't support backdrop-filter */
+  background-color: rgba(255, 255, 255, 0.9);
+}
+
+/* Enhanced navbar blur effect when scrolled */
+nav.bg-white\/80 {
+  background-color: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+/* Smooth transition for navbar elements */
+nav a, nav span {
+  transition: color 0.3s ease;
+}
+
+/* Course Card Hover Effects */
+.course-card {
+  position: relative;
+  overflow: hidden;
+  transform-origin: center;
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.course-card:hover {
+  box-shadow: 
+    0 20px 40px rgba(99, 102, 241, 0.15),
+    0 15px 25px rgba(0, 0, 0, 0.1),
+    0 5px 10px rgba(0, 0, 0, 0.1);
+}
+
+.course-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left 0.5s;
+  z-index: 1;
+}
+
+.course-card:hover::before {
+  left: 100%;
+}
+
+/* Image hover effect with better overflow handling */
+.course-card img {
+  transition: transform 0.4s ease-out;
+  transform-origin: center center;
+}
+
+.course-card:hover img {
+  transform: scale(1.05);
+}
+
+/* Button hover glow effect */
+.course-card a {
+  position: relative;
+  overflow: hidden;
+}
+
+.course-card a::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+  transition: left 0.3s;
+}
+
+.course-card:hover a::before {
+  left: 100%;
+}
+
+/* Add subtle border glow on hover */
+.course-card {
+  border: 2px solid transparent;
+}
+
+.course-card:hover {
+  border-color: rgba(99, 102, 241, 0.2);
+}
+
+/* Additional blur effects for modern browsers */
+@supports (backdrop-filter: blur(20px)) {
+  nav {
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+  }
+}
+
+/* Fallback for older browsers */
+@supports not (backdrop-filter: blur(20px)) {
+  nav {
+    background-color: rgba(255, 255, 255, 0.95);
+  }
+  
+  nav.bg-white\/80 {
+    background-color: rgba(255, 255, 255, 0.9);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  }
 }
 </style>

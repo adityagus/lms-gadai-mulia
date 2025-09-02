@@ -2,7 +2,7 @@ import { apiInstance } from './../utils/axios.js';
 
 export const getCourses = async (page = 1) => {
   try {
-    const response = await apiInstance.get(`/courses?page=${page}`);
+    const response = await apiInstance.get(`/api/courses?page=${page}`);
     return response.data;
   } catch (error) {
     console.error("Error fetching courses:", error);
@@ -10,10 +10,10 @@ export const getCourses = async (page = 1) => {
   }
 };
 
-export const searchCourse = async () => {
+export const searchContent = async (q) => {
   try {
-    const response = await apiInstance.get(`/search`);
-    return response.data;
+    const response = await apiInstance.get(`/api/v1/search?q=${encodeURIComponent(q)}`);
+    return response;
   } catch (error) {
     console.error("Error fetching courses:", error);
     throw error;
@@ -22,7 +22,7 @@ export const searchCourse = async () => {
 
 export const deleteCourse = async (id) => {
   try {
-    const response = await apiInstance.delete(`/courses/${id}`);
+    const response = await apiInstance.delete(`/api/courses/${id}`);
     return response.data;
   } catch (error) {
     if (error.response && error.response.data) {
@@ -38,7 +38,7 @@ export const deleteCourse = async (id) => {
 export const createCourse = async (courseData) => {
   console.dir(courseData);
   try {
-    const response = await apiInstance.post('/courses',courseData, {
+    const response = await apiInstance.post('/api/courses',courseData, {
       headers: {
         'Content-Type': 'multipart/form-data'
       }
@@ -50,24 +50,35 @@ export const createCourse = async (courseData) => {
   }
 }
 
-export const updateCourse = async (id, courseData) => {
-  // console.log("courseData", courseData);die;
-  try {      
-    const response = await apiInstance.put(`/courses/${id}`, courseData.formData,{
-      headers: {
-        'Content-Type': 'multipart/form-data'
-      }
-    });
+export const updateCourse = async (formData, id) => {
+  console.log("Update course data:", formData);
+  try {
+    let response;
+    if (formData instanceof FormData) {
+      formData.append('_method', 'PUT'); // Laravel method override
+      response = await apiInstance.post(`/api/courses/${id}`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      });
+    } else {
+      // Jika object biasa (tidak ada file upload), gunakan PUT dengan JSON
+      response = await apiInstance.put(`/api/courses/${id}`, formData, {
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+    }
     return response.data;
   } catch (error) {
-    console.error("Error updating course:",  error.response.data);
+    console.error("Error updating course:", error.response?.data || error);
     throw error;
   }
 }
 
 export const getCourseById = async (id, page = 1) => {
   try {
-    const response = await apiInstance.get(`/preview-course/${id}`);
+    const response = await apiInstance.get(`/api/preview-course/${id}`);
     return response.data;
   } catch (error) {
     console.error("Error fetching course by ID:", error);
@@ -77,7 +88,7 @@ export const getCourseById = async (id, page = 1) => {
 
 export const getCourseByIdPagination = async (id, page = 1) => {
   try {
-    const response = await apiInstance.get(`/courses/${id}?page=${page}`);
+    const response = await apiInstance.get(`/api/courses/${id}?page=${page}`);
     return response.data;
   } catch (error) {
     console.error("Error fetching course by ID:", error);
@@ -87,7 +98,7 @@ export const getCourseByIdPagination = async (id, page = 1) => {
 
 export const getCategories = async () => {
   try {
-    const response = await apiInstance.get('/categories');
+    const response = await apiInstance.get('/api/categories');
     return response.data;
   } catch (error) {
     console.error("Error fetching categories:", error);

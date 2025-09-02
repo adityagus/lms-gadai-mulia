@@ -12,7 +12,7 @@ class Content extends Model
     protected $table = 'course_details';
     
     protected $fillable = [
-      'course_id', 'title', 'type', 'content', 'order', 'created_by', 'updated_by'
+      'course_id', 'title', 'lampiran', 'type', 'content', 'order', 'created_by', 'updated_by'
     ];
     
     protected $casts = [
@@ -36,6 +36,11 @@ class Content extends Model
     public static function uploadContent($file)
     {
         return $file->store('uploads/content', 'public');
+    }
+
+    public static function uploadLampiran($file, $filePath = '')
+    {
+        return $file->store("uploads/lampiran$filePath", 'public');
     }
 
     public function course()

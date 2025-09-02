@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\api;
 
+use App\Models\Course;
 use App\Models\Content;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
@@ -50,6 +51,11 @@ class ContentController extends Controller
       if ($request->get('type') === 'pdf' && $request->hasFile('content')) {
           $contentPath = Content::uploadContent($request->file('content'));
           $validated['content'] = $contentPath;
+      }else if($request->get('type') === 'text' && $request->hasFile('lampiran')){
+        $lampiranPath = Content::uploadLampiran($request->file('lampiran'));
+        $validated['lampiran'] = $lampiranPath;
+      }else{
+        $validated['content'] = $request->get('content', null); 
       }
 
       $contents = Content::create($validated);
@@ -71,9 +77,19 @@ class ContentController extends Controller
         if (!$content) {
             return response()->json(['message' => 'Content not Found'], 404);
         }
-        
-        $content->update($request->validated());
-        
+
+        $validated = $request->validated();
+
+        // Jika type == 'pdf' dan ada file, upload file dan simpan path-nya
+        if ($request->get('type') === 'pdf' && $request->hasFile('content')) {
+            $contentPath = Content::uploadContent($request->file('content'));
+            $validated['content'] = $contentPath;
+        } else {
+            $validated['content'] = $request->get('content', null); // Jika bukan pdf, ambil string content
+        }
+
+        $content->update($validated);
+
         return response()->json([
             'message' => 'Content updated successfully',
             'data' => $content

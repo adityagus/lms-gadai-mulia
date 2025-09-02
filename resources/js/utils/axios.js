@@ -2,12 +2,28 @@ import axios from "axios"
 // import secureLocalStorage from "secure-ls"
 // import { STORAGE_KEY } from "./const.js"
 
-const baseURL = process.env.MIX_API_URL
+axios.defaults.withCredentials = true
+axios.defaults.headers.common["X-Requested-With"] = "XMLHttpRequest"
+
+// Ambil CSRF token dari meta tag (jika ada)
+const tokenMeta = document.querySelector('meta[name="csrf-token"]')
+if (tokenMeta) {
+  axios.defaults.headers.common["X-CSRF-TOKEN"] = tokenMeta.getAttribute("content")
+}
+
+const baseURL = process.env.APP_URL
 console.log("baseURL new", baseURL);
 export const apiInstance = axios.create({
   baseURL,
-  timeout: 5000
+  timeout: 10000,
 })
+
+const authURL = process.env.APP_URL
+export const apiInstanceAuth = axios.create({
+  baseURL: authURL,
+  timeout: 3000,
+})
+
 
 // export const apiInstanceAuth = axios.create({
 //   baseURL,

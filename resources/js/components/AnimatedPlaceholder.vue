@@ -1,4 +1,5 @@
 <template>
+  <!-- membuat custom class -->
   <div class="placeholder">
     &nbsp;
   </div>
@@ -13,6 +14,9 @@
       type: String,
     },
     borderRadius: {
+      type: String,
+    },
+    customClass: {
       type: String,
     },
   })

@@ -21,24 +21,6 @@ class Information extends Model
       ->get();
   }
   
-  public static function getSession(){
-    
-     $datasession = array(
-      'username' => "admin",
-      'nama' => "Administrator",
-      // 'level' => $u->level,//version old
-      'id_area' => 11,
-      'id_cbg' => 42,
-      'id_jbt' => 74,
-      'status' => "login"
-    );
-    
-    session(['set_userdata' => $datasession]);
-    
-    
-    return session('set_userdata');
-  }
-  
   public function viewMenu2()
 {
     // Ambil data menu dengan parent_id = 0

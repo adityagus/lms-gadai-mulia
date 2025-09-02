@@ -27,16 +27,24 @@ export const createContent = async (data) => {
   return response.data;
 };
 
-export const updateContent = async (data) => {
-  console.log('Updating content with data:', data);
-  const { id, ...updateData } = data; // Remove id from data body
-  const response = await apiInstance.put(`/contents/${id}`, updateData, {
-      headers: {
-          "Content-Type": "application/json",
-          "Accept": "application/json",
-      },
-  });
-  return response.data;
+function logFormData(formData) {
+  if (!(formData instanceof FormData)) return;
+  for (let pair of formData.entries()) {
+    console.log(pair[0]+ ':', pair[1]);
+  }
+}
+
+export const updateContent = async (data, id) => {
+  if (data instanceof FormData) {
+    logFormData(data);
+    // Kirim dengan POST + _method=PUT agar Laravel bisa menerima FormData
+    const response = await apiInstance.post(`/contents/${id}`, data);
+    return response.data;
+  } else {
+    console.log('Updating content with data:', data);
+    const response = await apiInstance.put(`/contents/${id}`, data);
+    return response.data;
+  }
 };
 
 export const deleteContent = async (id) => {

@@ -11,16 +11,16 @@
         <div class="flex items-center justify-center z-1">
 
           <!-- back to landing page (coming soon) -->
-          <!-- <div class="w-full max-w-md pt-10">
-            <a href="index.html"
+          <div class="w-full max-w-md pt-10">
+            <router-link to="/"
               class="absolute top-4 left-4 inline-flex items-center text-sm text-white transition-colors hover:text-gray-700 z-10">
               <svg class="stroke-current mr-1" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20"
                 fill="none">
                 <path d="M12.7083 5L7.5 10.2083L12.7083 15.4167" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
               </svg>
               Back to Landing Page
-            </a>
-          </div> -->
+            </router-link>
+          </div>
           <!-- ===== Common Grid Shape Start ===== -->
           <!-- <include src="./partials/common-grid-shape.html"></include> -->
           <img class="w-full h-full object-cover relative"
@@ -171,9 +171,11 @@ const password = ref('')
 
 const submitLogin = async () => {
   try {
-    const response = await axios.post('/api/login', {
+    const response = await axios.post('login', {
       user: username.value,
       pass: password.value
+    },{
+      withCredentials: true
     }).then(res => {
       if (res.data.success) {
         console.log('Login successful:', res.data);
