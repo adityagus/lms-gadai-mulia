@@ -253,7 +253,7 @@ class AnnouncementController extends Controller
         'no_surat' => 'nullable|string|max:255',
         'dokumen' => 'nullable|file|mimes:pdf,doc,docx,xls,xlsx|max:20480', // max 20MB
         'type' => 'string|max:100',
-        'content' => 'nullable|string|max:1000',
+        'content' => 'nullable|string|max:10000',
         'tgl_berlaku' => 'nullable|date',
         'regionals_id' => 'required|array',
         'kd_jabatan' => 'required|array',

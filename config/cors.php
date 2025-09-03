@@ -15,7 +15,7 @@ return [
     |
     */
 
-    'paths' => ['api/*', 'sanctum/csrf-cookie'],
+    'paths' => ['api/*', 'sanctum/csrf-cookie', 'https://openrouter.ai/api/v1/chat/completions'],
 
     'allowed_methods' => ['*'],
 

@@ -77,11 +77,6 @@
       </span>
     </div>
         <div>
-          <!-- Tampilkan file lama jika mode edit dan file lama ada -->
-          <div v-if="isEditMode && urlThumbnail" class="mb-2">
-            <a :href="`/storage/${urlThumbnail}`" target="_blank" class="text-blue-500 underline">Lihat File Lama</a>
-          </div>
-
           <!-- Input file baru -->
           <div class="mb-4">
             <label class="block text-sm font-semibold mb-1" for="file">
@@ -99,6 +94,10 @@
             <span v-if="fileName" class="text-xs text-gray-500 mt-1 block">
               File: {{ fileName }}
             </span>
+            <!-- Tampilkan file lama jika mode edit dan file lama ada -->
+          <div v-if="isEditMode && urlThumbnail" class="mb-2">
+            <a :href="`/storage/${urlThumbnail}`" target="_blank" class="text-blue-500 underline">Lihat File Lama</a>
+          </div>
           </div>
         </div>
       </div>
@@ -109,8 +108,10 @@
       </div>
       <div v-show="step === 3">
         <div class="mb-4">
-          <label class="block text-sm font-semibold mb-1">Akses Jabatan</label>
           <div class="flex flex-col gap-2">
+            <label class="flex items-center gap-2 font-semibold border-b border-gray-300 pb-2">
+              <input type="checkbox" :checked="isAllJabatanChecked" @change="toggleAllJabatan" /> Pilih Semua
+            </label>
             <label v-for="jab in daftarJabatan" :key="jab.id" class="flex items-center gap-2">
               <input type="checkbox" :value="jab.id" v-model="kd_jabatan" /> {{ jab.nama }}
             </label>
@@ -145,6 +146,9 @@ import AreaCheckbox from '@/components/AreaCheckbox.vue'
 import axios from 'axios'
 import { result } from 'lodash'
 import Swal from 'sweetalert2'
+// Select All Jabatan logic
+import { computed } from 'vue';
+
 
 
 const [route, router] = [useRoute(), useRouter()];
@@ -211,6 +215,15 @@ const nextStep = async function () {
   }
   await wizardStep(step.value, payload);
   if (step.value < 3) step.value++;
+}
+
+const isAllJabatanChecked = computed(() => daftarJabatan.value.length > 0 && kd_jabatan.value.length === daftarJabatan.value.length);
+function toggleAllJabatan(e) {
+  if (e.target.checked) {
+    kd_jabatan.value = daftarJabatan.value.map(j => j.id);
+  } else {
+    kd_jabatan.value = [];
+  }
 }
 
 const loadContentData = async () => {

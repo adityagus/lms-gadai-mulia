@@ -11,9 +11,11 @@
         />
       </div>
       <div class="w-full">
-        <h3 class="font-bold text-xl leading-[30px] line-clamp-1">
-          {{ name }}
-        </h3>
+        <router-link :to="`/courses/${id}`" class='cursor-pointer'>
+          <h3 class="font-bold text-xl leading-[30px] line-clamp-1">
+            {{ name }}
+          </h3>
+        </router-link>
         <div class="flex items-center gap-5">
           <!-- <div class="flex items-center gap-[6px] mt-[6px]">
             <img

@@ -98,27 +98,29 @@ function sendMessage() {
       },
       {
         headers: {
+          'withCredentials': 'true',
           'Content-Type': 'application/json',
           'Authorization': 'Bearer ' + token
         }
       }
     )
-      .finally(() => {
-        // Hapus pesan "Sedang mengetik..."
-        const typingIndex = messages.value.findIndex(m => m.text === 'Sedang mengetik...');
-        if (typingIndex !== -1) {
-          messages.value.splice(typingIndex, 1);
-        }
-      })
       .then(response => {
         // OpenRouter returns choices[0].message.content for OpenAI-compatible models
         reply = response.data?.choices?.[0]?.message?.content;
         messages.value.push({ from: 'bot', text: reply });
       })
       .catch(() => {
+        reply = 'Maaf, saya masih bot sederhana. Pertanyaan Anda: ' + userMsg;
+        if (/halo|hai|hi|assalam/i.test(userMsg)) reply = 'Halo juga! Ada yang bisa saya bantu?';
+        if (/dokumen|upload/i.test(userMsg)) reply = 'Untuk upload dokumen, silakan gunakan menu Pengumuman atau Formulir.';
+        if (/pengumuman/i.test(userMsg)) reply = 'Menu Pengumuman berisi informasi terbaru. Silakan cek di sidebar.';
         messages.value.push({ from: 'bot', text: reply });
       })
       .finally(() => {
+        const typingIndex = messages.value.findIndex(m => m.text === 'Sedang mengetik...');
+        if (typingIndex !== -1) {
+          messages.value.splice(typingIndex, 1);
+        }
         nextTick(() => {
           if (chatBody.value) chatBody.value.scrollTop = chatBody.value.scrollHeight;
         });

@@ -43,7 +43,7 @@
               <div @click="handleParentClick('info')"
                 :class="['flex items-center gap-3 w-full py-2 px-5 rounded-lg transition-all duration-300 cursor-pointer', openMenu === 'info' ? 'active' : '']">
                 <img src="/assets/images/icons/crown-white.svg" class="" alt="icon" />
-                <span class="font-semibold text-white">Information & Document</span>
+                <span class="font-semibold text-white">Document & Information</span>
                 <svg :class="['ml-auto transition-transform w-7', openMenu === 'info' ? 'rotate-90' : '']" width="25" height="25"
                   fill="white" stroke="currentColor" stroke-width="2">
                   <path d="M6 9l6-3-6-3" />

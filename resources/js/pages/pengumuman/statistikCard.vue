@@ -18,7 +18,8 @@
   <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
     <div v-for="(item, idx) in cards" :key="item.title"
       class="relative rounded-2xl bg-white shadow-xl p-0 flex flex-col justify-between overflow-hidden group statistik-card border border-gray-200 hover:border-sidebar transition">
-      <div class="absolute inset-0 opacity-10 pointer-events-none pattern-bg"></div>
+      <router-link :to="`detail-pengumuman/${item.id}`" :auth="auth">
+        <div class="absolute inset-0 opacity-10 pointer-events-none pattern-bg"></div>
       <div class="flex flex-col gap-2 z-10 p-6">
         <div class="flex items-center gap-3 mb-3">
           <div class="rounded-lg bg-sidebar p-2 flex items-center justify-center">
@@ -50,6 +51,7 @@
           <path stroke-linecap="round" stroke-linejoin="round" d="M17.25 12H6.75m4.5-4.5l4.5 4.5-4.5 4.5" />
         </svg>
       </button>
+      </router-link>
     </div>
   </div>
 </template>

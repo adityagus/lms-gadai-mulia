@@ -256,8 +256,9 @@
 import { ref, onMounted, onUnmounted } from 'vue';
 import AOS from 'aos';
 import 'aos/dist/aos.css';
+import { getSession } from '../../../services/authService';
 
-const idgrup = ref(localStorage.getItem('idgrup'));
+const idgrup = ref(null);
 const courses = ref([]);
 const isScrolled = ref(false);
 
@@ -276,7 +277,10 @@ const truncateDescription = (text, maxWords) => {
 
 onMounted(async () => {
   AOS.init({ once: true });
-  
+  const restSession = await getSession();
+  console.log("restSession awal", restSession);
+
+  idgrup.value = restSession.auth.idgrup;
   // Add scroll event listener
   window.addEventListener('scroll', handleScroll);
   
@@ -292,7 +296,7 @@ onMounted(async () => {
   }
 });
 
-onUnmounted(() => {
+onUnmounted(async () => {
   // Remove scroll event listener
   window.removeEventListener('scroll', handleScroll);
 });

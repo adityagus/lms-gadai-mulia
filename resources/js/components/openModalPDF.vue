@@ -3,37 +3,39 @@
     <div class="bg-white w-[1200px] rounded-2xl shadow-2xl p-0 relative flex flex-col max-h-[95vh]">
       <button @click="closeModal" class="absolute top-3 right-3 text-gray-400 hover:text-gray-700 text-xl font-bold z-10">&times;</button>
       <div v-if="selectedCard" class="overflow-y-auto scrollbar-hidden px-8 pt-8 pb-2 flex-1 rounded-2xl" style="max-height:calc(95vh - 70px);">
-        <div class="flex items-center gap-3 my-4">
-          <div class="rounded-lg bg-sidebar p-2 flex items-center justify-center">
-            <img src="https://unpkg.com/heroicons@2.0.13/24/solid/document.svg" class="w-8 h-8 filter-white-svg" alt="icon" />
-            <!-- <img :src="selectedCard.icon" class="w-8 h-8 filter-white-svg" alt="icon" /> -->
-          </div>
-          <div class="flex justify-between w-full items-center">
-            <div>
-              <h2 class="font-bold text-md text-sidebar">{{ selectedCard.title }}</h2>
-              <div class="text-xs text-gray-500">Tanggal: <span class="font-semibold text-sidebar">{{ selectedCard.date || '02.08.2025' }}</span></div>
+        <div class="absolute top-0 left-0 w-full h-20 rounded-t-2xl">
+          <div class="flex items-center gap-3 my-4 px-8 bg-white" id='header'>
+            <div class="rounded-lg bg-sidebar p-2 flex items-center justify-center">
+              <img src="https://unpkg.com/heroicons@2.0.13/24/solid/document.svg" class="w-8 h-8 filter-white-svg" alt="icon" />
+              <!-- <img :src="selectedCard.icon" class="w-8 h-8 filter-white-svg" alt="icon" /> -->
             </div>
-            <div class="bg-gray-50 rounded-lg p-3 flex flex-col mb-4 border border-gray-100">
-              <div class="flex justify-between items-center gap-3">
-                <span class="text-xs font-semibold text-gray-500">Nomor Surat</span>
-                <span class="text-xs font-bold text-sidebar">{{ selectedCard.no_surat }}</span>
+            <div class="flex justify-between w-full items-center">
+              <div>
+                <h2 class="font-bold text-md text-sidebar">{{ selectedCard.title }}</h2>
+                <div class="text-xs text-gray-500">Tanggal: <span class="font-semibold text-sidebar">{{ selectedCard.date || '02.08.2025' }}</span></div>
               </div>
-              <div class="flex justify-between items-center gap-3">
-                <span class="text-xs font-semibold text-gray-500">Tanggal Berlaku</span>
-                <span class="text-xs font-bold text-sidebar">{{ selectedCard.tgl_berlaku }}</span>
+              <div class="bg-gray-50 rounded-lg p-3 flex flex-col mb-4 border border-gray-100">
+                <div class="flex justify-between items-center gap-3">
+                  <span class="text-xs font-semibold text-gray-500">Nomor Surat</span>
+                  <span class="text-xs font-bold text-sidebar">{{ selectedCard.no_surat }}</span>
+                </div>
+                <div class="flex justify-between items-center gap-3">
+                  <span class="text-xs font-semibold text-gray-500">Tanggal Berlaku</span>
+                  <span class="text-xs font-bold text-sidebar">{{ selectedCard.tgl_berlaku }}</span>
+                </div>
               </div>
             </div>
           </div>
         </div>
-        <div class="overflow-hidden rounded-2xl mx-20">
-          <ContentPdf :content="selectedCard.url" class='h-[500px]' v-if='selectedCard.type === "pdf"'/>
-          <ContentText :content="selectedCard" class='h-[500px] shadow-sm shadow-purple-600 py-3 px-3 border mx-2 rounded-lg' v-if='selectedCard.type === "text"'/>
+        <div class="overflow-hidden rounded-2xl mx-10">
+          <ContentPdf :content="selectedCard.url" class='h-[500px]' v-if='selectedCard.type === "pdf" || selectedCard.type === null'/>
+          <ContentText :content="selectedCard" class='shadow-sm shadow-purple-600 mt-20 pb-3 px-3 border mx-2 rounded-lg' v-if='selectedCard.type === "text"'/>
         </div>
         <!-- {{ selectedCard.map(item => item.title) }}> -->
         <p class="text-gray-700 mb-4">{{ selectedCard.desc }}</p>
       </div>
       <div class="p-6 pt-2 border-t border-gray-100 bg-white z-10 rounded-2xl">
-        <button @click="closeModal" class="w-full py-2 rounded bg-sidebar text-white font-semibold hover:bg-purple-700 transition">Tutup</button>
+        <!-- <button @click="closeModal" class="w-full py-2 rounded bg-sidebar text-white font-semibold hover:bg-purple-700 transition">Tutup</button> -->
       </div>
     </div>
   </div>

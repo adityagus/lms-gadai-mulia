@@ -125,4 +125,3 @@ export const finishWizard = async () => {
     throw err;
   }
 }
-
