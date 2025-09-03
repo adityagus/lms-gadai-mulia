@@ -35,7 +35,11 @@ export const getDocumentById = async (document_id) => {
 
 export const createAnnouncement = async (data) => {
   try {
-    const response = await apiInstance.post('/announcements', data);
+    const response = await apiInstance.post('/announcements', data, {
+      headers:{
+        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+      }
+    });
     return response.data;
   } catch (error) {
     console.error('Error creating announcement:', error);
@@ -125,4 +129,3 @@ export const finishWizard = async () => {
     throw err;
   }
 }
-

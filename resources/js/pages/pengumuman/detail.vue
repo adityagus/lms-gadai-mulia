@@ -6,7 +6,7 @@
     Back to Pengumuman
   </router-link>
   <h1 class="text-2xl font-bold text-sidebar">{{ detail.name }}</h1>
-  <div class="mb-2 -mt-4 flex gap-2">
+  <div class="mb-2 -mt-4 flex gap-2" v-if="auth?.cabang === ''">
     <button v-for="tab in memoTabs" :key="tab.kd_wilayah" v-if='memoTabs.length > 1'
       @click="activeMemoTab = tab.kd_wilayah"
       :class="['px-3 py-1 rounded-lg font-semibold text-xs transition', activeMemoTab === tab.kd_wilayah ? 'bg-sidebar text-white shadow' : 'bg-white text-sidebar hover:bg-purple-100']">
@@ -196,7 +196,7 @@ onMounted(async () => {
       title: item.title || item.judul || '-',
       icon: item.icon || '/default-icon.svg',
       desc: item.desc || item.keterangan || item.deskripsi || '',
-      type: item.type || 'text',
+      type: item.type,
     }));
     // Untuk detail utama, mapping juga
     detail.value = {
