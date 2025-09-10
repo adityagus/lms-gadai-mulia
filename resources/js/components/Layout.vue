@@ -6,7 +6,7 @@
     <Sidebar />
     <main class="flex flex-col flex-1 gap-6 md:gap-[30px] p-4 md:p-[30px] md:ml-[290px] transition-all duration-300">
       <Header />
-      <router-view :key="$route.meta.values"></router-view>
+      <router-view></router-view>
       <Bot v-if="$route.name !== 'content-preview'" />
       <!-- <Outlet/> -->
     </main>

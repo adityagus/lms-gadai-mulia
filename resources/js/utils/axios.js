@@ -21,7 +21,7 @@ export const apiInstance = axios.create({
 const authURL = process.env.APP_URL
 export const apiInstanceAuth = axios.create({
   baseURL: authURL,
-  timeout: 3000,
+  timeout: 10000,
 })
 
 

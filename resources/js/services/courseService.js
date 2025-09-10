@@ -12,7 +12,7 @@ export const getCourses = async (page = 1) => {
 
 export const searchContent = async (q) => {
   try {
-    const response = await apiInstance.get(`/api/v1/search?q=${encodeURIComponent(q)}`);
+    const response = await apiInstance.get(`/api/search?q=${q}`);
     return response;
   } catch (error) {
     console.error("Error fetching courses:", error);

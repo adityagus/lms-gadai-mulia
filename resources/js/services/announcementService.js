@@ -35,11 +35,7 @@ export const getDocumentById = async (document_id) => {
 
 export const createAnnouncement = async (data) => {
   try {
-    const response = await apiInstance.post('/announcements', data, {
-      headers:{
-        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-      }
-    });
+    const response = await apiInstance.post('/announcements', data);
     return response.data;
   } catch (error) {
     console.error('Error creating announcement:', error);
@@ -67,15 +63,17 @@ export const softDeleteAnnouncement = async (id) => {
   }
 }
 
+// Memindahkan file yang tidak aktif ke status nonaktif
 export const trashAnnouncement = async (submenu_id) => {
   try {
-    const response = await apiInstance.get('/announcements/trash', {
-      params: { category: submenu_id }
+    // Endpoint khusus untuk menandai file nonaktif
+    const response = await apiInstance.patch('/announcements/nonactive', {
+      submenu_id
     });
     console.log('response', response);
     return response.data;
   } catch (error) {
-    console.error('Error fetching trashed announcements:', error);
+    console.error('Error moving announcement to nonactive:', error);
     throw error;
   }
 }

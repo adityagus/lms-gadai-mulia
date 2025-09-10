@@ -27,7 +27,15 @@ export const AnnouncementInfoSchema = z.object({
     title: z.string().min(5),
     no_surat: z.string().min(5),
     dokumen: z.any().optional(),
-    tipe: z.string().min(2),
+    type: z.enum(["text", "pdf"], {
+      errorMap: (issue, ctx) => {
+        console.log('issue', issue);
+        if (issue.code === "invalid_enum_value") {
+          return { message: "Tipe file wajib dipilih" };
+        }
+        return { message: "Required content type" };
+      }
+    }),
     tgl_berlaku: z.string(),// success: true,
     submenu_id: z.number().min(1, {
         message: "Please select submenu",
@@ -39,13 +47,6 @@ export const AnnouncementInfoSchema = z.object({
             code: z.ZodIssueCode.custom,
             message: "Invalid date format",
             path: ["tgl_berlaku"],
-        });
-    }
-    if (val.regionals_id.length === 0) {
-        ctx.addIssue({
-            code: z.ZodIssueCode.custom,
-            message: "At least one regional must be selected",
-            path: ["regionals_id"],
         });
     }
     

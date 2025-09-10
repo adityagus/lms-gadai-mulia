@@ -19,7 +19,7 @@ class MasterController extends Controller
 
     
     public function getTypesByIdMenu($id_menu){
-      $types = \DB::table('submenu_new')->where('id_menu', $id_menu)->get();
+      $types = \DB::table('submenu')->where('id_menu', $id_menu)->get();
       return response()->json($types);
     }
     

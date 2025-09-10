@@ -1,7 +1,7 @@
 <template>
   <header class="flex items-center justify-between gap-[30px]">
     <div>
-      <h1 class="font-extrabold text-[28px] leading-[42px]">Manage Courses</h1>
+      <h1 class="font-extrabold text-[28px] leading-[42px]">Kelola Kelas</h1>
       <p class="text-[#838C9D] mt-[1]">Give the best future for your great employees</p>
     </div>
     <div class="flex items-center gap-3">
@@ -10,7 +10,7 @@
       </RouterLink> -->
       <RouterLink to="/courses/create" v-if='auth && (auth.idgrup === "JBT-032" || auth.idgrup === "JBT-038") && !loading'
         class="w-fit rounded-full p-[14px_20px] font-semibold text-[#FFFFFF] bg-[#662FFF] text-nowrap">
-        New Course
+        + Tambah Kelas 
       </RouterLink>
     </div>
   </header>

@@ -21,29 +21,29 @@
             <p class="font-semibold text-xs leading-[18px] text-white">
               GENERAL
             </p>
-            <li :class="{ 'active': $route.path === '/' }">
-              <router-link to="/">
+            <li :class="{ 'active': $route.name === 'overview' }">
+              <div @click="handleMainMenuClick('/overview')">
                 <div
-                  class="flex items-center gap-3 w-full py-2 px-5 rounded-xl transition-all duration-300 hover:shadow-[-10px_-6px_10px_0_#7F33FF_inset]">
+                  class="flex items-center gap-3 w-full py-2 px-5 rounded-xl transition-all duration-300 hover:shadow-[-10px_-6px_10px_0_#7F33FF_inset] cursor-pointer">
                   <img src="/assets/images/icons/3dcube-white.svg" class="w-6 h-6" alt="icon" />
                   <span class="font-semibold text-white">Overview</span>
                 </div>
-              </router-link>
+              </div>
             </li>
-            <li :class="{ 'active': $route.path === '/courses' }">
-              <router-link to="/courses">
+            <li :class="{ 'active': $route.path === '/lms' }">
+              <div @click="handleMainMenuClick('/lms')">
                 <div
-                  class="flex items-center gap-3 w-full py-2 px-5 rounded-lg transition-all duration-300 hover:shadow-[-10px_-6px_10px_0_#7F33FF_inset]">
+                  class="flex items-center gap-3 w-full py-2 px-5 rounded-lg transition-all duration-300 hover:shadow-[-10px_-6px_10px_0_#7F33FF_inset] cursor-pointer">
                   <img src="/assets/images/icons/note-favorite-white.svg" class="w-6 h-6" alt="icon" />
-                  <span class="font-semibold text-white">Courses</span>
+                  <span class="font-semibold text-white">LMS</span>
                 </div>
-              </router-link>
+              </div>
             </li>
             <li>
               <div @click="handleParentClick('info')"
                 :class="['flex items-center gap-3 w-full py-2 px-5 rounded-lg transition-all duration-300 cursor-pointer', openMenu === 'info' ? 'active' : '']">
                 <img src="/assets/images/icons/crown-white.svg" class="" alt="icon" />
-                <span class="font-semibold text-white">Document & Information</span>
+                <span class="font-semibold text-white">Informasi</span>
                 <svg :class="['ml-auto transition-transform w-7', openMenu === 'info' ? 'rotate-90' : '']" width="25" height="25"
                   fill="white" stroke="currentColor" stroke-width="2">
                   <path d="M6 9l6-3-6-3" />
@@ -76,25 +76,25 @@
             <p class="font-semibold text-xs leading-[18px] text-white">
               Master
             </p>
-            <li>
-            <router-link to="admin/migrasi-data">
-              <div
-                class="flex items-center gap-3 w-full py-2 px-5 rounded-lg transition-all duration-300 hover:shadow-[-10px_-6px_10px_0_#7F33FF_inset]">
-                <img src="/assets/images/icons/profile-2user-white.svg" class="w-6 h-6" alt="icon" />
-                <span class="font-semibold text-white">Migrasi Data</span>
-              </div>
-            </router-link>
-          </li>
-            <li :class="{ 'active': $route.path === '/master/categories' }">
-              <router-link to="/master/categories">
+            <li :class="{ 'active': $route.path === '/admin/migrasi-data' }">
+              <div @click="handleMainMenuClick('/admin/migrasi-data')">
                 <div
-                  class="flex items-center gap-3 w-full py-2 px-5 rounded-lg transition-all duration-300 hover:shadow-[-10px_-6px_10px_0_#7F33FF_inset]">
+                  class="flex items-center gap-3 w-full py-2 px-5 rounded-lg transition-all duration-300 hover:shadow-[-10px_-6px_10px_0_#7F33FF_inset] cursor-pointer">
+                  <img src="/assets/images/icons/profile-2user-white.svg" class="w-6 h-6" alt="icon" />
+                  <span class="font-semibold text-white">Migrasi Data</span>
+                </div>
+              </div>
+            </li>
+            <li :class="{ 'active': $route.path === '/master/categories' }">
+              <div @click="handleMainMenuClick('/master/categories')">
+                <div
+                  class="flex items-center gap-3 w-full py-2 px-5 rounded-lg transition-all duration-300 hover:shadow-[-10px_-6px_10px_0_#7F33FF_inset] cursor-pointer">
                   <img src="/assets/images/icons/crown-white.svg" class="w-6 h-6" alt="icon" />
                   <span class="font-semibold text-white">
                     Categories
                   </span>
                 </div>
-              </router-link>
+              </div>
             </li>
             <!-- menu migrasi data -->
             <li>
@@ -334,13 +334,29 @@ const activeSub = ref(route.path);
 const sidebarOpen = ref(false);
 
 const handleParentClick = (menu) => {
+  // Jika klik parent menu, reset submenu aktif
+  if (openMenu.value !== menu) {
+    activeSub.value = '';
+  }
   openMenu.value = openMenu.value === menu ? '' : menu;
 };
 
 const handleSubClick = (subPath) => {
   activeSub.value = subPath;
+  // Pastikan parent menu tetap aktif jika submenu diklik
+  if (openMenu.value !== 'info') {
+    openMenu.value = 'info';
+  }
   router.push(subPath);
   sidebarOpen.value = false; // close sidebar on mobile after click
+};
+
+// Tutup openMenu jika pindah ke menu utama
+const handleMainMenuClick = (mainPath) => {
+  openMenu.value = '';
+  activeSub.value = mainPath;
+  router.push(mainPath);
+  sidebarOpen.value = false;
 };
 
 onMounted(() => {

@@ -1,15 +1,15 @@
 <template>
   <div id="Breadcrumb" class="flex items-center gap-5 *:after:content-['/'] *:after:ml-5">
     <span class="last-of-type:after:content-[''] last-of-type:font-semibold">
-      Manage Course
+      Kelola Kelas
     </span>
     <span class="last-of-type:after:content-[''] last-of-type:font-semibold">
-      <a href='/courses'>
-        Course
+      <a href='/lms'>
+        Kelas
       </a>
     </span>
     <span class="last-of-type:after:content-[''] last-of-type:font-semibold">
-      {{ isEditMode ? 'Edit Content' : 'Add Content' }}
+      {{ isEditMode ? 'Ubah Materi' : 'Tambah Materi' }}
     </span>
   </div>
   <header class="flex items-center justify-between gap-[30px]">
@@ -19,7 +19,7 @@
       </div>
       <div>
         <h1 class="font-extrabold text-[28px] leading-[42px]">
-          {{ isEditMode ? 'Edit Content' : 'Add Content' }}
+          {{ isEditMode ? 'Ubah Materi' : 'Tambah Materi' }}
         </h1>
         <p class="text-[#838C9D] mt-[1]">
           {{ isEditMode ? 'Update the content for the course' : 'Give a best content for the course' }}
@@ -127,9 +127,15 @@
                     <span class="error-message text-[#FF435A]">The description is required</span>
                 </div> -->
     <div class="flex items-center gap-[14px]">
-      <button type="submit" class="w-full rounded-full border border-[#060A23] p-[14px_20px] font-semibold text-nowrap">
-        {{ isEditMode ? 'Update as Draft' : 'Save as Draft' }}
-      </button>
+      <!-- <button type="submit" class="w-full rounded-full border border-[#060A23] p-[14px_20px] font-semibold text-nowrap">
+        
+        </button> -->
+      <router-link :to="{
+        name: 'courseDetail',
+        params: { id: courseId }
+      }" class="w-full rounded-full border border-[#060A23] p-[14px_20px] font-semibold text-nowrap flex items-center justify-center">
+        Cancel
+      </router-link>
       <button type="submit" class="w-full rounded-full p-[14px_20px] font-semibold text-[#FFFFFF] bg-[#662FFF] text-nowrap">
         {{ isEditMode ? 'Update Content Now' : 'Add Content Now' }}
       </button>

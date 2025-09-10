@@ -155,10 +155,13 @@
 
 <script setup>
 
-import { useRouter } from 'vue-router'
+import { useRouter, useRoute } from 'vue-router'
 import { ref } from 'vue'
 import axios from 'axios'
 
+
+
+const route = useRoute();
 const router = useRouter();
 const showPassword = ref(false);
 
@@ -178,13 +181,7 @@ const submitLogin = async () => {
       withCredentials: true
     }).then(res => {
       if (res.data.success) {
-        console.log('Login successful:', res.data);
-        localStorage.setItem('nama', res.data.user.nama);
-        localStorage.setItem('user', res.data.user.user);
-        localStorage.setItem('idgrup', res.data.user.idgrup);
-        localStorage.setItem('status', 'login');
-        // Redirect to the appropriate page based on user group
-        window.location.href = res.data.redirect;
+        router.push('/overview'); // Redirect to home page after login
       } else {
         alert("Username atau password salah");
       }

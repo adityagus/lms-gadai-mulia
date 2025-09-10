@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\MigrasiDataController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\LoginController;
@@ -95,4 +96,9 @@ Route::post('/wizard/finish', [WizardController::class, 'finish']);
 
 
 });
+
+// migrasi data
+Route::get('/migrasi-data', [MigrasiDataController::class, 'export']);
+Route::post('/migrasi-data', [MigrasiDataController::class, 'import']);
+
 // routes/api.php;

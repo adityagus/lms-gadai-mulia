@@ -271,11 +271,11 @@ class CourseController extends Controller
       ->get();
 
     // Search documents (announcements)
-    $documents = Announcement::with('menu') ->where(function($q) use ($query) {
-        $q->where('title', 'LIKE', "%{$query}%")
-          ->orWhere('no_surat', 'LIKE', "%{$query}%");
-          // ->orWhere('menu.name', 'LIKE', "%{$query}%");
-      })
+    $documents = Announcement::where(function ($q) use ($query) {
+      $q->where('title', 'LIKE', "%{$query}%")
+        ->orWhere('no_surat', 'LIKE', "%{$query}%");
+      // ->orWhere('menu.name', 'LIKE', "%{$query}%");
+    })
       ->limit(10)
       ->get();
 
@@ -298,9 +298,14 @@ class CourseController extends Controller
         'title' => $doc->title,
         'tagline' => $doc->no_surat ?? '',
         'description' => $doc->content ?? '',
-        'category' => 'Document',
-        'thumbnail_url' => "https://unpkg.com/heroicons@2.0.13/24/solid/document.svg",
-        'type' => 'document',
+        'submenu_id' => $doc->submenu_id,
+        'tgl_berlaku' => $doc->tgl_berlaku,
+        'url' => $doc->url,
+        'no_surat' => $doc->no_surat,
+        'menu' => $doc->menu ? $doc->menu->name : null,
+        'category' => $doc->menu ? $doc->menu->name : null,
+        'thumbnail_url' => $doc->menu ? $doc->menu->icon : null,
+        'type' => $doc->type,
       ];
     });
 
@@ -318,7 +323,7 @@ class CourseController extends Controller
       // Load relasi category jika belum di-load
       $course->load('category');
 
-      $client = SearchClient::create('V18ENC6M06', 'c2ca39153191af8d720b24257772d170');
+      $client = SearchClient::create(env('ALGOLIA_APP_ID'), env('ALGOLIA_SECRET'));
       $index = $client->initIndex('course_gadai_mulia');
 
       $algoliaData = [
@@ -344,7 +349,7 @@ class CourseController extends Controller
   private function deleteFromAlgoliaIndex($courseId)
   {
     try {
-      $client = SearchClient::create('V18ENC6M06', 'c2ca39153191af8d720b24257772d170');
+      $client = SearchClient::create(env('ALGOLIA_APP_ID'), env('ALGOLIA_SECRET'));
       $index = $client->initIndex('course_gadai_mulia');
 
       $index->deleteObject($courseId);

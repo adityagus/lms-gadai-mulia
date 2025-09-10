@@ -68,7 +68,7 @@ class AnnouncementController extends Controller
     $cabang = Session::get('auth.cabang');
 
     //fetch function model
-    $announcementTitle = Menu::select('id', 'name')->findOrFail($menu_id);
+    $announcementTitle = Menu::select('id', 'name', 'icon')->findOrFail($menu_id);
 
     // buat untuk tidak duplicate
     if($cabang == null){
@@ -116,10 +116,12 @@ class AnnouncementController extends Controller
     });
 
     $mainTitle = $announcementTitle->name ?? 'Pengumuman';
+    $mainIcon = $announcementTitle->icon ?? 'https://unpkg.com/heroicons@2.0.13/24/solid/document.svg';
     return response()->json([
       'success' => true,
       'detail' => [
-        'title' => $mainTitle
+        'title' => $mainTitle,
+        'icon' => $mainIcon
       ],
       'items' => $announcements
     ]);

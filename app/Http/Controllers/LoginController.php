@@ -51,7 +51,7 @@ class LoginController extends Controller
                 // session()->save();
 
                 // Kembalikan response JSON, frontend yang handle localStorage dan redirect
-                $redirectUrl = ($datasession['idgrup'] === 'JBT-032') ? '/courses' : '/courses';
+                $redirectUrl = ($datasession['idgrup'] === 'JBT-032') ? '/lms' : '/lms';
                 return response()->json([
                     'success' => true,
                     'user' => $datasession,
@@ -65,12 +65,12 @@ class LoginController extends Controller
         }
     }
     
-    public function logout(Request $request)
-    {
-        // Hapus data session
-        Session::flush();
+    // public function logout(Request $request)
+    // {
+    //     // Hapus data session
+    //     Session::flush();
 
-        // Redirect ke halaman login atau halaman lain yang diinginkan
-        return Redirect::to('/sign-in');
-    }
+    //     // Redirect ke halaman login atau halaman lain yang diinginkan
+    //     return Redirect::to('/sign-in');
+    // }
 }

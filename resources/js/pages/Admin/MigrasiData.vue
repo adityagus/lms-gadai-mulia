@@ -3,7 +3,7 @@
     <h1 class="text-2xl font-bold mb-6 text-sidebar">Migrasi Data (Upload Excel)</h1>
     <form @submit.prevent="submitExcel">
       <input type="file" accept=".xlsx,.xls" @change="onFileChange" class="mb-4" required />
-      <button type="submit" class="px-4 py-2 bg-sidebar text-white rounded font-semibold hover:bg-purple-700 transition">
+      <button type="submit" class="px-4 py-2 bg-sidebar text-white rounded font-semibold bg-purple-700 transition hover:bg-purple-800">
         Upload & Migrasi
       </button>
     </form>
@@ -39,7 +39,7 @@ async function submitExcel() {
     })
     success.value = true
   } catch (e) {
-    error.value = e.response?.data?.message || 'Migrasi gagal!'
+    error.value = e.response?.data?.message || 'Migrasi gagal!' + e.message
   }
 }
 </script>

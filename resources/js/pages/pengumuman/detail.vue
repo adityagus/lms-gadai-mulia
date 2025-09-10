@@ -1,4 +1,11 @@
 <template>
+    <!-- Modal Detail Card -->
+  <OpenModalPDF
+    ref="modalRef"
+    v-model:showModal="showModal"
+    v-model:selectedCard="selectedCard"
+  />
+  
   <router-link to='/pengumuman' class='flex gap-2 items-center -mb-4 text-gray-400 text-xs cursor-pointer'>
     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4 text-sidebar">
       <path stroke-linecap="round" stroke-linejoin="round" d="M19 12H5m7-7l-7 7 7 7" />
@@ -16,25 +23,13 @@
   <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
     <div v-for="(item, idx) in filteredCards" :key="item.submenu_id" class="relative rounded-2xl bg-white shadow-xl p-0 flex flex-col justify-between overflow-hidden group announcement-card border border-gray-200 hover:border-sidebar transition" @click="openDetail(item)">
       <div class="absolute inset-0 opacity-10 pointer-events-none pattern-bg"></div>
-      <div class="absolute top-4 right-4 z-20 flex gap-2" v-if='auth && (auth.idgrup == "JBT-032" || auth.idgrup === "JBT-037" || auth.idgrup === "JBT-039" || auth.idgrup === "JBT-040")'>
-        <router-link :to="{name: 'information-document-update', params: { id: item.id }}" @click.stop class="bg-white rounded-full p-2 shadow hover:bg-purple-100 transition group/edit" >
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5 text-sidebar group-hover/edit:text-purple-700">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M16.862 3.487a2.1 2.1 0 1 1 2.97 2.97L8.91 17.38a2.1 2.1 0 0 1-.88.53l-3.07.92a.525.525 0 0 1-.65-.65l.92-3.07a2.1 2.1 0 0 1 .53-.88L16.862 3.487z" />
-          </svg>
-        </router-link>
-        <button @click.stop="deleteAnnouncement(item)" class="bg-red-100 rounded-full p-2 shadow hover:bg-red-200 transition group/delete">
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5 text-red-600 group-hover/delete:text-red-800">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-          </svg>
-        </button>
-      </div>
       <div class="flex flex-col gap-2 z-10 p-6">
         <div class="flex items-center gap-3 mb-3">
-          <div class="rounded-lg bg-sidebar p-2 flex items-center justify-center flex-shrink-0">
-            <img src="https://unpkg.com/heroicons@2.0.13/24/solid/document.svg" class="w-8 h-8 filter-white-svg" alt="icon" />
+          <div class="rounded-tr-lg rounded-bl-3xl bg-sidebar p-2 absolute -top-1 -right-0 flex items-center justify-center flex-shrink-0">
+            <img :src="detail.icon" class="w-8 h-8 filter-white-svg" alt="icon" />
             <!-- <img :src="item.icon" class="w-8 h-8 filter-white-svg" alt="icon" /> -->
           </div>
-          <span class="text-sidebar text-lg font-bold line-clamp-2 transition-all duration-300 hover:line-clamp-none cursor-pointer"  :title="item.title" >{{ item.title }}</span>
+          <span class="text-sidebar text-lg font-bold transition-all duration-300 mt-3 hover:line-clamp-none cursor-pointer"  :title="item.title" >{{ item.title }}</span>
         </div>
         <div class="bg-gray-50 rounded-lg p-3 flex flex-col gap-2 mb-2 border border-gray-100">
           <div class="flex justify-between items-center">
@@ -51,18 +46,27 @@
             <span class="text-xs font-bold text-sidebar">{{ item.tgl_berlaku }}</span>
           </div>
         </div>
-        <div class="text-xs text-gray-500 mb-2">Terakhir update: <br><span class="font-semibold text-sidebar">{{ item.date }}</span></div>
+        <div class="text-xs text-gray-500 mb-16">Terakhir update: <br><span class="font-semibold text-sidebar">{{ item.date }}</span></div>
+         <!-- Tombol aksi di tengah bawah -->
+        <div class="absolute bottom-8 left-1/2 -translate-x-1/2 flex gap-4 mt-2 justify-center items-center w-max" v-if='auth && (auth.idgrup == "JBT-032" || auth.idgrup === "JBT-037" || auth.idgrup === "JBT-039" || auth.idgrup === "JBT-040")'>
+          <router-link :to="{name: 'information-document-update', params: { id: item.id }}" @click.stop class="bg-white rounded-full px-4 py-2 shadow hover:bg-purple-100 transition group/edit flex items-center gap-2" >
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5 text-sidebar group-hover/edit:text-purple-700">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M16.862 3.487a2.1 2.1 0 1 1 2.97 2.97L8.91 17.38a2.1 2.1 0 0 1-.88.53l-3.07.92a.525.525 0 0 1-.65-.65l.92-3.07a2.1 2.1 0 0 1 .53-.88L16.862 3.487z" />
+            </svg>
+            <span class="text-xs font-semibold text-sidebar">Edit</span>
+          </router-link>
+          <button @click.stop="deleteAnnouncement(item)" class="bg-red-100 rounded-full px-4 py-2 shadow hover:bg-red-200 transition group/delete flex items-center gap-2">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5 text-red-600 group-hover/delete:text-red-800">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+            <span class="text-xs font-semibold text-red-600">Archive</span>
+          </button>
+        </div>
       </div>
     </div>
   </div>
 
-  <!-- Modal Detail Card -->
-  <OpenModalPDF
-    ref="modalRef"
-    :cards="filteredCards"
-    v-model:showModal="showModal"
-    v-model:selectedCard="selectedCard"
-  />
+
 </template>
 
 <script setup>
@@ -81,6 +85,7 @@ const router = useRouter();
 
 const detail = ref({});
 const title = ref({})
+const icon = ref({})
 const memoTabs = ref([]);
 const activeMemoTab = ref('all')
 const modalRef = ref(null);
@@ -185,7 +190,8 @@ onMounted(async () => {
     } else {
       items = result.items || [];
       detail.value = result.detail || result;
-      title.value = result.title || result.judul || 'Detail Pengumuman';
+      title.value = result.title || 'Detail Pengumuman';
+      icon.value = result.icon || 'https://unpkg.com/heroicons@2.0.13/24/solid/document.svg';
     }
     // Mapping agar field sesuai dengan template
     cards.value = items.map(item => ({

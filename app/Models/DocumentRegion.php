@@ -12,8 +12,10 @@ class DocumentRegion extends Model
     protected $table = 'document_region'; // Assuming the table name is 'document_regions'
     protected $fillable = [
         'document_id',
-        'region_id'
+        'regional_id'
     ];
+    
+    // public $timestamps = false;
     
     public function document()
     {

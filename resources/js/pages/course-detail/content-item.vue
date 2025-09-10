@@ -32,14 +32,14 @@
               :to="`/course/update-contents/${props.courseId}/${props.id}`"
               class="w-fit rounded-full border border-[#060A23] p-[14px_20px] font-semibold text-nowrap hover:bg-gray-50 transition-colors"
             >
-              Edit Content
+              Ubah Materi
             </RouterLink>
             <button
               type="button"
               @click="$emit('delete-content', props.id)"
               class="w-fit rounded-full p-[14px_20px] bg-[#FF435A] font-semibold text-white text-nowrap hover:bg-red-600 transition-colors"
             >
-              Delete
+              Hapus
             </button>
           </div>
         </div>

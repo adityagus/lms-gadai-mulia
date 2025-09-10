@@ -4,10 +4,10 @@
       Dashboard
     </span>
     <span class="last-of-type:after:content-[''] last-of-type:font-semibold">
-      <RouterLink to="/courses">Manage Course</RouterLink>
+      <RouterLink to="/courses">Kelola Kelas</RouterLink>
     </span>
     <span class="last-of-type:after:content-[''] last-of-type:font-semibold">
-      Details
+      Detail
     </span>
   </div>
   <header class="flex items-center justify-between gap-[30px]">
@@ -17,12 +17,12 @@
       </h1>
     </div>
     <div class="flex items-center gap-3">
-      <RouterLink :to="`/courses/${course?.id}/edit`" class="w-fit rounded-full border border-[#060A23] p-[14px_20px] font-semibold text-nowrap">
-        Edit Course
+      <RouterLink :to="`/courses/${course.id}/edit`" class="w-fit rounded-full border border-[#060A23] p-[14px_20px] font-semibold text-nowrap">
+        Edit Kelas
       </RouterLink>
-      <RouterLink :to="`/course/${course?.id}/preview`"
+      <RouterLink :to="`/course/${course.id}/preview`"
         class="w-fit rounded-full p-[14px_20px] font-semibold text-[#FFFFFF] bg-[#662FFF] text-nowrap">
-        Preview Course
+        Pratinjau Kelas
       </RouterLink>
     </div>
   </header>

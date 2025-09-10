@@ -15,8 +15,10 @@ class Master extends Model
   {
     $query = \DB::connection('db2')
       ->table('tbljabatan as jb')
-      ->select('jb.kd_jabatan', 'jb.nm_jabatan', 'jb.jabatan_active')
+      ->select('jb.kd_jabatan', 'jb.nm_jabatan', 'jb.status_karyawan', 'jb.jabatan_active')
       ->where('jabatan_active', 'true')
+      ->where('jb.status_karyawan','!=','Eksternal')
+      ->orderBy('jb.nm_jabatan', 'asc')
       ->get();
 
     return $query;

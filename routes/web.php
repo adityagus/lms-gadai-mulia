@@ -7,6 +7,7 @@ use App\Http\Controllers\api\MasterController;
 use App\Http\Controllers\api\WizardController;
 use App\Http\Controllers\api\ContentController;
 use App\Http\Controllers\InformationController;
+use App\Http\Controllers\migrasiDataController;
 use App\Http\Controllers\api\FileUploadController;
 use App\Http\Controllers\api\AnnouncementController;
 
@@ -92,6 +93,7 @@ Route::get('csrf-token', function (Request $request) {
     return response()->json(['csrf_token' => csrf_token()]);
 });
 
+// migrasi data
 
 
 // 🔹 Catch-all for SPA (Vue/React/Next.js front-end)

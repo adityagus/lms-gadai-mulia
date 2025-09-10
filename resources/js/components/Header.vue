@@ -152,27 +152,24 @@
     </div>
 
     <!-- Modal Course Detail -->
-    <div v-if="showModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
+    <div v-if="showModal && selectedCourse" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
       <div class="bg-white rounded-xl shadow-lg p-6 w-[350px] relative">
         <button @click="closeModal" class="absolute top-2 right-2 text-gray-400 hover:text-gray-700 text-xl font-bold">&times;</button>
-        <div v-if="selectedCourse">
-          <img :src="selectedCourse.thumbnail_url" alt="cover" class="w-20 h-20 object-cover rounded mb-3"
-            v-if="selectedCourse.thumbnail_url" />
-          <h2 class="font-bold text-lg mb-1">{{ selectedCourse.title }}</h2>
-          <p class="text-sm text-gray-500 mb-2">{{ selectedCourse.tagline }}</p>
-          <p class="mb-2">{{ selectedCourse.description }}</p>
-          <span class="inline-block px-3 py-1 rounded bg-blue-100 text-blue-700 text-xs">{{ selectedCourse.category }}</span>
-        </div>
-        <div v-if="selectedDocument">
-          <img :src="selectedDocument.thumbnail_url" alt="cover" class="w-20 h-20 object-cover rounded mb-3"
-            v-if="selectedDocument.thumbnail_url" />
-          <h2 class="font-bold text-lg mb-1">{{ selectedDocument.title }}</h2>
-          <p class="text-sm text-gray-500 mb-2">{{ selectedDocument.tagline }}</p>
-          <p class="mb-2">{{ selectedDocument.description }}</p>
-          <span class="inline-block px-3 py-1 rounded bg-blue-100 text-blue-700 text-xs">{{ selectedDocument.category }}</span>
-        </div>
+        <img :src="selectedCourse.thumbnail_url" alt="cover" class="w-20 h-20 object-cover rounded mb-3"
+          v-if="selectedCourse.thumbnail_url" />
+        <h2 class="font-bold text-lg mb-1">{{ selectedCourse.title }}</h2>
+        <p class="text-sm text-gray-500 mb-2">{{ selectedCourse.tagline }}</p>
+        <p class="mb-2">{{ selectedCourse.description }}</p>
+        <span class="inline-block px-3 py-1 rounded bg-blue-100 text-blue-700 text-xs">{{ selectedCourse.category }}</span>
       </div>
     </div>
+  <!-- Modal Document Detail pakai komponen openModalPdf -->
+  <openModalPdf 
+    ref="modalRef"
+    :cards="[selectedDocument]"
+    v-model:showModal="showModal"
+    v-model:selectedCard="selectedDocument"
+    @close="closeModal" />
     <!-- End: Modal Search Algolia Style -->
 
     <div class="relative flex items-center justify-end gap-[14px] group">
@@ -208,14 +205,16 @@ import { ref, nextTick, onMounted } from 'vue';
 import { AisInstantSearch, AisSearchBox, AisHits } from 'vue-instantsearch/vue3/es';
 import { liteClient } from 'algoliasearch/lite';
 import { useRouter } from 'vue-router';
+import { getSession, signOut } from '@/services/authService';
 import { searchContent } from '@/services/courseService'; 
-import { signOut, getSession } from '@/services/authService'; // Pastikan path ini sesuai dengan struktur proyek Anda
+import openModalPdf from './openModalPDF.vue'
 import Swal from 'sweetalert2';
 
 const showSearch = ref(false);
 const showModal = ref(false);
 const selectedCourse = ref(null);
 const selectedDocument = ref(null);
+const modalRef = ref(null);
 const router = useRouter()
 const nama = ref('');
 const jabatan = ref('');
@@ -267,6 +266,7 @@ async function handleSearch() {
       if (response.data.success) {
         searchResultsCourse.value = response.data.courses || [];
         searchResultsDocument.value = response.data.documents || [];
+        console.log('Search results:', response.data);
       } else {
         searchResultsCourse.value = [];
         searchResultsDocument.value = [];
@@ -309,18 +309,21 @@ function gotoDetail(course) {
   }
 
   // If already on the same route, force reload
-  if (router.currentRoute.value.path === `/courses/${course.id}`) {
-    router.replace({ path: `/courses/${course.id}`, query: { t: Date.now() } });
+  if (router.currentRoute.value.path === `/student/courses/${course.id}`) {
+    router.replace({ path: `/student/courses/${course.id}`, query: { t: Date.now() } });
   } else {
-    router.push(`/courses/${course.id}`);
+    router.push(`/student/courses/${course.id}`);
   }
   closeSearch();
 }
 
 function openDocumentDetail(document) {
+  console.log('openDocumentDetail', document);
   selectedDocument.value = document;
   selectedCourse.value = null;
   showModal.value = true;
+  
+  closeSearch();
 }
 
 function logout() {
@@ -352,65 +355,45 @@ function closeModal() {
 </script>
 
 <style scoped>
+.announcement-card {
+  transition: box-shadow 0.2s, transform 0.2s;
+}
+.announcement-card:hover {
+  box-shadow: 0 8px 32px 0 rgba(127, 51, 255, 0.37), 0 1.5px 6px 0 #7F33FF;
+  transform: translateY(-2px) scale(1.03);
+  border-color: #7F33FF;
+}
+.pattern-bg {
+  background-image: url('https://www.toptal.com/designers/subtlepatterns/uploads/dot-grid.png');
+  background-size: 40px 40px;
+}
+.bg-sidebar {
+  background: #7F33FF;
+}
+.filter-white-svg {
+  filter: brightness(0) invert(1);
+}
 .line-clamp-2 {
+/* Untuk satu baris clamp nomor surat */
+.line-clamp-1 {
   display: -webkit-box;
-  -webkit-line-clamp: 2;
+  line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+  display: -webkit-box;
   line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
-
-/* Custom scrollbar */
-.overflow-y-auto::-webkit-scrollbar {
-  width: 6px;
+/* Hide scrollbar utility */
+.scrollbar-hidden {
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE 10+ */
 }
-
-.overflow-y-auto::-webkit-scrollbar-track {
-  background: #f1f1f1;
-  border-radius: 3px;
-}
-
-.overflow-y-auto::-webkit-scrollbar-thumb {
-  background: #c1c1c1;
-  border-radius: 3px;
-}
-
-.overflow-y-auto::-webkit-scrollbar-thumb:hover {
-  background: #a8a8a8;
-}
-
-/* Smooth transitions */
-.transition-colors {
-  transition: color 0.15s ease-in-out;
-}
-
-.transition-all {
-  transition: all 0.15s ease-in-out;
-}
-
-/* Hover effects */
-.hover\:bg-gray-50:hover {
-  background-color: #f9fafb;
-}
-
-.hover\:border-blue-200:hover {
-  border-color: #bfdbfe;
-}
-
-.hover\:text-gray-600:hover {
-  color: #4b5563;
-}
-
-/* Focus styles */
-.focus\:ring-2:focus {
-  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.5);
-}
-
-.focus\:border-transparent:focus {
-  border-color: transparent;
-}
-
-.focus\:outline-none:focus {
-  outline: none;
+.scrollbar-hidden::-webkit-scrollbar {
+  display: none; /* Chrome/Safari/Webkit */
 }
 </style>

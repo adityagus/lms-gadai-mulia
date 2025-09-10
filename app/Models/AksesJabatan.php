@@ -13,8 +13,11 @@ class AksesJabatan extends Model
     protected $table = 'akses_jabatan';
     protected $fillable = [
         'document_id',
-        'jabatan_id',
+        'kd_jbt',
     ];
+    
+    public $timestamps = false;
+    
     
     
     public function announcement()

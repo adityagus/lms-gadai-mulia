@@ -100,7 +100,7 @@ const getContentIcon = (type) => {
 };
 
 const goBack = () => {
-  router.push('/courses');
+  router.history?.back() || router.push({name: 'lms'});
 };
 
 // Lifecycle
@@ -111,6 +111,13 @@ onMounted(() => {
     error.value = 'Course ID not provided';
   }
 });
+
+watch(() => route.params.id, (newId, oldId) => {
+  if (newId !== oldId) {
+    fetchCourseData();
+  }
+});
+
 
 // Watch for changes in contents to auto-select first content
 watch(contents, (newContents) => {

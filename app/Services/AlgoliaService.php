@@ -15,7 +15,7 @@ class AlgoliaService
      */
     public function refresh(Request $request)
     {
-        $client = SearchClient::create('V18ENC6M06', 'c2ca39153191af8d720b24257772d170');
+        $client = SearchClient::create(env('ALGOLIA_APP_ID'), env('ALGOLIA_SECRET'));
         $index = $client->initIndex('course_gadai_mulia');
 
         // Courses
@@ -69,7 +69,7 @@ class AlgoliaService
     {
         try {
             $course->load('category');
-            $client = SearchClient::create('V18ENC6M06', 'c2ca39153191af8d720b24257772d170');
+            $client = SearchClient::create(env('ALGOLIA_APP_ID'), env('ALGOLIA_SECRET'));
             $index = $client->initIndex('course_gadai_mulia');
             $algoliaData = [
                 'objectID' => 'course_' . $course->id,
@@ -94,7 +94,7 @@ class AlgoliaService
     public function updateDocument($document)
     {
         try {
-            $client = SearchClient::create('V18ENC6M06', 'c2ca39153191af8d720b24257772d170');
+            $client = SearchClient::create(env('ALGOLIA_APP_ID'), env('ALGOLIA_SECRET'));
             $index = $client->initIndex('course_gadai_mulia');
             $algoliaData = [
                 'objectID' => 'document_' . $document->id,
@@ -119,7 +119,7 @@ class AlgoliaService
     public function deleteFromAlgolia($type, $id)
     {
         try {
-            $client = SearchClient::create('V18ENC6M06', 'c2ca39153191af8d720b24257772d170');
+            $client = SearchClient::create(env('ALGOLIA_APP_ID'), env('ALGOLIA_SECRET'));
             $index = $client->initIndex('course_gadai_mulia');
             $objectID = $type . '_' . $id;
             $index->deleteObject($objectID);

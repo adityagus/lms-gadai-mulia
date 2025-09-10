@@ -11,7 +11,7 @@
         />
       </div>
       <div class="w-full">
-        <router-link :to="`/courses/${id}`" class='cursor-pointer'>
+        <router-link :to="`student/courses/${id}`" class='cursor-pointer'>
           <h3 class="font-bold text-xl leading-[30px] line-clamp-1">
             {{ name }}
           </h3>
@@ -40,13 +40,13 @@
           @click="deleteCourse(`${id}`)"
           class="w-fit rounded-full border bg-red-500 text-white p-[14px_20px] font-semibold text-nowrap"
         >
-          Delete
+          Hapus
         </button>
         <RouterLink
-          :to="`/courses/${id}`"
+          :to="`/kelas/${id}`"
           class="w-fit rounded-full border border-[#060A23] p-[14px_20px] font-semibold text-nowrap"
         >
-          Manage
+          Kelola
         </RouterLink>
       </div>
     </div>
@@ -101,7 +101,7 @@ const deleteCourse = (id) => {
 //   if (result.isConfirmed) {
     
 //      try {
-//       const result = await axios.delete(`http://127.0.0.1:8000/api/courses/${id}`)
+//       const result = await axios.delete(`http://127.0.0.1:8000/api/kelas/${id}`)
       
 //       if(result.data.status == 200){
 //         Swal.fire({

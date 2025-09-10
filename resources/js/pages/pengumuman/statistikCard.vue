@@ -1,7 +1,7 @@
 <template>
   <div class="flex justify-end mb-4 gap-2">
     <router-link :to="{ name: 'information-document-create', query: { type: category}}" v-if='auth && (auth.idgrup == "JBT-032" || auth.idgrup === "JBT-037" || auth.idgrup === "JBT-039" || auth.idgrup === "JBT-040")'
-      class="px-4 py-2 bg-sidebar text-white rounded-lg font-semibold shadow hover:bg-purple-700 transition" :id>
+      class="px-4 py-2 bg-green-500 text-white rounded-lg font-semibold shadow hover:bg-green-700 transition" :id>
       + Create <span>{{ category == 1 ? 'Pengumuman' : category == 2 ? 'Formulir' : 'Report' }}</span>
     </router-link>
     <router-link :to="{ name: 'archive-pengumuman', query: { submenu_id: category } }" v-if='auth && (auth.idgrup == "JBT-032" || auth.idgrup === "JBT-037" || auth.idgrup === "JBT-039" || auth.idgrup === "JBT-040")' 
@@ -12,7 +12,7 @@
       </svg>
 
 
-      Archive
+      Arsip
     </router-link>
   </div>
   <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">

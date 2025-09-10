@@ -9,7 +9,7 @@ class Menu extends Model
 {
     use HasFactory;
     
-    public $table = 'submenu_new';
+    public $table = 'submenu';
     
     public function announcements()
     {

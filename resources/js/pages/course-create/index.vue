@@ -288,9 +288,9 @@ onMounted(async () => {
       </span>
     </div>
     <div class="flex items-center gap-[14px]">
-      <button type="submit" class="w-full rounded-full border border-[#060A23] p-[14px_20px] font-semibold text-nowrap">
-        Save as Draft
-      </button>
+      <router-link to="/lms" class="w-full rounded-full border border-[#060A23] p-[14px_20px] font-semibold text-nowrap flex items-center justify-center">
+        Cancel
+      </router-link>
       <button type="submit" :disabled="edit ? mutateUpdate.isLoading : mutateCreate.isLoading"
         class="w-full rounded-full p-[14px_20px] font-semibold text-[#FFFFFF] bg-[#662FFF] text-nowrap">
         {{ !edit ? "Create " : "Update" }} Now

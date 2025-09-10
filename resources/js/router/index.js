@@ -1,4 +1,3 @@
-import AdminMigrasiData from "@/pages/admin/MigrasiData.vue";
 import { createRouter, createWebHistory } from "vue-router";
 import Layout from "@/components/Layout";
 import TestVue from "@/components/test-vue";
@@ -8,8 +7,8 @@ import CourseDetail from "../pages/course-detail/index";
 import CourseCreate from "../pages/course-create/index";
 import CourseContentCreate from "@/pages/course-content-create/index";
 import ContentPreview from "@/pages/course-preview/index";
-import AnnonouncementInfo from "@/pages/pengumuman/statistikCard.vue"
-import ArchivePengumuman from "@/pages/pengumuman/archive.vue"
+import AnnonouncementInfo from "@/pages/pengumuman/statistikCard.vue";
+import ArchivePengumuman from "@/pages/pengumuman/archive.vue";
 import SignIn from "@/pages/SignIn";
 import Main from "@/pages/landing-page/layouts/Main";
 import Home from "@/pages/landing-page/pages/home";
@@ -51,9 +50,9 @@ const routes = [
         component: Home,
     },
     {
-      path: "/detail-course/:id",
-      name: "detailPage",
-      component: DetailPage,
+        path: "/detail-course/:id",
+        name: "detailPage",
+        component: DetailPage,
     },
     {
         path: "/sign-in",
@@ -65,8 +64,8 @@ const routes = [
         component: Layout,
         children: [
             {
-                path: "",
-                name: "home",
+                path: "/overview",
+                name: "overview",
                 component: Dashboard,
             },
             {
@@ -99,12 +98,12 @@ const routes = [
                 component: CourseCreate,
             },
             {
-                path: "/courses",
-                name: "courses",
+                path: "/lms",
+                name: "lms",
                 component: Course,
             },
             {
-                path: "/courses/:id",
+                path: "/kelas/:id",
                 name: "courseDetail",
                 beforeEnter: async (to, from, next) => {
                     const course = await getCourseById(to.params.id);
@@ -167,22 +166,22 @@ const routes = [
                 name: "archive-pengumuman",
                 component: ArchivePengumuman,
             },
-            {
-                path: "/admin/migrasi-data",
-                name: "admin-migrasi-data",
-                component: AdminMigrasiData,
-            },
+            // {
+            //     path: "/admin/migrasi-data",
+            //     name: "admin-migrasi-data",
+            //     component: AdminMigrasiData,
+            // },
         ],
     },
     {
         path: "/master",
         component: Layout,
         children: [
-          {
-            path: "/master/categories",
-            name: "categories",
-            component: CategoryManagement,
-          }
+            {
+                path: "/master/categories",
+                name: "categories",
+                component: CategoryManagement,
+            },
         ],
     },
     {
@@ -195,10 +194,16 @@ const routes = [
                 component: courseStudent,
             },
             {
-              path: "/student/courses/:id",
-              name: "content-preview",
-              component: ContentPreview,
-            }
+                path: "/student/courses/:id",
+                name: "content-preview",
+                beforeEnter: async (to, from, next) => {
+                    const course = await getCourseById(to.params.id);
+                    // Store the categories in the route meta for access in the component
+                    to.params.course = course;
+                    next();
+                },
+                component: ContentPreview,
+            },
         ],
     },
 ];
@@ -208,68 +213,72 @@ const router = createRouter({
     routes,
     scrollBehavior(to, from, savedPosition) {
         if (to.hash) {
-            return { el: to.hash, behavior: 'smooth' };
+            return { el: to.hash, behavior: "smooth" };
         }
-        return { top: 0};
-    }
+        return { top: 0 };
+    },
 });
 
-
 async function getSessionAuth() {
-  try {
-    const res = await getSession();
-    return res.auth; // sesuai response backend
-  } catch (e) {
-    return null;
-  }
+    try {
+        const res = await getSession();
+        return res.auth; // sesuai response backend
+    } catch (e) {
+        return null;
+    }
 }
 
 // Middleware: Cek akses berdasarkan sessionStorage (atau localStorage)
-router.beforeEach(async(to, from, next) => {
-  const auth = await getSessionAuth();
-  // membuat variable global auth
-  if (typeof window !== "undefined" && auth) {
-    window.auth = auth;
-  }else{
-    window.auth = null;
-  }
-  if(to.path !== '/sign-in' && to.path !== '/' && to.name !== "detailPage" && !auth) {
-    return next({ path: '/sign-in' });
-  }
-  
-  // Ambil idgrup dari localStorage
-  const idgrup = typeof window !== "undefined" && auth
-    ? auth.idgrup
-    : null;
-  
-  // Jika user akses root dan sudah login, redirect otomatis
-  if (to.path === '/sign-in' && idgrup) {
-    if (idgrup === 'JBT-032' || idgrup === 'JBT-038') {
-      return next({ path: '/courses' });
-    } else {
-      return next({ path: '/student/courses' });
-    }
-  }
+router.beforeEach(async (to, from, next) => {
+  try{
+    const resauth  = await getSession();
+    const auth = resauth.auth;
 
-  // Jika route ke /courses, hanya boleh jika idgrup JBT-032
-  if (to.path.startsWith('/courses')) {
-    if (idgrup === 'JBT-032' || idgrup === 'JBT-038') {
-      next();
-    } else {
-      // Redirect ke student jika bukan admin
-      return next({ path: '/student/courses' });
+    
+    // if (typeof window !== "undefined") {
+    //     window.auth = auth || null;
+    // }
+
+    // Jika tidak login dan bukan halaman public, redirect ke login
+    const isPublic =
+        ["/sign-in", "/", "/detail-course/" + to.params.id].includes(to.path) ||
+        to.name === "detailPage";
+    if (!auth && !isPublic) {
+        return next({ path: "/sign-in" });
     }
-  }
-  // Jika route ke /student, hanya boleh jika idgrup bukan JBT-032
-  else if (to.path.startsWith('/student')) {
-    if (idgrup && idgrup !== 'JBT-032' && idgrup !== 'JBT-038') {
-      next();
-    } else {
-      // Redirect ke admin jika admin
-      return next({ path: '/courses' });
+
+    // Jika sudah login dan akses /sign-in, redirect sesuai grup
+    if (to.path === "/sign-in" && auth && auth.idgrup) {
+        if (auth.idgrup === "JBT-032" || auth.idgrup === "JBT-038") {
+            return next({ path: "/lms" });
+        } else {
+            return next({ path: "/student/courses" });
+        }
     }
-  } else {
-    next();
+
+    // Jika akses /courses, hanya admin
+    if (to.path.startsWith("/courses")) {
+        if (auth && (auth.idgrup === "JBT-032" || auth.idgrup === "JBT-038")) {
+            return next();
+        } else {
+            return next({ path: "/student/courses" });
+        }
+    }
+
+    // // Jika akses /student, hanya non-admin
+    // if (to.path.startsWith("/student")) {
+    //     if (auth && auth.idgrup !== "JBT-032") {
+    //         return next();
+    //     } else {
+    //         return next({ path: "/lms" });
+    //     }
+    // }
+
+    // Default: lanjutkan
+    return next();
+    
+  }catch(e){
+    console.log(e);
   }
 });
 
