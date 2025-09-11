@@ -41,6 +41,7 @@ class Master extends Model
         ->get();
 
 
+      // dd($query);
       // Group berdasarkan area
       $grouped = $query->groupBy('kd_area');
 
@@ -51,14 +52,14 @@ class Master extends Model
         $children = [];
         foreach ($items as $item) {
           $children[] = [
-            "id_area" => (int) $item->kd_cabang,
+            "id_area" => $item->kd_cabang,
             "nm_area" => $item->nm_cabang,
             "children" => []
           ];
         }
 
         $result[] = [
-          "id_area" => (int) $kd_area,
+          "id_area" => $kd_area,
           "nm_area" => $areaName,
           "children" => $children
         ];

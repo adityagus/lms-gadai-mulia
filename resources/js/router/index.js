@@ -189,12 +189,12 @@ const routes = [
         component: Layout,
         children: [
             {
-                path: "/student/courses",
+                path: "/student/lms",
                 name: "studentCourses",
                 component: courseStudent,
             },
             {
-                path: "/student/courses/:id",
+                path: "/student/kelas/:id",
                 name: "content-preview",
                 beforeEnter: async (to, from, next) => {
                     const course = await getCourseById(to.params.id);
@@ -257,11 +257,11 @@ router.beforeEach(async (to, from, next) => {
     }
 
     // Jika akses /courses, hanya admin
-    if (to.path.startsWith("/courses")) {
+    if (to.path.startsWith("/lms")) {
         if (auth && (auth.idgrup === "JBT-032" || auth.idgrup === "JBT-038")) {
             return next();
         } else {
-            return next({ path: "/student/courses" });
+            return next({ path: "/student/lms" });
         }
     }
 

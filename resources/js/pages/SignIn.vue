@@ -107,7 +107,7 @@
                     </div>
                   </div>
                   <!-- Checkbox -->
-                  <div class="flex items-center justify-between">
+                  <!-- <div class="flex items-center justify-between">
                     <div x-data="{ checkboxToggle: false }">
                       <label for="checkboxLabelOne"
                         class="flex items-center text-sm font-normal text-gray-700 cursor-pointer select-none ">
@@ -127,9 +127,9 @@
                         Keep me logged in
                       </label>
                     </div>
-                    <!-- <a href="/reset-password.html" class="text-sm text-brand-500 hover:text-brand-600">Forgot
-                      password?</a> -->
-                  </div>
+                  </div> -->
+                  <!-- <a href="/reset-password.html" class="text-sm text-brand-500 hover:text-brand-600">Forgot
+                    password?</a> -->
                   <!-- Button -->
                   <div>
                     <button type='submit'

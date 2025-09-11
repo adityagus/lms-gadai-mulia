@@ -4,14 +4,14 @@
       <button @click="closeModal" class="absolute top-3 right-3 text-gray-400 hover:text-gray-700 text-xl font-bold z-10">&times;</button>
       <div v-if="selectedCard" class="overflow-y-auto scrollbar-hidden px-8 pt-8 pb-2 flex-1 rounded-2xl" style="max-height:calc(95vh - 70px);">
         <!-- DEBUG: Props -->
-        <div class="mb-2 p-2 bg-gray-100 rounded text-xs text-gray-700">
+        <!-- <div class="mb-2 p-2 bg-gray-100 rounded text-xs text-gray-700">
           <strong>DEBUG PROPS:</strong>
           <div><b>cards:</b> {{ cards }}</div>
-          <!-- <div><b>showModal:</b> {{ showModal }}</div> -->
+          <div><b>showModal:</b> {{ showModal }}</div>
           <div><b>selectedCard:</b> {{ selectedCard }}</div>
-        </div>
-        <div class="absolute top-0 left-0 w-full h-20 rounded-t-2xl">
-          <div class="flex items-center gap-3 my-4 px-8 bg-white" id='header'>
+        </div> -->
+        <div class="absolute top-0 left-0 w-full h-20 rounded-t-2xl bg-white">
+          <div class="flex items-center gap-3 my-4 px-8" id='header'>
             <div class="rounded-lg bg-sidebar p-2 flex items-center justify-center">
               <img src="https://unpkg.com/heroicons@2.0.13/24/solid/document.svg" class="w-8 h-8 filter-white-svg" alt="icon" />
               <!-- <img :src="selectedCard.icon" class="w-8 h-8 filter-white-svg" alt="icon" /> -->

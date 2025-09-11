@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\LoginController;
+use App\Http\Controllers\OverviewController;
 use App\Http\Controllers\api\CourseController;
 use App\Http\Controllers\api\MasterController;
 use App\Http\Controllers\api\WizardController;
@@ -54,6 +55,9 @@ Route::middleware(['web', 'api'])->prefix('api')->group(function () {
   Route::delete('/courses/{id}', [CourseController::class, 'destroy']);
   Route::get('/categories', [CourseController::class, 'categories']);
   Route::get('/search', [CourseController::class, 'search']);
+  // Overview endpoint
+  Route::get('/overview', [OverviewController::class, 'index']);
+  Route::get('/user-overview', [OverviewController::class, 'userOverview']);
 });
 
 // 🔹 Content

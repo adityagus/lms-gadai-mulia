@@ -16,7 +16,9 @@ class Course extends Model
     // Menambahkan metode untuk mengelola upload file
     public static function uploadThumbnail($file)
     {
-        return $file->store('uploads/courses', 'public');
+      // menyimpan di folder storage/app/public/aktif/uploads/courses
+        $path = $file->store('uploads/courses', 'aktif');
+        return $path;
     }
     
     public function category()

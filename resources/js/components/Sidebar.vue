@@ -76,7 +76,7 @@
             <p class="font-semibold text-xs leading-[18px] text-white">
               Master
             </p>
-            <li :class="{ 'active': $route.path === '/admin/migrasi-data' }">
+            <!-- <li :class="{ 'active': $route.path === '/admin/migrasi-data' }">
               <div @click="handleMainMenuClick('/admin/migrasi-data')">
                 <div
                   class="flex items-center gap-3 w-full py-2 px-5 rounded-lg transition-all duration-300 hover:shadow-[-10px_-6px_10px_0_#7F33FF_inset] cursor-pointer">
@@ -84,7 +84,7 @@
                   <span class="font-semibold text-white">Migrasi Data</span>
                 </div>
               </div>
-            </li>
+            </li> -->
             <li :class="{ 'active': $route.path === '/master/categories' }">
               <div @click="handleMainMenuClick('/master/categories')">
                 <div
@@ -97,7 +97,7 @@
               </div>
             </li>
             <!-- menu migrasi data -->
-            <li>
+            <!-- <li>
               <a href="/instructors">
                 <div
                   class="flex items-center gap-3 w-full py-2 px-5 rounded-lg transition-all duration-300 hover:shadow-[-10px_-6px_10px_0_#7F33FF_inset]">
@@ -132,7 +132,7 @@
                   <span class="font-semibold text-white">Settings</span>
                 </div>
               </a>
-            </li>
+            </li> -->
           </ul>
         </nav>
       </div>

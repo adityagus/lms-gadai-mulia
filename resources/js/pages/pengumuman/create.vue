@@ -53,13 +53,13 @@
           <div class="flex flex-col gap-[10px]" v-if='type === "text"'>
       <label class="font-semibold">Content</label>
       <!-- <ckeditor :editor="editor" v-model="data" /> -->
-      <!-- <ckeditor :editor="ClassicEditor" v-model="content" :config="editorConfig" @change="() =>{
+      <ckeditor :editor="ClassicEditor" v-model="content" :config="editorConfig" @change="() =>{
         const data = editor.getData();
         console.log('data adalah', data);
         // Update the content field with the editor content
         content.value = data;
         console.log('Editor content changed:', content);
-      }" /> -->
+      }" />
       <!-- <ckeditor
         v-if="editor"
         v-model="data"
@@ -118,7 +118,6 @@
           </div>
         </div>
       </div>
-      {{ errors }}ini
       <div class="flex gap-2 mt-6">
         <button v-if="step > 1" type="button" @click="prevStep"
           class="flex-1 py-2 rounded bg-gray-200 text-sidebar font-semibold hover:bg-gray-300 transition">Sebelumnya</button>

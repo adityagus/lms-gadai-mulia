@@ -13,6 +13,7 @@ const props = defineProps({
 })
 
 const imgUrl = process.env.MIX_IMG_URL || '';
+console.log('imgUtl', imgUrl);
 console.log("props.content", props.content);
 const contentUrl = imgUrl + props.content ;
 console.log("ContentPdf component loaded with content:", contentUrl);

@@ -1,32 +1,4 @@
 <template>
-  <!-- User Dashboard Section -->
-  <section class="mb-8">
-    <h2 class="font-bold text-xl mb-2">Hi, {{ user.name }} 👋</h2>
-    <p class="text-gray-500 mb-4">Selamat datang di dashboard! Berikut ringkasan aktivitas kamu:</p>
-    <!-- Kursus dan Dokumen Terakhir -->
-    <div class="grid grid-cols-2 gap-6 mt-8">
-      <div class="bg-white rounded-xl p-6 shadow">
-        <p class="text-lg font-semibold mb-2">Kursus Terakhir Dilihat</p>
-        <ul>
-          <li v-for="course in lastCourses" :key="course.id" class="mb-1">
-            <span class="font-bold">{{ course.title }}</span>
-            <span class="text-gray-500 text-sm"> ({{ course.viewed_at }})</span>
-          </li>
-        </ul>
-      </div>
-      <div class="bg-white rounded-xl p-6 shadow">
-        <p class="text-lg font-semibold mb-2">Dokumen Terakhir Diakses</p>
-        <ul>
-          <li v-for="doc in lastDocuments" :key="doc.id" class="mb-1">
-            <span class="font-bold">{{ doc.title }}</span>
-            <span class="text-gray-500 text-sm"> ({{ doc.accessed_at }})</span>
-          </li>
-        </ul>
-      </div>
-    </div>
-  </section>
-
-  <!-- Overview Perusahaan -->
   <header class="flex items-center justify-between gap-[30px]">
     <div>
       <h1 class="font-extrabold text-[28px] leading-[42px]">Overview</h1>
@@ -98,18 +70,10 @@
                 <Students/> -->
   </div>
 </template>
+
 <script setup>
 import { ref, onMounted } from 'vue'
 import axios from 'axios'
-
-const user = ref({ name: 'User' })
-const userStats = ref({
-  courses_joined: 0,
-  documents_accessed: 0
-})
-
-const lastCourses = ref([])
-const lastDocuments = ref([])
 
 const overview = ref({
   active_users: 0,
@@ -122,31 +86,12 @@ const overview = ref({
 
 onMounted(async () => {
   try {
-    // Ambil data user
-    const userRes = await axios.get('/api/user-overview')
-    console.log("User overview response:", userRes.data);
-    user.value = userRes.data.user
-    userStats.value = userRes.data.stats
-
-    // Ambil kursus dan dokumen terakhir
-    lastCourses.value = userRes.data.last_courses || []
-    lastDocuments.value = userRes.data.last_documents || []
-
-    // Ambil data overview perusahaan
-    const res = await axios.get('/overview')
-    overview.value = res.data.stats || res.data
+    // throw new Error("Simulated fetch error");
+    const res = await axios.get('/api/overview')
+    overview.value = res.data.stats
+    console.log("Overview data fetched:", overview.value);
   } catch (e) {
     // fallback dummy data jika gagal
-    user.value = { name: 'User' }
-    userStats.value = { courses_joined: 3, documents_accessed: 12 }
-    lastCourses.value = [
-      { id: 1, title: 'Dasar Manajemen', viewed_at: '2025-09-10' },
-      { id: 2, title: 'Teknik Komunikasi', viewed_at: '2025-09-09' }
-    ]
-    lastDocuments.value = [
-      { id: 1, title: 'Panduan SOP', accessed_at: '2025-09-10' },
-      { id: 2, title: 'Formulir Pengajuan', accessed_at: '2025-09-08' }
-    ]
     overview.value = {
       active_users: 189498,
       total_courses: 7221,

@@ -63,17 +63,15 @@ export const softDeleteAnnouncement = async (id) => {
   }
 }
 
-// Memindahkan file yang tidak aktif ke status nonaktif
 export const trashAnnouncement = async (submenu_id) => {
   try {
-    // Endpoint khusus untuk menandai file nonaktif
-    const response = await apiInstance.patch('/announcements/nonactive', {
-      submenu_id
+    const response = await apiInstance.get('/announcements/trash', {
+      params: { category: submenu_id }
     });
     console.log('response', response);
     return response.data;
   } catch (error) {
-    console.error('Error moving announcement to nonactive:', error);
+    console.error('Error fetching trashed announcements:', error);
     throw error;
   }
 }

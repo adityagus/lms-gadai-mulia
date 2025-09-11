@@ -65,12 +65,12 @@ class LoginController extends Controller
         }
     }
     
-    // public function logout(Request $request)
-    // {
-    //     // Hapus data session
-    //     Session::flush();
+    public function logout(Request $request)
+    {
+        // Hapus data session
+        Session::flush();
 
-    //     // Redirect ke halaman login atau halaman lain yang diinginkan
-    //     return Redirect::to('/sign-in');
-    // }
+        // Redirect ke halaman login atau halaman lain yang diinginkan
+        return Redirect::to('/sign-in');
+    }
 }

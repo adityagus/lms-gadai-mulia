@@ -123,7 +123,7 @@ const onSubmit = handleSubmit(async () => {
       await mutateCreate.mutateAsync(formData);
     }
     
-    router.push('/courses');
+    router.push('/lms');
     queryClient.invalidateQueries({ queryKey: ['courses'] });
     Swal.fire({
       title: "Success!",

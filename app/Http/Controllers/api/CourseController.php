@@ -22,6 +22,7 @@ class CourseController extends Controller
     $page = $request->query('page', 1); // Get the page number from the query string, default to 1 if not provided
     $cacheKey = 'courses.page.' . $page;
 
+    Cache::flush();
     $courses = Cache::remember($cacheKey, now()->addDay(), function () {
       return Course::with('category:id,name')->paginate(5);
     });
@@ -29,8 +30,7 @@ class CourseController extends Controller
     // Loop through the courses and append the thumbnail URL
     collect($courses->items())->transform(function ($course) {
       // Generate the full URL for the thumbnail (assuming the thumbnail is stored in public disk)
-      $baseUrl = config('app.img_url', asset('storage/'));
-      $course->thumbnail_url = $baseUrl . '/' . ltrim($course->thumbnail, '/');
+      $course->thumbnail_url = env('MIX_IMG_URL') . ltrim($course->thumbnail, '/');
 
       //  Storage::url($course->thumbnail); // Adjust if storage path differs
       return $course;
@@ -52,7 +52,7 @@ class CourseController extends Controller
     }
     $contents = $course->contents()->orderBy('order', 'asc')->paginate(5, ['*'], 'page', $page); // 5 konten per halaman
     $courseArr = $course->toArray();
-    $courseArr['thumbnail_url'] = asset('storage/' . $course->thumbnail);
+    $courseArr['thumbnail_url'] = env('MIX_IMG_URL') . $course->thumbnail;
     return response()->json([
       'course' => $courseArr,
       'contents' => $contents
@@ -68,7 +68,10 @@ class CourseController extends Controller
     }
     $contents = $course->contents()->orderBy('order')->get();
     $courseArr = $course->toArray();
-    $courseArr['thumbnail_url'] = asset('storage/' . $course->thumbnail);
+    $courseArr['thumbnail_url'] = env('MIX_IMG_URL') . $course->thumbnail;
+    Cache::add('last_previewed_course_' . session('auth.user'), [$courseArr], now()->days(7));
+    // dd( Cache::get('last_previewed_course_' . session('auth.user')));
+
     return response()->json([
       'course' => $courseArr,
       'contents' => $contents
@@ -116,11 +119,12 @@ class CourseController extends Controller
     $course->category_id = $validated['category_id'];
     $course->is_popular = 0;
     $course->save();
-
-    // Update Algolia index setelah create
-    $algoliaController = new AlgoliaService();
-    $algoliaController->updateCourse($course);
-
+    
+    $courseLast = Cache::get('courses.page.1')->lastPage ?? 1;
+    for ($key = 1; $key <= $courseLast; $key++) {
+      Cache::forget('courses.page.' . $key);
+    }
+    
     return response()->json([
       "status" => 201,
       "message" => "Course created successfully",
@@ -174,8 +178,8 @@ class CourseController extends Controller
         $thumbnailPath = Course::uploadThumbnail($request->file('thumbnail'));
 
         // Hapus thumbnail lama jika ada
-        if ($course->thumbnail && Storage::disk('public')->exists($course->thumbnail)) {
-          Storage::disk('public')->delete($course->thumbnail);
+        if ($course->thumbnail && Storage::disk('aktif')->exists($course->thumbnail)) {
+          Storage::disk('aktif')->delete($course->thumbnail);
         }
 
         $course->thumbnail = $thumbnailPath;
@@ -198,13 +202,14 @@ class CourseController extends Controller
 
       $course->save();
 
-      // Update Algolia index setelah update
-      $algoliaController = new AlgoliaService();
-      $algoliaController->updateCourse($course);
-
       // Return course dengan thumbnail URL
       $courseData = $course->toArray();
-      $courseData['thumbnail_url'] = asset('storage/' . $course->thumbnail);
+      $courseData['thumbnail_url'] = env('MIX_IMG_URL') . $course->thumbnail;
+      
+      $courseLast = Cache::get('courses.page.1')->lastPage ?? 1;
+      for ($key = 1; $key <= $courseLast; $key++) {
+        Cache::forget('courses.page.' . $key);
+      }
 
       return response()->json([
         "status" => 200,
@@ -233,13 +238,14 @@ class CourseController extends Controller
         'message' => 'Course not found'
       ], 400);
     }
-    $courses = Course::paginate(5);
+    // $courses = Course::paginate(5);
     $course->delete();
-
-    // Hapus dari Algolia index setelah delete
-    $algoliaController = new AlgoliaService();
-    $algoliaController->deleteFromAlgolia('course', $id);
-
+    
+    $courseLast = Cache::get('courses.page.1')->lastPage ?? 1;
+    for ($key = 1; $key <= $courseLast; $key++) {
+      Cache::forget('courses.page.' . $key);
+    }
+    
     return response()->json([
       'status' => 200,
       'message' => 'Course deleted successfully'
@@ -315,49 +321,6 @@ class CourseController extends Controller
       'documents' => $documentResults,
       'total' => $courseResults->count() + $documentResults->count(),
     ]);
-  }
-
-  private function updateAlgoliaIndex($course)
-  {
-    try {
-      // Load relasi category jika belum di-load
-      $course->load('category');
-
-      $client = SearchClient::create(env('ALGOLIA_APP_ID'), env('ALGOLIA_SECRET'));
-      $index = $client->initIndex('course_gadai_mulia');
-
-      $algoliaData = [
-        'objectID' => $course->id,
-        'title' => $course->name,
-        'tagline' => $course->tagline,
-        'description' => $course->description,
-        'category' => $course->category ? $course->category->name : null,
-        'thumbnail_url' => env('MIX_IMG_URL') . $course->thumbnail,
-      ];
-
-      $index->saveObject($algoliaData);
-
-      Log::info('Algolia index updated for course: ' . $course->id);
-    } catch (\Exception $e) {
-      Log::error('Failed to update Algolia index: ' . $e->getMessage());
-    }
-  }
-
-  /**
-   * Hapus course dari Algolia index
-   */
-  private function deleteFromAlgoliaIndex($courseId)
-  {
-    try {
-      $client = SearchClient::create(env('ALGOLIA_APP_ID'), env('ALGOLIA_SECRET'));
-      $index = $client->initIndex('course_gadai_mulia');
-
-      $index->deleteObject($courseId);
-
-      Log::info('Course deleted from Algolia index: ' . $courseId);
-    } catch (\Exception $e) {
-      Log::error('Failed to delete from Algolia index: ' . $e->getMessage());
-    }
   }
 
 }
