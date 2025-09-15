@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Login;
+use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
@@ -39,7 +40,7 @@ class LoginController extends Controller
 
                 // Simpan data tambahan ke session jika perlu
                 $datasession = [
-                    'nama' => $nama,
+                    'nama' => Str::title($nama),
                     'user' => $user->username,
                     'cabang' => $user->fk_cabang_user ?? null,
                     'jabatan' => $user->nm_jabatan ?? null,

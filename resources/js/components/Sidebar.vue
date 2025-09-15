@@ -30,7 +30,7 @@
                 </div>
               </div>
             </li>
-            <li :class="{ 'active': $route.path === '/lms' }">
+            <li :class="{ 'active': $route.path === '/lms' || $route.path === '/student/lms' }">
               <div @click="handleMainMenuClick('/lms')">
                 <div
                   class="flex items-center gap-3 w-full py-2 px-5 rounded-lg transition-all duration-300 hover:shadow-[-10px_-6px_10px_0_#7F33FF_inset] cursor-pointer">
@@ -63,16 +63,11 @@
                     <span class="font-semibold text-white">Formulir</span>
                   </div>
                 </li>
-                <li :class="{ 'active': activeSub === '/report' }">
-                  <div @click.prevent="handleSubClick('/report')" href="#" class="text-white hover:text-gray-300 px-5 cursor-pointer">
-                    <span class="font-semibold text-white">Report</span>
-                  </div>
-                </li>
               </ul>
             </li>
 
           </ul>
-          <ul class="flex flex-col gap-4">
+          <ul class="flex flex-col gap-4" v-if='auth && (auth.idgrup === "JBT-032" || auth.idgrup === "JBT-038")'>
             <p class="font-semibold text-xs leading-[18px] text-white">
               Master
             </p>
@@ -326,12 +321,14 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
+import { getSession } from '../services/authService';
 
 const route = useRoute();
 const router = useRouter();
 const openMenu = ref('');
 const activeSub = ref(route.path);
 const sidebarOpen = ref(false);
+const auth = ref(null);
 
 const handleParentClick = (menu) => {
   // Jika klik parent menu, reset submenu aktif
@@ -359,13 +356,15 @@ const handleMainMenuClick = (mainPath) => {
   sidebarOpen.value = false;
 };
 
-onMounted(() => {
+onMounted(async () => {
   // Cek jika route saat ini adalah salah satu sub-menu info
   const infoSubs = ['/pengumuman', '/overview/subitem2', '/overview/subitem3'];
   if (infoSubs.includes(route.path)) {
     openMenu.value = 'info';
     activeSub.value = route.path;
   }
+  const restAuth = await getSession();
+  auth.value = restAuth.auth;
 });
 </script>
 

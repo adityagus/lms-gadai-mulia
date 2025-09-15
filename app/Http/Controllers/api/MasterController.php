@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\api;
 
 use App\Models\Master;
+use App\Models\Category;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 
@@ -43,6 +44,53 @@ class MasterController extends Controller
       $result = Master::getCabang();
       return response()->json($result);
     }
-    
-    
+
+    public function getCategories()
+    {
+      $categories = Category::select('id', 'name', 'description')->get();
+
+    if ($categories->isEmpty()) {
+      return response()->json(['message' => 'No categories found'], 404);
+    }
+
+    return response()->json($categories, 200);
   }
+  
+  public function addCategory(Request $request)
+  {
+    $request->validate([
+      'name' => 'required|string|max:255',
+      'description' => 'required|string|max:500',
+    ]);
+
+    $category = Category::create($request->validated());
+
+    return response()->json([
+      'message' => 'Category created successfully',
+      'category' => $category
+    ], 201);
+  }
+  
+  public function updateCategory(Request $request, $id)
+  {
+    $request->validate([
+      'name' => 'required|string|max:255',
+      'description' => 'required|string|max:500',
+    ]);
+
+    $category = Category::find($id);
+    if (!$category) {
+      return response()->json(['message' => 'Category not found'], 404);
+    }
+
+    $category->update($request->validated());
+
+    return response()->json([
+      'message' => 'Category updated successfully',
+      'category' => $category
+    ], 200);
+  }
+    
+    
+    
+}

@@ -14,6 +14,7 @@
 						<tr class="bg-gray-100 text-gray-700">
 							<th class="py-3 px-4 border-b text-center w-16">#</th>
 							<th class="py-3 px-4 border-b text-left">Name</th>
+							<th class="py-3 px-4 border-b text-left">Keterangan</th>
 							<th class="py-3 px-4 border-b text-center w-40">Actions</th>
 						</tr>
 					</thead>
@@ -21,6 +22,7 @@
 						<tr v-for="(cat, idx) in categories" :key="cat.id" class="hover:bg-gray-50">
 							<td class="py-2 px-4 border-b text-center">{{ idx + 1 }}</td>
 							<td class="py-2 px-4 border-b">{{ cat.name }}</td>
+							<td class="py-2 px-4 border-b">{{ cat.description }}</td>
 							<td class="py-2 px-4 border-b text-center">
 								<button @click="openEditModal(cat)" class="inline-flex items-center text-blue-600 hover:text-blue-800 font-semibold mr-3">
 									<svg class="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536M9 13h3l8-8a2.828 2.828 0 10-4-4l-8 8v3z"></path></svg>
@@ -68,6 +70,8 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import axios from 'axios';
+import { useQuery } from '@tanstack/vue-query';
+import { getCategories } from '../../services/courseService';
 
 const categories = ref([]);
 const loading = ref(false);
@@ -79,11 +83,19 @@ const success = ref('');
 const modalError = ref('');
 const modalLoading = ref(false);
 
+
+// const {data, isPending} = useQuery(
+//   ['getCategories'], fetchCategories
+// );
+
+// console.log('getCategories', data, isPending);
+
 function fetchCategories() {
 	loading.value = true;
 	error.value = '';
 	axios.get('/api/categories')
 		.then(res => {
+      // console.log(res.data);
 			categories.value = res.data;
 		})
 		.catch(() => {

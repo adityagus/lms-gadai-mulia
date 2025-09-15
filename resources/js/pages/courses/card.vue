@@ -11,8 +11,8 @@
         />
       </div>
       <div class="w-full">
-        <router-link :to="`student/courses/${id}`" class='cursor-pointer'>
-          <h3 class="font-bold text-xl leading-[30px] line-clamp-1">
+        <router-link :to="{ name: 'content-preview', params: { id } }" class='cursor-pointer'>
+          <h3 class="font-bold text-xl leading-[30px] hover:text-shadow-lg transition-shadow hover:text-shadow-purple-600/50">
             {{ name }}
           </h3>
         </router-link>

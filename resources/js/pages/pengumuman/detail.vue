@@ -46,7 +46,7 @@
             <span class="text-xs font-bold text-sidebar">{{ item.tgl_berlaku }}</span>
           </div>
         </div>
-        <div class="text-xs text-gray-500 mb-16">Terakhir update: <br><span class="font-semibold text-sidebar">{{ item.date }}</span></div>
+        <div class="text-xs text-gray-500 mb-16">Terakhir update: <br><span class="font-semibold text-sidebar">{{ item.dateLastUpdate }}</span></div>
          <!-- Tombol aksi di tengah bawah -->
         <div class="absolute bottom-8 left-1/2 -translate-x-1/2 flex gap-4 mt-2 justify-center items-center w-max" v-if='auth && (auth.idgrup == "JBT-032" || auth.idgrup === "JBT-037" || auth.idgrup === "JBT-039" || auth.idgrup === "JBT-040")'>
           <router-link :to="{name: 'information-document-update', params: { id: item.id }}" @click.stop class="bg-white rounded-full px-4 py-2 shadow hover:bg-purple-100 transition group/edit flex items-center gap-2" >
@@ -75,7 +75,7 @@ import { softDeleteAnnouncement } from '@/services/announcementService';
 import OpenModalPDF from '@/components/openModalPDF.vue';
 import { ref, computed, onMounted, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { getDetailAnnouncement } from '@/services/announcementService';
+import { getDetailAnnouncement, getLastDocumentPreview } from '@/services/announcementService';
 import { getSession } from '@/services/authService';
 import { getWilayah } from '@/services/masterService';
 import Swal from 'sweetalert2';
@@ -114,9 +114,10 @@ const filteredCards = computed(() => {
   );
 });
 
-function openDetail(card) {
+async function openDetail(card) {
   if (modalRef.value && modalRef.value.openModal) {
     modalRef.value.openModal(card);
+    await getLastDocumentPreview(card.id);
   }
   
   console.log('openDetail', modalRef.value, card)

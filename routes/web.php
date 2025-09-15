@@ -53,12 +53,20 @@ Route::middleware(['web', 'api'])->prefix('api')->group(function () {
   Route::post('/courses', [CourseController::class, 'store']);
   Route::put('/courses/{id}', [CourseController::class, 'update']);
   Route::delete('/courses/{id}', [CourseController::class, 'destroy']);
-  Route::get('/categories', [CourseController::class, 'categories']);
   Route::get('/search', [CourseController::class, 'search']);
   // Overview endpoint
-  Route::get('/overview', [OverviewController::class, 'index']);
   Route::get('/user-overview', [OverviewController::class, 'userOverview']);
+  Route::get('/admin-overview', [OverviewController::class, 'adminOverview']);
+  
+  // 🔹 Categories
+  Route::get('/categories', [MasterController::class, 'getCategories']);
+  Route::post('/categories', [MasterController::class, 'addCategory']);
+  Route::put('/categories/{id}', [MasterController::class, 'updateCategory']);
+  Route::delete('/categories/{id}', [MasterController::class, 'deleteCategory']);
 });
+
+
+
 
 // 🔹 Content
 Route::get('/course/contents/{courseId}', [ContentController::class, 'index']);
@@ -72,6 +80,7 @@ Route::get('/announcements', [AnnouncementController::class, 'index']);
 Route::get('/announcements/trash', [AnnouncementController::class, 'trash']);
 Route::get('/announcement/{menu_id}', [AnnouncementController::class, 'detail']);
 Route::get('/announcements/document/{document_id}', [AnnouncementController::class, 'documentById']);
+Route::get('/announcements/document/preview/{document_id}', [AnnouncementController::class, 'lastDocumentPreview']);
 Route::post('/announcements', [AnnouncementController::class, 'store']);
 Route::post('/announcements/{document_id}', [AnnouncementController::class, 'update']);
 Route::patch('/announcements/{document_id}/restore', [AnnouncementController::class, 'restore']);

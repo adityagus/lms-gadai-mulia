@@ -6,11 +6,11 @@ use App\Models\Announcement;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
-class AksesJabatan extends Model
+class DocumentPosition extends Model
 {
     use HasFactory;
     
-    protected $table = 'akses_jabatan';
+    protected $table = 'document_position';
     protected $fillable = [
         'document_id',
         'kd_jbt',

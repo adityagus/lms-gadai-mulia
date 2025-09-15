@@ -252,7 +252,7 @@ router.beforeEach(async (to, from, next) => {
         if (auth.idgrup === "JBT-032" || auth.idgrup === "JBT-038") {
             return next({ path: "/lms" });
         } else {
-            return next({ path: "/student/courses" });
+            return next({ path: "/student/lms" });
         }
     }
 

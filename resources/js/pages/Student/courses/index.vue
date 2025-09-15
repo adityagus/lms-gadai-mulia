@@ -80,7 +80,7 @@ const fetchCourses = async (page = 1) => {
 
 
 const goToDetail = (id) => {
-  router.push(`/student/courses/${id}`);
+  router.push({name: 'content-preview', params: { id }});
 };
 
 onMounted(() => {

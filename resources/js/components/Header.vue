@@ -101,7 +101,7 @@
               class="flex items-center gap-4 p-4 rounded-xl hover:bg-gray-50 cursor-pointer transition-colors border border-gray-100 hover:border-blue-200"
               @click="openDocumentDetail(item)">
               <div class="flex-shrink-0">
-                <img :src="item.thumbnail_url" alt="Document thumbnail" class="w-16 h-16 object-cover rounded-lg shadow-sm"
+                <img :src="item.thumbnail_url" alt="Document thumbnail" class="w-16 h-16 object-cover rounded-lg shadow-sm fill-[#662FFF]"
                   v-if="item.thumbnail_url" />
                 <div v-else class="w-16 h-16 bg-gray-200 rounded-lg flex items-center justify-center">
                   <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -111,7 +111,7 @@
                 </div>
               </div>
               <div class="flex-1 min-w-0">
-                <h4 class="font-semibold text-gray-900 truncate">{{ item.title }}</h4>
+                <h4 class="font-semibold text-gray-900">{{ item.title }}</h4>
                 <p class="text-sm text-gray-500 line-clamp-2 mt-1">{{ item.tagline }}</p>
                 <div class="flex items-center mt-2">
                   <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
@@ -178,7 +178,7 @@
         <p class="text-sm leading-[21px] text-[#838C9D]">{{ jabatan }}</p>
       </div>
       <button type="button" id="profileButton" class="flex shrink-0 w-[50px] h-[50px] rounded-full overflow-hidden">
-        <img src="/assets/images/photos/photo-1.png" class="w-full h-full object-cover" alt="profile photos" />
+        <img src="/assets/images/icons/profile.png" class="w-full h-full object-cover" alt="profile photos" />
       </button>
       <div id="ProfileDropdown" class="absolute top-full hidden group-hover:block z-50">
         <ul class="flex flex-col w-[200px] rounded-[20px] border border-[#CFDBEF] p-5 gap-4 bg-white mt-4">

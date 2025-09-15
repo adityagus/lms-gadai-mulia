@@ -54,3 +54,25 @@ export const getCabang = async () => {
     throw error;
   }
 }
+
+export const userOverview = async () => {
+  try {
+    const response = await apiInstance.get('/api/user-overview');
+    console.log('response user overview', response);
+    return response;
+  } catch (error) {
+    console.error('Error fetching user overview:', error);
+    throw error;
+  }
+}
+
+export const adminOverview = async () => {
+  try {
+    const response = await apiInstance.get('/api/admin-overview');
+    console.log('response admin overview', response);
+    return response;
+  } catch (error) {
+    console.error('Error fetching admin overview:', error);
+    throw error;
+  }
+}

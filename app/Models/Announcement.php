@@ -3,7 +3,7 @@
 namespace App\Models;
 
 use App\Models\AksesCabang;
-use App\Models\AksesJabatan;
+use App\Models\DocumentPosition;
 use App\Models\DocumentRegion;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -50,6 +50,10 @@ class Announcement extends Model
     protected $dates = ['deleted_at'];
     // Relasi: Announcement punya satu Menu
     
+    public static function count_pengumuman() {
+        return self::count();
+    }
+    
     public function menu()
     {
         return $this->belongsTo(Menu::class, 'submenu_id', 'id');
@@ -57,7 +61,7 @@ class Announcement extends Model
     
     public function akses_jabatan()
     {
-        return $this->hasMany(AksesJabatan::class, 'document_id', 'id');
+        return $this->hasMany(DocumentPosition::class, 'document_id', 'id');
     }
     
     public function akses_cabang(){

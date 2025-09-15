@@ -22,7 +22,6 @@ class CourseController extends Controller
     $page = $request->query('page', 1); // Get the page number from the query string, default to 1 if not provided
     $cacheKey = 'courses.page.' . $page;
 
-    Cache::flush();
     $courses = Cache::remember($cacheKey, now()->addDay(), function () {
       return Course::with('category:id,name')->paginate(5);
     });
@@ -69,8 +68,7 @@ class CourseController extends Controller
     $contents = $course->contents()->orderBy('order')->get();
     $courseArr = $course->toArray();
     $courseArr['thumbnail_url'] = env('MIX_IMG_URL') . $course->thumbnail;
-    Cache::add('last_previewed_course_' . session('auth.user'), [$courseArr], now()->days(7));
-    // dd( Cache::get('last_previewed_course_' . session('auth.user')));
+    Cache::put('last_previewed_course_' . session('auth.user'), $courseArr, now()->addDays(7));
 
     return response()->json([
       'course' => $courseArr,
@@ -132,16 +130,6 @@ class CourseController extends Controller
     ]);
   }
 
-  public function categories()
-  {
-    $categories = Category::select('id', 'name')->get();
-
-    if ($categories->isEmpty()) {
-      return response()->json(['message' => 'No categories found'], 404);
-    }
-
-    return response()->json($categories, 200);
-  }
 
   public function update(Request $request, $id)
   {

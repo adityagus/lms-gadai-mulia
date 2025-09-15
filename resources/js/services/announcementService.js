@@ -53,6 +53,17 @@ export const updateAnnouncement = async (data, id) => {
   }
 }
 
+export const getLastDocumentPreview = async (document_id) => {
+  try {
+    const response = await apiInstance.get(`/announcements/document/preview/${document_id}`);
+    console.log('response', response);
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching last document preview:', error);
+    throw error;
+  }
+}
+
 export const softDeleteAnnouncement = async (id) => {
   try {
     const response = await apiInstance.delete(`/announcements/${id}`);

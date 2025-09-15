@@ -1,5 +1,5 @@
 <template>
-  <embed :src="pdfUrl" type="application/pdf" width="100%" height="500px" v-if="pdfUrl" />
+  <embed :src="pdfUrl + '#toolbar=0&navpanes=0'" type="application/pdf" width="100%" height="500px" class='mt-16' v-if="pdfUrl" />
 </template>
 
 <script setup>

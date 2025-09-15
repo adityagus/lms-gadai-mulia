@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use App\Services\AlgoliaService;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\ValidationException;
@@ -77,7 +78,7 @@ class AnnouncementController extends Controller
       //   $q->where('kd_jbt', $jbt);
       // })
       ->distinct()
-      ->select('id', 'submenu_id', 'title', 'no_surat', 'url', 'tgl_berlaku', 'created_at', 'content', 'type')
+      ->select('id', 'submenu_id', 'title', 'no_surat', 'url', 'tgl_berlaku', 'created_at','created_by', 'updated_at', 'updated_by', 'content', 'type')
       ->get();
     }else{
       $announcements = Announcement::with('menu:id', 'document_regional')->where('submenu_id', $menu_id)
@@ -105,13 +106,14 @@ class AnnouncementController extends Controller
 
     $announcements->transform(function ($announcement) {
       // timezone
-      $announcement->date = $announcement->created_at
+      $announcement->dateLastUpdate = $announcement->updated_at ? Carbon::parse($announcement->updated_at)->timezone('Asia/Jakarta')->format('d M Y H:i:s') . ' WIB' : $announcement->created_at
         ? Carbon::parse($announcement->created_at)->timezone('Asia/Jakarta')->format('d M Y H:i:s') . ' WIB'
         : null;
 
       $announcement->tgl_berlaku = $announcement->tgl_berlaku
         ? Carbon::parse($announcement->tgl_berlaku)->format('d-m-Y')
         : null;
+
       return $announcement;
     });
 
@@ -380,6 +382,50 @@ class AnnouncementController extends Controller
       return response()->json(['status' => 'error', 'message' => 'Internal Server Error'], 500);
     }
   }
+  
+  public function lastDocumentPreview($document_id)
+{
+    try {
+        $announcement = Announcement::select('id', 'title', 'submenu_id', 'no_surat' ,'url', 'created_at', 'updated_at', 'tgl_berlaku', 'type', 'content')
+            ->with('akses_jabatan:document_id,kd_jbt', 'menu:id,id_menu', 'document_regional')
+            ->where('id', $document_id)
+            ->firstOrFail();
+
+        $announcementArr = [
+            'id' => $announcement->id,
+            'title' => $announcement->title,
+            'url' => env('ENV_MIX_URL') . $announcement->url,
+            'no_surat' => $announcement->no_surat,
+            'tgl_berlaku' => $announcement->tgl_berlaku,
+            'type' => $announcement->type,
+            'accessed_at' => now()->toDateString(),
+        ];
+
+        $userKey = 'last_previewed_document_' . session('auth.user');
+        $lastDocuments = Cache::get($userKey, []);
+
+        // Hapus dokumen yang sudah ada jika dibuka lagi, agar tidak double
+        $lastDocuments = array_filter($lastDocuments, function($doc) use ($announcementArr) {
+            return $doc['id'] !== $announcementArr['id'];
+        });
+
+        // Tambahkan dokumen baru di depan
+        array_unshift($lastDocuments, $announcementArr);
+
+        // Batasi hanya 2 dokumen terakhir
+        $lastDocuments = array_slice($lastDocuments, 0, 2);
+
+        // Simpan ke cache dengan masa berlaku 7 hari
+        Cache::put($userKey, $lastDocuments, now()->addDays(7));
+
+        // Debug: tampilkan dokumen terakhir di cache
+        // dd(Cache::get($userKey));
+
+        return response()->json(['success' => true, 'data' => $announcementArr]);
+    } catch (\Exception $e) {
+        return response()->json(['success' => false, 'message' => 'Announcement not found: ' . $e->getMessage()], 404);
+    }
+}
 
   public function deletePermanent($document_id)
   {
