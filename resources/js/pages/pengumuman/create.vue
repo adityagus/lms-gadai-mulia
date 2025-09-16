@@ -279,7 +279,7 @@ const fnBack = () => {
     cancelButtonText: 'Batal'
   }).then((result) => {
     if (result.isConfirmed) {
-      router.push('/pengumuman');
+      router.back();
     }
   });
 }

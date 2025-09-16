@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\api;
 
+use App\Models\DocumentPosition;
+use App\Models\DocumentRegion;
 use Carbon\Carbon;
 use App\Models\Menu;
 use App\Models\Announcement;
@@ -295,7 +297,7 @@ class AnnouncementController extends Controller
 
       // Update document_region
       // Hapus dulu yang lama
-      \DB::table('document_region')->where('document_id', $announcement->id)->delete();
+      DocumentRegion::where('document_id', $announcement->id)->delete();
 
       // Simpan yang baru
       $regions = $validated['regionals_id'];
@@ -307,13 +309,13 @@ class AnnouncementController extends Controller
         ];
       }
       if (!empty($regionRows)) {
-        \DB::table('document_region')->insert($regionRows);
+        DocumentRegion::insert($regionRows);
       }
       
-      $algoliaService = new AlgoliaService();
-      $algoliaService->updateDocument($announcement);
-      
-      // Simpan ke table akese_jabatan
+      // update ke table akese_jabatan
+      DocumentPosition::where('document_id', $announcement->id)->delete();
+      $jabatanRows = [];
+      // Simpan yang baru
       $jabatan = $validated['kd_jabatan'];
       foreach ($jabatan as $jbt) {
         $jabatanRows[] = [
@@ -322,7 +324,7 @@ class AnnouncementController extends Controller
         ];
       }
       if (!empty($jabatanRows)) {
-        \DB::table('document_position')->insert($jabatanRows);
+        DocumentPosition::insert($jabatanRows);
       }
 
       return response()->json([
