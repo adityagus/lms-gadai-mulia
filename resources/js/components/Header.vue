@@ -5,7 +5,7 @@
       <button
         class="appearance-none outline-none w-full py-3 font-semibold placeholder:font-normal placeholder:text-[#838C9D] text-left"
         @click="openSearch" placeholder="Search course, student, other file...">
-        <span class="font-semibold text-[#838C9D]">Cari Course...</span>
+        <span class="font-semibold text-[#838C9D]">Pencarian...</span>
       </button>
       <img src="/assets/images/icons/search-normal.svg" class="w-6 h-6" alt="icon" />
     </div>
@@ -27,7 +27,7 @@
         <div class="p-6 pb-2">
           <div class="relative">
             <input ref="searchInput" v-model="searchQuery" @input="handleSearch" type="text"
-              placeholder="Ketik nama course, dokumen, kategori, atau deskripsi..."
+              placeholder="Ketik nama kelas, dokumen, kategori, atau deskripsi..."
               class="w-full px-4 py-3 pl-12 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
               autofocus />
             <svg class="absolute left-4 top-3.5 w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -40,8 +40,8 @@
         <!-- Tabs -->
         <div class="px-6 pt-2 pb-4">
           <div class="flex gap-2 border-b border-gray-200 mb-2">
-            <button :class="['px-4 py-2 font-semibold', searchTab === 'courses' ? 'border-b-2 border-blue-500 text-blue-600' : 'text-gray-500']" @click="searchTab = 'courses'">Courses</button>
-            <button :class="['px-4 py-2 font-semibold', searchTab === 'documents' ? 'border-b-2 border-blue-500 text-blue-600' : 'text-gray-500']" @click="searchTab = 'documents'">Documents</button>
+            <button :class="['px-4 py-2 font-semibold', searchTab === 'kelas' ? 'border-b-2 border-blue-500 text-blue-600' : 'text-gray-500']" @click="searchTab = 'kelas'">Kelas</button>
+            <button :class="['px-4 py-2 font-semibold', searchTab === 'informasi' ? 'border-b-2 border-blue-500 text-blue-600' : 'text-gray-500']" @click="searchTab = 'informasi'">Informasi</button>
           </div>
         </div>
 
@@ -145,7 +145,7 @@
               </path>
             </svg>
             <h3 class="mt-2 text-sm font-medium text-gray-900">Cari</h3>
-            <p class="mt-1 text-sm text-gray-500">Mulai ketik untuk mencari course atau dokumen</p>
+            <p class="mt-1 text-sm text-gray-500">Mulai ketik untuk mencari kelas atau informasi</p>
           </div>
         </div>
       </div>
@@ -309,10 +309,10 @@ function gotoDetail(course) {
   }
 
   // If already on the same route, force reload
-  if (router.currentRoute.value.path === `/student/courses/${course.id}`) {
-    router.replace({ path: `/student/courses/${course.id}`, query: { t: Date.now() } });
+  if (router.currentRoute.value.path === `/student/kelas/${course.id}`) {
+    router.replace({ path: `/student/kelas/${course.id}`, query: { t: Date.now() } });
   } else {
-    router.push(`/student/courses/${course.id}`);
+    router.push(`/student/kelas/${course.id}`);
   }
   closeSearch();
 }

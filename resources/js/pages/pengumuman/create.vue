@@ -33,8 +33,9 @@
         </div>
         <div class="mb-4">
           <label class="block text-sm font-semibold mb-1" for="type">Tipe {{ name }} <span class="text-red-500">*</span></label>
-          <select v-model="submenu_id" v-bind='submenuIdAttrs' id='submenu_id' class="w-full border rounded px-3 py-2 focus:outline-sidebar"
-            :class="{ 'border-red-500': errors.submenu_id }" @change='handleTypeChange(submenu_id)' required>
+          <select v-model="submenu_id" v-bind='submenuIdAttrs' id='submenu_id'
+            class="w-full border rounded px-3 py-2 focus:outline-sidebar" :class="{ 'border-red-500': errors.submenu_id }"
+            @change='handleTypeChange(submenu_id)' required>
             <option disabled value="">Pilih Tipe {{ name }}</option>
             <option v-for="typeDoc in typeDocuments" :key="typeDoc.id" :value="typeDoc.id">{{ typeDoc.name }}</option>
           </select>
@@ -50,32 +51,32 @@
           </select>
           <span v-if="errors.type" class="text-xs text-red-500 mt-1">{{ errors.type }}</span>
         </div>
-          <div class="flex flex-col gap-[10px]" v-if='type === "text"'>
-      <label class="font-semibold">Content</label>
-      <!-- <ckeditor :editor="editor" v-model="data" /> -->
-      <ckeditor :editor="ClassicEditor" v-model="content" :config="editorConfig" @change="() =>{
+        <div class="flex flex-col gap-[10px]" v-if='type === "text"'>
+          <label class="font-semibold">Content</label>
+          <!-- <ckeditor :editor="editor" v-model="data" /> -->
+          <ckeditor :editor="ClassicEditor" v-model="content" :config="editorConfig" @change="() =>{
         const data = editor.getData();
         console.log('data adalah', data);
         // Update the content field with the editor content
         content.value = data;
         console.log('Editor content changed:', content);
       }" />
-      <!-- <ckeditor
+          <!-- <ckeditor
         v-if="editor"
         v-model="data"
         :editor="editor"
         :config="config"
     /> -->
-      <!-- {/* <div id="editor"></div> */} -->
-      <!-- <CKEditor
+          <!-- {/* <div id="editor"></div> */} -->
+          <!-- <CKEditor
             editor={ClassicEditor}
             config={}
           /> -->
-          
+
           <span class="error-message text-[#FF435A]">
-        {{ errors?.text }}
-      </span>
-    </div>
+            {{ errors?.text }}
+          </span>
+        </div>
         <div>
           <!-- Input file baru -->
           <div class="mb-4">
@@ -95,16 +96,22 @@
               File: {{ fileName }}
             </span>
             <!-- Tampilkan file lama jika mode edit dan file lama ada -->
-          <div v-if="isEditMode && urlThumbnail" class="mb-2">
-            <a :href="`/storage/${urlThumbnail}`" target="_blank" class="text-blue-500 underline">Lihat File Lama</a>
-          </div>
+            <div v-if="isEditMode && urlThumbnail" class="mb-2">
+              <a :href="`/storage/${urlThumbnail}`" target="_blank" class="text-blue-500 underline">Lihat File Lama</a>
+            </div>
           </div>
         </div>
       </div>
       <div v-show="step === 2">
         <div class="flex flex-col gap-2">
+          <label class="flex items-center gap-2 font-semibold border-b border-gray-300 pb-2">
+            <input type="checkbox" :checked="isAllCabangChecked" @change="toggleAllCabang" /> Pilih Semua
+          </label>
           <AreaCheckbox v-for="area in areas" :key="area.id_area" :area="area" v-model:checked="regionals_id" />
         </div>
+        <span v-if="regionals_id.length == 0" class="text-xs text-red-500 mt-1 block">
+          Required
+        </span>
       </div>
       <div v-show="step === 3">
         <div class="mb-4">
@@ -119,21 +126,33 @@
         </div>
       </div>
       <div class="flex gap-2 mt-6">
+        <button type="button" @click="fnBack()" v-if='step == 1'
+          class="flex-1 py-2 rounded bg-gray-200 text-sidebar font-semibold hover:bg-gray-400 transition">
+          Kembali
+        </button>
         <button v-if="step > 1" type="button" @click="prevStep"
           class="flex-1 py-2 rounded bg-gray-200 text-sidebar font-semibold hover:bg-gray-300 transition">Sebelumnya</button>
-        <button v-if="step < 3" type="button" @click="nextStep"
-          class="flex-1 py-2 rounded bg-sidebar text-white font-semibold hover:bg-purple-700 transition">Selanjutnya</button>
+        <button v-if="step < 3" type="button" @click="nextStep" :disabled="!canProceedStep"
+          class="flex-1 py-2 rounded bg-sidebar text-white font-semibold hover:bg-purple-700 transition">
+          Selanjutnya
+        </button>
         <button v-if="step === 3" type="submit" :disabled="isSubmitting"
           class="flex-1 py-2 rounded bg-sidebar text-white font-semibold hover:bg-purple-700 transition">
           <span v-if='!isSubmitting'>Simpan</span>
           <div class="loader justify-items-center" v-if="isSubmitting">
-            <svg aria-hidden="true" class="w-5 h-5 text-gray-200 animate-spin dark:text-gray-600 fill-white" viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z" fill="currentColor"/><path d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z" fill="currentFill"/></svg>
-        <span class="sr-only">Loading...</span>
+            <svg aria-hidden="true" class="w-5 h-5 text-gray-200 animate-spin dark:text-gray-600 fill-white" viewBox="0 0 100 101"
+              fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path
+                d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z"
+                fill="currentColor" />
+              <path
+                d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z"
+                fill="currentFill" />
+            </svg>
+            <span class="sr-only">Loading...</span>
           </div>
         </button>
       </div>
-      <div v-if="success" class="mt-4 text-green-600 text-sm font-semibold">{{ name }} berhasil disimpan!</div>
-      <div v-if="submitError" class="mt-4 text-red-600 text-sm font-semibold">{{ submitError }}</div>
     </form>
   </div>
 </template>
@@ -209,6 +228,31 @@ const editorConfig = {
   initialData: content == null ? "" : content,
 };
 
+
+const canProceedStep = computed(() => {
+  console.log('errors', errors.title);
+  if (step.value === 1) {
+    return (
+      title.value &&
+      no_surat.value &&
+      tgl_berlaku.value &&
+      submenu_id.value &&
+      type.value &&
+      ((type.value === 'text' && content.value) || (type.value === 'pdf' && (file.value || isEditMode.value))) &&
+      !errors.value.title &&
+      !errors.value.no_surat &&
+      !errors.value.tgl_berlaku &&
+      !errors.value.submenu_id &&
+      !errors.value.type &&
+      (type.value !== 'pdf' || !errors.file)
+    );
+  }
+  if (step.value === 2) {
+    return regionals_id.value && regionals_id.value.length > 0;
+  }
+  return true;
+});
+
 const nextStep = async function () {
   // Simpan data step ke session
   // let payload = {};
@@ -223,12 +267,62 @@ const nextStep = async function () {
   if (step.value < 3) step.value++;
 }
 
+const fnBack = () => {
+  Swal.fire({
+    title: 'Apakah Anda yakin?',
+    text: "Data yang telah diisi akan hilang!",
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#3085d6',
+    cancelButtonColor: '#d33',
+    confirmButtonText: 'Ya, kembali',
+    cancelButtonText: 'Batal'
+  }).then((result) => {
+    if (result.isConfirmed) {
+      router.push('/pengumuman');
+    }
+  });
+}
+
 const isAllJabatanChecked = computed(() => daftarJabatan?.value.length > 0 && kd_jabatan?.value.length === daftarJabatan.value.length);
+
 function toggleAllJabatan(e) {
   if (e.target.checked) {
     kd_jabatan.value = daftarJabatan.value.map(j => j.id);
   } else {
     kd_jabatan.value = [];
+  }
+}
+
+const isAllCabangChecked = computed(() => {
+  // Hitung semua id_area dan anaknya
+  const allIds = [];
+  areas.value.forEach(area => {
+    allIds.push(area.id_area);
+    if (area.children && area.children.length > 0) {
+      area.children.forEach(child => {
+        allIds.push(child.id_area);
+      });
+    }
+  });
+  return regionals_id.value.length === allIds.length;
+});
+
+function toggleAllCabang(e) {
+  if (e.target.checked) {
+    // Pilih semua id_area dari areas dan children-nya
+    const allIds = [];
+    areas.value.forEach(area => {
+      allIds.push(area.id_area);
+      if (area.children && area.children.length > 0) {
+        area.children.forEach(child => {
+          allIds.push(child.id_area);
+        });
+      }
+    });
+    regionals_id.value = allIds;
+  } else {
+    regionals_id.value = [];
   }
 }
 
@@ -241,7 +335,7 @@ const loadContentData = async () => {
   no_surat.value = result.no_surat;
   tgl_berlaku.value = result.tgl_berlaku;
   submenu_id.value = result.submenu_id;
-  kd_jabatan.value = (result.akses_jabatan || [])
+  kd_jabatan.value = (result.document_position || [])
     .map(item => item.kd_jbt) || [];
   regionals_id.value = (result.document_regional || [])
     .map(item => item.regional_id) || [];
@@ -278,8 +372,6 @@ function prevStep() {
   if (step.value > 1) step.value--
 }
 console.log("Category create from route:", createType);
-const success = ref(false)
-const submitError = ref('')
 const file = ref(null)
 const fileName = ref('')
 const typeDocuments = ref('')
@@ -352,7 +444,7 @@ onMounted(async () => {
   const lastStep = ref(1);
   // jika udah ke load baru dipanggil
   try {
-    const [resTypes, resAreas, restJabatan, wizardRes] = await Promise.all([
+    const [resTypes, resAreas, resJabatan, wizardRes] = await Promise.all([
       getTypesByIdMenu(createType),
       getCabang(),
       getJabatan(),
@@ -360,7 +452,7 @@ onMounted(async () => {
     ]);
 
     
-    daftarJabatan.value = restJabatan.map(j => ({ id: j.kd_jabatan, nama: j.nm_jabatan }));
+    daftarJabatan.value = resJabatan.map(j => ({ id: j.kd_jabatan, nama: j.nm_jabatan }));
     typeDocuments.value = resTypes;
 
 
@@ -414,9 +506,7 @@ function handleTypeChange(submenuId) {
 
 const onSubmit = handleSubmit(async () => {
   
-  success.value = false
   console.log('Submitting form:', values);
-  submitError.value = ''
 
   // if (!validate()) return
   try {
@@ -458,11 +548,14 @@ const onSubmit = handleSubmit(async () => {
     }
 
     // await finishWizard();
-    success.value = true
     router.push(`/detail-pengumuman/${values.submenu_id}`) // arahkan ke detail pengumuman sesuai tipe
   } catch (error) {
-    console.log('error', error);
-    submitError.value = 'Gagal menyimpan data!'
+    Swal.fire({
+            title: "Error!",
+            text: `Failed to ${isEditMode.value ? 'update' : 'save'} data : ${error.message}`,
+            icon: "error",
+            timer: 1500
+          });
   }
 }
 )

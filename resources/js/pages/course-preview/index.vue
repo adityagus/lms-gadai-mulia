@@ -162,7 +162,7 @@ watch(contents, (newContents) => {
                             @click="goBack" 
                             class="font-semibold text-white hover:underline text-left"
                         >
-                            <span>← Back to Dashboard</span>
+                            <span>← Kembali ke Kelas</span>
                         </button>
                         
                         <!-- Course Info -->

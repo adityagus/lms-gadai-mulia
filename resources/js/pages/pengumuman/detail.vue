@@ -1,42 +1,45 @@
 <template>
-    <!-- Modal Detail Card -->
-  <OpenModalPDF
-    ref="modalRef"
-    v-model:showModal="showModal"
-    v-model:selectedCard="selectedCard"
-  />
-  
-  <router-link to='/pengumuman' class='flex gap-2 items-center -mb-4 text-gray-400 text-xs cursor-pointer'>
-    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4 text-sidebar">
-      <path stroke-linecap="round" stroke-linejoin="round" d="M19 12H5m7-7l-7 7 7 7" />
-    </svg>
-    Back to Pengumuman
-  </router-link>
+  <!-- Modal Detail Card -->
+  <OpenModalPDF ref="modalRef" v-model:showModal="showModal" v-model:selectedCard="selectedCard" />
+
+  <div class='flex gap-2 items-center -mb-4 text-gray-400 text-xs'>
+    <router-link to='/pengumuman' class='flex gap-2 items-center text-gray-400 text-xs cursor-pointer'>
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"
+        class="w-4 h-4 text-sidebar">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M19 12H5m7-7l-7 7 7 7" />
+      </svg>
+      Back to Pengumuman
+    </router-link>
+  </div>
   <h1 class="text-2xl font-bold text-sidebar">{{ detail.name }}</h1>
   <div class="mb-2 -mt-4 flex gap-2" v-if="auth?.cabang === ''">
-    <button v-for="tab in memoTabs" :key="tab.kd_wilayah" v-if='memoTabs.length > 1'
-      @click="activeMemoTab = tab.kd_wilayah"
+    <button v-for="tab in memoTabs" :key="tab.kd_wilayah" v-if='memoTabs.length > 1' @click="activeMemoTab = tab.kd_wilayah"
       :class="['px-3 py-1 rounded-lg font-semibold text-xs transition', activeMemoTab === tab.kd_wilayah ? 'bg-sidebar text-white shadow' : 'bg-white text-sidebar hover:bg-purple-100']">
       {{ tab.nm_wilayah }}
     </button>
   </div>
   <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
-    <div v-for="(item, idx) in filteredCards" :key="item.submenu_id" class="relative rounded-2xl bg-white shadow-xl p-0 flex flex-col justify-between overflow-hidden group announcement-card border border-gray-200 hover:border-sidebar transition" @click="openDetail(item)">
+    <div v-for="(item, idx) in filteredCards" :key="item.submenu_id"
+      class="relative rounded-2xl bg-white shadow-xl p-0 flex flex-col justify-between overflow-hidden group announcement-card border border-gray-200 hover:border-sidebar transition"
+      @click="openDetail(item)">
       <div class="absolute inset-0 opacity-10 pointer-events-none pattern-bg"></div>
       <div class="flex flex-col gap-2 z-10 p-6">
         <div class="flex items-center gap-3 mb-3">
-          <div class="rounded-tr-lg rounded-bl-3xl bg-sidebar p-2 absolute -top-1 -right-0 flex items-center justify-center flex-shrink-0">
+          <div
+            class="rounded-tr-lg rounded-bl-3xl bg-sidebar p-2 absolute -top-1 -right-0 flex items-center justify-center flex-shrink-0">
             <img :src="detail.icon" class="w-8 h-8 filter-white-svg" alt="icon" />
             <!-- <img :src="item.icon" class="w-8 h-8 filter-white-svg" alt="icon" /> -->
           </div>
-          <span class="text-sidebar text-lg font-bold transition-all duration-300 mt-3 hover:line-clamp-none cursor-pointer"  :title="item.title" >{{ item.title }}</span>
+          <span class="text-sidebar text-lg font-bold transition-all duration-300 mt-3 hover:line-clamp-none cursor-pointer"
+            :title="item.title">{{ item.title }}</span>
         </div>
         <div class="bg-gray-50 rounded-lg p-3 flex flex-col gap-2 mb-2 border border-gray-100">
           <div class="flex justify-between items-center">
             <span class="text-xs font-semibold text-gray-500">Nomor Surat</span>
             <span class="text-xs font-bold text-sidebar line-clamp-1 relative group">
               {{ item.no_surat }}
-              <span v-if="item.no_surat && item.no_surat.length > 20" class="absolute left-0 top-full mt-1 w-max bg-white border border-gray-300 shadow-lg rounded px-2 py-1 text-xs text-sidebar opacity-0 group-hover:opacity-100 transition pointer-events-none z-30">
+              <span v-if="item.no_surat && item.no_surat.length > 20"
+                class="absolute left-0 top-full mt-1 w-max bg-white border border-gray-300 shadow-lg rounded px-2 py-1 text-xs text-sidebar opacity-0 group-hover:opacity-100 transition pointer-events-none z-30">
                 {{ item.no_surat }}
               </span>
             </span>
@@ -46,17 +49,24 @@
             <span class="text-xs font-bold text-sidebar">{{ item.tgl_berlaku }}</span>
           </div>
         </div>
-        <div class="text-xs text-gray-500 mb-16">Terakhir update: <br><span class="font-semibold text-sidebar">{{ item.dateLastUpdate }}</span></div>
-         <!-- Tombol aksi di tengah bawah -->
-        <div class="absolute bottom-8 left-1/2 -translate-x-1/2 flex gap-4 mt-2 justify-center items-center w-max" v-if='auth && (auth.idgrup == "JBT-032" || auth.idgrup === "JBT-037" || auth.idgrup === "JBT-039" || auth.idgrup === "JBT-040")'>
-          <router-link :to="{name: 'information-document-update', params: { id: item.id }}" @click.stop class="bg-white rounded-full px-4 py-2 shadow hover:bg-purple-100 transition group/edit flex items-center gap-2" >
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5 text-sidebar group-hover/edit:text-purple-700">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M16.862 3.487a2.1 2.1 0 1 1 2.97 2.97L8.91 17.38a2.1 2.1 0 0 1-.88.53l-3.07.92a.525.525 0 0 1-.65-.65l.92-3.07a2.1 2.1 0 0 1 .53-.88L16.862 3.487z" />
+        <div class="text-xs text-gray-500 mb-16">Terakhir update: <br><span class="font-semibold text-sidebar">{{ item.dateLastUpdate
+            }}</span></div>
+        <!-- Tombol aksi di tengah bawah -->
+        <div class="absolute bottom-8 left-1/2 -translate-x-1/2 flex gap-4 mt-2 justify-center items-center w-max"
+          v-if='auth && (auth.idgrup == "JBT-032" || auth.idgrup === "JBT-037" || auth.idgrup === "JBT-039" || auth.idgrup === "JBT-040")'>
+          <router-link :to="{ name: 'information-document-update', params: { id: item.id } }" @click.stop
+            class="bg-white rounded-full px-4 py-2 shadow hover:bg-purple-100 transition group/edit flex items-center gap-2">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"
+              class="w-5 h-5 text-sidebar group-hover/edit:text-purple-700">
+              <path stroke-linecap="round" stroke-linejoin="round"
+                d="M16.862 3.487a2.1 2.1 0 1 1 2.97 2.97L8.91 17.38a2.1 2.1 0 0 1-.88.53l-3.07.92a.525.525 0 0 1-.65-.65l.92-3.07a2.1 2.1 0 0 1 .53-.88L16.862 3.487z" />
             </svg>
             <span class="text-xs font-semibold text-sidebar">Edit</span>
           </router-link>
-          <button @click.stop="deleteAnnouncement(item)" class="bg-red-100 rounded-full px-4 py-2 shadow hover:bg-red-200 transition group/delete flex items-center gap-2">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5 text-red-600 group-hover/delete:text-red-800">
+          <button @click.stop="deleteAnnouncement(item)"
+            class="bg-red-100 rounded-full px-4 py-2 shadow hover:bg-red-200 transition group/delete flex items-center gap-2">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"
+              class="w-5 h-5 text-red-600 group-hover/delete:text-red-800">
               <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
             </svg>
             <span class="text-xs font-semibold text-red-600">Archive</span>
@@ -105,7 +115,7 @@ const cards = ref([]);
 const filteredCards = computed(() => {
   const tab = activeMemoTab.value;
   const allCards = cards.value || [];
-  
+
   if (tab === 'all') return allCards;
 
   return allCards.filter(card =>
@@ -119,13 +129,13 @@ async function openDetail(card) {
     modalRef.value.openModal(card);
     await getLastDocumentPreview(card.id);
   }
-  
+
   console.log('openDetail', modalRef.value, card)
 }
 
 const deleteAnnouncement = (item) => {
   // archive
-  
+
   Swal.fire({
     title: "Are you sure archive?",
     icon: "warning",
@@ -148,7 +158,7 @@ const deleteAnnouncement = (item) => {
           });
         });
     }
-    })
+  })
     .catch(() => {
       Swal.fire({
         title: "Error!",
@@ -180,7 +190,7 @@ onMounted(async () => {
       getWilayah(),
       getSession()
     ]);
-    
+
     auth.value = resSession.auth
     console.log('areas', resultAreas)
     let items = [];
@@ -214,7 +224,7 @@ onMounted(async () => {
       date: detail.value.date || detail.value.updated_at || detail.value.tanggal_update || '-',
       desc: detail.value.desc || detail.value.keterangan || detail.value.deskripsi || '',
     };
-    
+
     memoTabs.value = [
       { kd_wilayah: 'all', nm_wilayah: 'All' },
       ...resultAreas,
@@ -234,43 +244,54 @@ onMounted(async () => {
 .announcement-card {
   transition: box-shadow 0.2s, transform 0.2s;
 }
+
 .announcement-card:hover {
   box-shadow: 0 8px 32px 0 rgba(127, 51, 255, 0.37), 0 1.5px 6px 0 #7F33FF;
   transform: translateY(-2px) scale(1.03);
   border-color: #7F33FF;
 }
+
 .pattern-bg {
   background-image: url('https://www.toptal.com/designers/subtlepatterns/uploads/dot-grid.png');
   background-size: 40px 40px;
 }
+
 .bg-sidebar {
   background: #7F33FF;
 }
+
 .filter-white-svg {
   filter: brightness(0) invert(1);
 }
+
 .line-clamp-2 {
-/* Untuk satu baris clamp nomor surat */
-.line-clamp-1 {
-  display: -webkit-box;
-  line-clamp: 1;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
+
+  /* Untuk satu baris clamp nomor surat */
+  .line-clamp-1 {
+    display: -webkit-box;
+    line-clamp: 1;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
   display: -webkit-box;
   line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
+
 /* Hide scrollbar utility */
 .scrollbar-hidden {
-  scrollbar-width: none; /* Firefox */
-  -ms-overflow-style: none; /* IE 10+ */
+  scrollbar-width: none;
+  /* Firefox */
+  -ms-overflow-style: none;
+  /* IE 10+ */
 }
+
 .scrollbar-hidden::-webkit-scrollbar {
-  display: none; /* Chrome/Safari/Webkit */
+  display: none;
+  /* Chrome/Safari/Webkit */
 }
 </style>
-

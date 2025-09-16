@@ -14,10 +14,17 @@ class DocumentPosition extends Model
     protected $fillable = [
         'document_id',
         'kd_jbt',
+        'create_by',
     ];
     
     public $timestamps = false;
     
+        protected static function booted()
+  {
+    static::creating(function ($model) {
+      $model->created_by = session('auth.user');
+    });
+  }
     
     
     public function announcement()

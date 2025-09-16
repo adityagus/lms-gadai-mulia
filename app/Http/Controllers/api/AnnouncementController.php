@@ -30,7 +30,7 @@ class AnnouncementController extends Controller
       $announcements = Menu::where('id_menu', $category)
       ->withCount([
         'announcements as count_tipe_announcement' => function ($q) use ($jbt) {
-          // $q->whereHas('akses_jabatan', function ($q2) use ($jbt) {
+          // $q->whereHas('document_position', function ($q2) use ($jbt) {
           //   $q2->where('kd_jbt', $jbt);
           // });
         }
@@ -40,7 +40,7 @@ class AnnouncementController extends Controller
     }else{
       $announcements = Menu::where('id_menu', $category)
         ->with(['announcements' => function ($q) use ($jbt, $cabang) {
-          $q->whereHas('akses_jabatan', function ($q2) use ($jbt) {
+          $q->whereHas('document_position', function ($q2) use ($jbt) {
             $q2->where('kd_jbt', $jbt);
           })
           ->whereHas('document_regional', function ($q3) use ($cabang) {
@@ -74,7 +74,7 @@ class AnnouncementController extends Controller
     // buat untuk tidak duplicate
     if($cabang == null){
       $announcements = Announcement::with('menu:id', 'document_regional')->where('submenu_id', $menu_id)
-      // ->whereHas('akses_jabatan', function ($q) use ($jbt) {
+      // ->whereHas('document_position', function ($q) use ($jbt) {
       //   $q->where('kd_jbt', $jbt);
       // })
       ->distinct()
@@ -82,7 +82,7 @@ class AnnouncementController extends Controller
       ->get();
     }else{
       $announcements = Announcement::with('menu:id', 'document_regional')->where('submenu_id', $menu_id)
-      ->whereHas('akses_jabatan', function ($q) use ($jbt) {
+      ->whereHas('document_position', function ($q) use ($jbt) {
         $q->where('kd_jbt', $jbt);
       })
       ->whereHas('document_regional', function ($q) use ($cabang) {
@@ -95,7 +95,7 @@ class AnnouncementController extends Controller
       
     }
     // $announcements = Announcement::with('menu:id', 'document_regional')->where('submenu_id', $menu_id)
-    //   // ->whereHas('akses_jabatan', function ($q) use ($jbt) {
+    //   // ->whereHas('document_position', function ($q) use ($jbt) {
     //   //   $q->where('kd_jbt', $jbt);
     //   // })
     //   ->distinct()
@@ -136,7 +136,7 @@ class AnnouncementController extends Controller
 
   //   $announcement = Announcement::where('submenu_id', $menu_id)
   //     ->where('id', $document_id)
-  //     ->whereHas('akses_jabatan', function($q) use ($jbt) {
+  //     ->whereHas('document_position', function($q) use ($jbt) {
   //       $q->where('kd_jbt', $jbt);
   //     })
   //     ->first();
@@ -202,11 +202,11 @@ class AnnouncementController extends Controller
         $jabatanRows[] = [
           'document_id' => $announcement->id,
           'kd_jbt' => $jbt,
-          'user' => 'Created by ' . session('auth.user')
+          'created_by' => 'Created by ' . session('auth.user')
         ];
       }
       if (!empty($jabatanRows)) {
-        \DB::table('akses_jabatan')->insert($jabatanRows);
+        \DB::table('document_position')->insert($jabatanRows);
       }
 
       if (!empty($regionRows)) {
@@ -233,7 +233,7 @@ class AnnouncementController extends Controller
     // debugging validate
     // 
     try {
-      $announcement = Announcement::select('id', 'title', 'submenu_id', 'no_surat' ,'url', 'created_at', 'updated_at', 'tgl_berlaku', 'type', 'content')->with('akses_jabatan:document_id,kd_jbt', 'menu:id,id_menu', 'document_regional')->where('id', $document_id)->firstOrFail();
+      $announcement = Announcement::select('id', 'title', 'submenu_id', 'no_surat' ,'url', 'created_at', 'updated_at', 'tgl_berlaku', 'type', 'content')->with('document_position:document_id,kd_jbt', 'menu:id,id_menu', 'document_regional')->where('id', $document_id)->firstOrFail();
 
       $announcement->content_url = env('ENV_MIX_URL') . $announcement->url;
       return response()->json(['success' => true, 'data' => $announcement]);
@@ -319,11 +319,10 @@ class AnnouncementController extends Controller
         $jabatanRows[] = [
           'document_id' => $announcement->id,
           'kd_jbt' => $jbt,
-          'user' => 'Updated by ' . session('auth.user')
         ];
       }
       if (!empty($jabatanRows)) {
-        \DB::table('akses_jabatan')->insert($jabatanRows);
+        \DB::table('document_position')->insert($jabatanRows);
       }
 
       return response()->json([
@@ -387,7 +386,7 @@ class AnnouncementController extends Controller
 {
     try {
         $announcement = Announcement::select('id', 'title', 'submenu_id', 'no_surat' ,'url', 'created_at', 'updated_at', 'tgl_berlaku', 'type', 'content')
-            ->with('akses_jabatan:document_id,kd_jbt', 'menu:id,id_menu', 'document_regional')
+            ->with('document_position:document_id,kd_jbt', 'menu:id,id_menu', 'document_regional')
             ->where('id', $document_id)
             ->firstOrFail();
 

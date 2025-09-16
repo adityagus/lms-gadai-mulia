@@ -59,7 +59,7 @@ class Announcement extends Model
         return $this->belongsTo(Menu::class, 'submenu_id', 'id');
     }
     
-    public function akses_jabatan()
+    public function document_position()
     {
         return $this->hasMany(DocumentPosition::class, 'document_id', 'id');
     }
