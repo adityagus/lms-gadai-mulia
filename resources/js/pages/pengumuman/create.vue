@@ -122,6 +122,9 @@
             <label v-for="jab in daftarJabatan" :key="jab.id" class="flex items-center gap-2">
               <input type="checkbox" :value="jab.id" v-model="kd_jabatan" /> {{ jab.nama }}
             </label>
+            <span v-if="kd_jabatan.length == 0" class="text-xs text-red-500 mt-1 block">
+              Required
+            </span>
           </div>
         </div>
       </div>
@@ -138,7 +141,7 @@
         </button>
         <button v-if="step === 3" type="submit" :disabled="isSubmitting"
           class="flex-1 py-2 rounded bg-sidebar text-white font-semibold hover:bg-purple-700 transition">
-          <span v-if='!isSubmitting'>Simpan</span>
+          <span v-if='!isSubmitting'>{{ isEditMode ? 'Update' : 'Simpan' }}</span>
           <div class="loader justify-items-center" v-if="isSubmitting">
             <svg aria-hidden="true" class="w-5 h-5 text-gray-200 animate-spin dark:text-gray-600 fill-white" viewBox="0 0 100 101"
               fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -279,7 +282,7 @@ const fnBack = () => {
     cancelButtonText: 'Batal'
   }).then((result) => {
     if (result.isConfirmed) {
-      router.push('/pengumuman');
+      router.back();
     }
   });
 }
@@ -550,9 +553,10 @@ const onSubmit = handleSubmit(async () => {
     // await finishWizard();
     router.push(`/detail-pengumuman/${values.submenu_id}`) // arahkan ke detail pengumuman sesuai tipe
   } catch (error) {
+    console.log(error)
     Swal.fire({
             title: "Error!",
-            text: `Failed to ${isEditMode.value ? 'update' : 'save'} data : ${error.message}`,
+            text: `${error.response.data.message || error.message || 'An error occurred.'}`,
             icon: "error",
             timer: 1500
           });

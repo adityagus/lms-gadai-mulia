@@ -48,6 +48,7 @@ class Master extends Model
       $result = [];
       foreach ($grouped as $kd_area => $items) {
         $areaName = $items[0]->nm_area; // ambil nama area sekali saja
+        $areaKode = $items[0]->kd_area; // ambil kd_area sekali saja
 
         $children = [];
         foreach ($items as $item) {
@@ -59,7 +60,7 @@ class Master extends Model
         }
 
         $result[] = [
-          "id_area" => $kd_area,
+          "id_area" => $item->kd_cabang,
           "nm_area" => $areaName,
           "children" => $children
         ];
