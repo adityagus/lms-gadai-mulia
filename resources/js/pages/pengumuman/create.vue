@@ -316,7 +316,6 @@ function toggleAllCabang(e) {
     // Pilih semua id_area dari areas dan children-nya
     const allIds = [];
     areas.value.forEach(area => {
-      allIds.push(area.id_area);
       if (area.children && area.children.length > 0) {
         area.children.forEach(child => {
           allIds.push(child.id_area);

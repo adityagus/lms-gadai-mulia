@@ -36,6 +36,7 @@ class MasterController extends Controller
       ->table('tblwilayah as w')
       ->select('w.kd_wilayah', 'w.nm_wilayah')
       ->orderBy('w.kd_wilayah', 'asc')
+      ->where('w.wilayah_active', 'true')
       ->get();
       return response()->json($result);
     }

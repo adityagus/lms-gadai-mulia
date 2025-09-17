@@ -6,11 +6,12 @@ const props = defineProps({
 });
 const emit = defineEmits(['update:checked']);
 
+let ids = [];
 function getAllChildIds(area) {
-  let ids = [area.id_area];
+  ids.push(area.id_area);
   if (area.children && area.children.length > 0) {
     area.children.forEach(child => {
-      ids = ids.concat(getAllChildIds(child));
+      ids.push(child.id_area);
     });
   }
   return ids;

@@ -177,8 +177,8 @@ class AnnouncementController extends Controller
       $mainPath = $mainPath ? $mainPath : '';
       $file = $request->file('dokumen');
       $fileName = time() . '_' . $file->getClientOriginalName();
-      $filePath = $file->storeAs("public/{$mainPath}", $fileName);
-      $publicPath = str_replace('public/', '', $filePath);
+      $filePath = $file->storeAs("public/aktif/{$mainPath}", $fileName);
+      $publicPath = str_replace('public/aktif/', '', $filePath);
 
       // Simpan data ke table announcement (sekali saja)
       $data = $validated;
@@ -194,7 +194,7 @@ class AnnouncementController extends Controller
       foreach ($regions as $regionId) {
         $regionRows[] = [
           'document_id' => $announcement->id,
-          'regional_id' => (int)$regionId,
+          'regional_id' => $regionId,
         ];
       }
 
@@ -214,9 +214,6 @@ class AnnouncementController extends Controller
       if (!empty($regionRows)) {
         \DB::table('document_region')->insert($regionRows);
       }
-
-      $algoliaService = new AlgoliaService();
-      $algoliaService->updateDocument($announcement);
 
       $announcement->user = 'Created by ' . session('auth.user');
       return response()->json([
@@ -273,16 +270,16 @@ class AnnouncementController extends Controller
       // Jika ada file baru, simpan file baru dan hapus file lama
       if ($request->hasFile('dokumen')) {
         // Hapus file lama jika ada
-        if ($announcement->url && Storage::exists('public/' . $announcement->url)) {
-          Storage::delete('public/' . $announcement->url);
+        if ($announcement->url && Storage::exists('public/aktif/' . $announcement->url)) {
+          Storage::delete('public/aktif/' . $announcement->url);
         }
 
         $mainPath = Menu::getNameById($request->get('submenu_id'));
         $mainPath = $mainPath ? $mainPath : '';
         $file = $request->file('dokumen');
         $fileName = time() . '_' . $file->getClientOriginalName();
-        $filePath = $file->storeAs("public/{$mainPath}", $fileName);
-        $publicPath = str_replace('public/', '', $filePath);
+        $filePath = $file->storeAs("public/aktif/{$mainPath}", $fileName);
+        $publicPath = str_replace('public/aktif/', '', $filePath);
         $validated['url'] = $publicPath;
       } else {
         unset($validated['dokumen']); // Jangan update kolom dokumen jika tidak ada file baru
@@ -344,10 +341,14 @@ class AnnouncementController extends Controller
       
       
       $announcement = Announcement::findOrFail($document_id);
+      
+      if ($announcement->url && Storage::exists('public/aktif/' . $announcement->url)) {
+        $currentPath = 'public/aktif/' . $announcement->url;
+        $newPath = 'public/tidakaktif/' . $announcement->url;
+        Storage::move($currentPath, $newPath);
+      }
+      
       $announcement->delete();
-
-      $algoliaService = new AlgoliaService();
-      $algoliaService->deleteFromAlgolia('announcement', $document_id);
 
       return response()->json(['success' => true, 'message' => 'Announcement deleted successfully'], 200);
     } catch (\Exception $e) {
@@ -377,6 +378,14 @@ class AnnouncementController extends Controller
   {
     try {
       $announcement = Announcement::onlyTrashed()->where('id', $document_id)->firstOrFail();
+      
+      if ($announcement->url && Storage::exists('public/tidakaktif/' . $announcement->url)) {
+        $currentPath = 'public/tidakaktif/' . $announcement->url;
+        $newPath = 'public/aktif/' . $announcement->url;
+        Storage::move($currentPath, $newPath);
+      }
+      
+      
       $announcement->restore();
       return response()->json(['status' => 'success', 'message' => 'Announcement restored successfully'], 200);
     } catch (\Exception $e) {
@@ -428,23 +437,23 @@ class AnnouncementController extends Controller
     }
 }
 
-  public function deletePermanent($document_id)
-  {
-    try {
-      $announcement = Announcement::onlyTrashed()->where('id', $document_id)->firstOrFail();
+  // public function deletePermanent($document_id)
+  // {
+  //   try {
+  //     $announcement = Announcement::onlyTrashed()->where('id', $document_id)->firstOrFail();
 
-      // Hapus file terkait jika ada
-      if ($announcement->url && Storage::exists('public/' . $announcement->url)) {
-        Storage::delete('public/' . $announcement->url);
-      }
+  //     // Hapus file terkait jika ada
+  //     if ($announcement->url && Storage::exists('public/' . $announcement->url)) {
+  //       Storage::delete('public/' . $announcement->url);
+  //     }
 
-      $announcement->forceDelete();
-      return response()->json(['status' => 'success', 'message' => 'Announcement permanently deleted'], 200);
-    } catch (\Exception $e) {
-      return response()->json(['status' => 'error', 'message' => 'Internal Server Error'], 500);
-    }
+  //     $announcement->forceDelete();
+  //     return response()->json(['status' => 'success', 'message' => 'Announcement permanently deleted'], 200);
+  //   } catch (\Exception $e) {
+  //     return response()->json(['status' => 'error', 'message' => 'Internal Server Error'], 500);
+  //   }
 
-  }
+  // }
   
   
   public function hardDelete($document_id)
@@ -453,8 +462,8 @@ class AnnouncementController extends Controller
       $announcement = Announcement::onlyTrashed()->where('id', $document_id)->firstOrFail();
 
       // Hapus file terkait jika ada
-      if ($announcement->url && Storage::exists('public/' . $announcement->url)) {
-        Storage::delete('public/' . $announcement->url);
+      if ($announcement->url && Storage::exists('public/tidakaktif/' . $announcement->url)) {
+        Storage::delete('public/tidakaktif/' . $announcement->url);
       }
 
       $announcement->forceDelete();

@@ -75,6 +75,7 @@ function toggleChat() {
 }
 
 const token = "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";
+
 function sendMessage() {
   if (!input.value.trim()) return;
   messages.value.push({ from: 'user', text: input.value });
@@ -83,11 +84,10 @@ function sendMessage() {
   nextTick(() => {
     if (chatBody.value) chatBody.value.scrollTop = chatBody.value.scrollHeight;
   });
-  // Simulasi balasan bot
- setTimeout(() => {
-  // buatkan transisi sedang mengetik atau animasi nya
-   messages.value.push({ from: 'bot', text: 'Sedang mengetik...', style: 'italic text-gray-400 animate-pulse' });
-    // let reply = 'Maaf, saya masih bot sederhana. Pertanyaan Anda: ' + userMsg;
+  // Animasi mengetik
+  let typingMsg = { from: 'bot', text: 'Sedang mengetik...', style: 'italic text-gray-400 animate-pulse' };
+  messages.value.push(typingMsg);
+  setTimeout(() => {
     axios.post(
       'https://openrouter.ai/api/v1/chat/completions',
       {
@@ -98,29 +98,33 @@ function sendMessage() {
       },
       {
         headers: {
-          'withCredentials': 'true',
           'Content-Type': 'application/json',
           'Authorization': 'Bearer ' + token
         }
       }
     )
       .then(response => {
-        // OpenRouter returns choices[0].message.content for OpenAI-compatible models
-        reply = response.data?.choices?.[0]?.message?.content;
-        messages.value.push({ from: 'bot', text: reply });
-      })
-      .catch(() => {
-        reply = 'Maaf, saya masih bot sederhana. Pertanyaan Anda: ' + userMsg;
-        if (/halo|hai|hi|assalam/i.test(userMsg)) reply = 'Halo juga! Ada yang bisa saya bantu?';
-        if (/dokumen|upload/i.test(userMsg)) reply = 'Untuk upload dokumen, silakan gunakan menu Pengumuman atau Formulir.';
-        if (/pengumuman/i.test(userMsg)) reply = 'Menu Pengumuman berisi informasi terbaru. Silakan cek di sidebar.';
-        messages.value.push({ from: 'bot', text: reply });
-      })
-      .finally(() => {
-        const typingIndex = messages.value.findIndex(m => m.text === 'Sedang mengetik...');
+        let reply = response.data?.choices?.[0]?.message?.content;
+        // Hapus animasi mengetik sebelum push reply
+        const typingIndex = messages.value.findIndex(m => m.text === typingMsg.text);
         if (typingIndex !== -1) {
           messages.value.splice(typingIndex, 1);
         }
+        messages.value.push({ from: 'bot', text: reply });
+      })
+      .catch((err) => {
+        console.log(err.message);
+        let reply = 'Maaf, saya masih bot sederhana. Pertanyaan Anda: ' + userMsg;
+        if (/halo|hai|hi|assalam/i.test(userMsg)) reply = 'Halo juga! Ada yang bisa saya bantu?';
+        if (/dokumen|upload/i.test(userMsg)) reply = 'Untuk upload dokumen, silakan gunakan menu Pengumuman atau Formulir.';
+        if (/pengumuman/i.test(userMsg)) reply = 'Menu Pengumuman berisi informasi terbaru. Silakan cek di sidebar.';
+        const typingIndex = messages.value.findIndex(m => m.text === typingMsg.text);
+        if (typingIndex !== -1) {
+          messages.value.splice(typingIndex, 1);
+        }
+        messages.value.push({ from: 'bot', text: reply });
+      })
+      .finally(() => {
         nextTick(() => {
           if (chatBody.value) chatBody.value.scrollTop = chatBody.value.scrollHeight;
         });

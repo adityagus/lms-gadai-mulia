@@ -117,10 +117,11 @@ const filteredCards = computed(() => {
   const allCards = cards.value || [];
 
   if (tab === 'all') return allCards;
-
+  
+  
   return allCards.filter(card =>
     Array.isArray(card.document_regional) &&
-    card.document_regional.some(dr => dr.regional_id.toString().charAt(0) == tab)
+    card.document_regional.some(dr => dr.regional_id.toString().charAt(1) == tab)
   );
 });
 
