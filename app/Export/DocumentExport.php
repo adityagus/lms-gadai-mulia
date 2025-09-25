@@ -4,7 +4,7 @@ namespace App\Exports;
 
 use App\Models\Document;
 use App\Models\DocumentRegion;
-use App\Models\AksesJabatan;
+use App\Models\DocumentPosition;
 use Maatwebsite\Excel\Concerns\WithMultipleSheets;
 
 class DocumentExport implements WithMultipleSheets
@@ -55,7 +55,7 @@ class AksesJabatanSheetExport implements FromCollection, WithHeadings
 {
     public function collection()
     {
-        return AksesJabatan::all();
+        return DocumentPosition::all();
     }
     public function headings(): array
     {

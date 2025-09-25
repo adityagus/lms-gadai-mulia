@@ -61,7 +61,7 @@
           </div>
 
           <!-- Results: Courses -->
-          <div v-else-if="searchTab === 'courses' && searchResultsCourse.length > 0" class="space-y-3 max-h-72 overflow-y-auto">
+          <div v-else-if="searchTab === 'kelas' && searchResultsCourse.length > 0" class="space-y-3 max-h-72 overflow-y-auto">
             <div v-for="item in searchResultsCourse" :key="'course-' + item.id"
               class="flex items-center gap-4 p-4 rounded-xl hover:bg-gray-50 cursor-pointer transition-colors border border-gray-100 hover:border-blue-200"
               @click="gotoDetail(item)">
@@ -96,7 +96,7 @@
           </div>
 
           <!-- Results: Documents -->
-          <div v-else-if="searchTab === 'documents' && searchResultsDocument.length > 0" class="space-y-3 max-h-72 overflow-y-auto">
+          <div v-else-if="searchTab === 'informasi' && searchResultsDocument.length > 0" class="space-y-3 max-h-72 overflow-y-auto">
             <div v-for="item in searchResultsDocument" :key="'doc-' + item.id"
               class="flex items-center gap-4 p-4 rounded-xl hover:bg-gray-50 cursor-pointer transition-colors border border-gray-100 hover:border-blue-200"
               @click="openDocumentDetail(item)">
@@ -223,7 +223,7 @@ const searchResultsDocument = ref([]);
 const isSearching = ref(false);
 const searchQuery = ref('');
 const searchInput = ref(null);
-const searchTab = ref('courses');
+const searchTab = ref('kelas');
 
 // Cek route berdasarkan name
 const routeByName = router.options.routes.find(r => r.name === 'courseDetail');
@@ -286,7 +286,7 @@ function openSearch() {
   searchResultsCourse.value = [];
   searchResultsDocument.value = [];
   searchQuery.value = '';
-  searchTab.value = 'courses';
+  searchTab.value = 'kelas';
   nextTick(() => {
     if (searchInput.value) {
       searchInput.value.focus();
