@@ -79,6 +79,7 @@ class AnnouncementController extends Controller
       // ->whereHas('document_position', function ($q) use ($jbt) {
       //   $q->where('kd_jbt', $jbt);
       // })
+      ->orderBy('tgl_berlaku', 'desc')
       ->distinct()
       ->select('id', 'submenu_id', 'title', 'no_surat', 'url', 'tgl_berlaku', 'created_at','created_by', 'updated_at', 'updated_by', 'content', 'type')
       ->get();
@@ -90,6 +91,7 @@ class AnnouncementController extends Controller
       ->whereHas('document_regional', function ($q) use ($cabang) {
         $q->where('regional_id', $cabang);
       })
+      ->orderBy('tgl_berlaku', 'desc')
       ->distinct()
       ->select('id', 'submenu_id', 'title', 'no_surat', 'url', 'tgl_berlaku', 'created_at', 'content', 'type')
       ->get();
@@ -108,9 +110,9 @@ class AnnouncementController extends Controller
 
     $announcements->transform(function ($announcement) {
       // timezone
-      $announcement->dateLastUpdate = $announcement->updated_at ? Carbon::parse($announcement->updated_at)->timezone('Asia/Jakarta')->format('d M Y H:i:s') . ' WIB' : $announcement->created_at
-        ? Carbon::parse($announcement->created_at)->timezone('Asia/Jakarta')->format('d M Y H:i:s') . ' WIB'
-        : null;
+      $announcement->dateLastUpdate = $announcement->updated_at
+        ? Carbon::parse($announcement->updated_at)->timezone('Asia/Jakarta')->format('d M Y H:i:s') . ' WIB'
+        : Carbon::parse($announcement->created_at)->timezone('Asia/Jakarta')->format('d M Y H:i:s') . ' WIB';
 
       $announcement->tgl_berlaku = $announcement->tgl_berlaku
         ? Carbon::parse($announcement->tgl_berlaku)->format('d-m-Y')

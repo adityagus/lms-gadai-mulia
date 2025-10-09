@@ -12,13 +12,50 @@
     </router-link>
   </div>
   <h1 class="text-2xl font-bold text-sidebar">{{ detail.name }}</h1>
-  <div class="mb-2 -mt-4 flex gap-2" v-if="auth?.cabang === ''">
-    <button v-for="tab in memoTabs" :key="tab.kd_wilayah" v-if='memoTabs.length > 1' @click="activeMemoTab = tab.kd_wilayah"
-      :class="['px-3 py-1 rounded-lg font-semibold text-xs transition', activeMemoTab === tab.kd_wilayah ? 'bg-sidebar text-white shadow' : 'bg-white text-sidebar hover:bg-purple-100']">
-      {{ tab.nm_wilayah }}
-    </button>
+  <!-- Baris filter area dan layout menu -->
+  <div class="flex items-center justify-between mb-4">
+    <!-- Filter Area Tabs -->
+    <div class="flex gap-2" v-if="auth?.cabang === ''">
+      <button
+        v-for="tab in memoTabs"
+        :key="tab.kd_wilayah"
+        v-if="memoTabs.length > 1"
+        @click="activeMemoTab = tab.kd_wilayah"
+        :class="['px-3 py-1 rounded-lg font-semibold text-xs transition', activeMemoTab === tab.kd_wilayah ? 'bg-sidebar text-white shadow' : 'bg-white text-sidebar hover:bg-purple-100']"
+      >
+        {{ tab.nm_wilayah }}
+      </button>
+    </div>
+<!-- Layout Menu Icon -->
+    <div class="flex gap-2" v-if="auth?.cabang === ''">
+      <button
+        @click="viewMode = 'card'"
+        :class="['px-3 py-1 rounded-lg font-semibold text-xs transition flex items-center gap-1', viewMode === 'card' ? 'bg-sidebar text-white shadow' : 'bg-white text-sidebar hover:bg-purple-100']"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <rect x="3" y="3" width="7" height="7" rx="1.5" stroke-width="2"/>
+          <rect x="14" y="3" width="7" height="7" rx="1.5" stroke-width="2"/>
+          <rect x="14" y="14" width="7" height="7" rx="1.5" stroke-width="2"/>
+          <rect x="3" y="14" width="7" height="7" rx="1.5" stroke-width="2"/>
+        </svg>
+        Card
+      </button>
+      <button
+        @click="viewMode = 'table'"
+        :class="['px-3 py-1 rounded-lg font-semibold text-xs transition flex items-center gap-1', viewMode === 'table' ? 'bg-sidebar text-white shadow' : 'bg-white text-sidebar hover:bg-purple-100']"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <rect x="3" y="6" width="18" height="2" rx="1" stroke-width="2"/>
+          <rect x="3" y="11" width="18" height="2" rx="1" stroke-width="2"/>
+          <rect x="3" y="16" width="18" height="2" rx="1" stroke-width="2"/>
+        </svg>
+        Table
+      </button>
+    </div>
   </div>
-  <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
+
+  <!-- Card Layout -->
+  <div v-if="viewMode === 'card'" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
     <div v-for="(item, idx) in filteredCards" :key="item.submenu_id"
       class="relative rounded-2xl bg-white shadow-xl p-0 flex flex-col justify-between overflow-hidden group announcement-card border border-gray-200 hover:border-sidebar transition"
       @click="openDetail(item)">
@@ -76,7 +113,42 @@
     </div>
   </div>
 
-
+  <!-- Table/List Layout -->
+  <div v-else>
+    <table class="min-w-full bg-white rounded-lg shadow border border-gray-200">
+      <thead>
+        <tr class="bg-gray-100 text-sidebar">
+          <th class="px-4 py-2 text-left text-xs font-bold">Title</th>
+          <th class="px-4 py-2 text-left text-xs font-bold">Nomor Surat</th>
+          <th class="px-4 py-2 text-left text-xs font-bold">Tanggal Berlaku</th>
+          <th class="px-4 py-2 text-left text-xs font-bold">Last Update</th>
+          <th class="px-4 py-2 text-left text-xs font-bold" v-if="auth && (auth.idgrup == 'JBT-032' || auth.idgrup === 'JBT-037' || auth.idgrup === 'JBT-039' || auth.idgrup === 'JBT-040')">Aksi</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr v-for="item in filteredCards" :key="item.submenu_id" class="border-b hover:bg-purple-50 transition">
+          <td class="px-4 py-2 text-sidebar font-semibold cursor-pointer" @click="openDetail(item)">{{ item.title }}</td>
+          <td class="px-4 py-2 text-xs">{{ item.no_surat }}</td>
+          <td class="px-4 py-2 text-xs">{{ item.tgl_berlaku }}</td>
+          <td class="px-4 py-2 text-xs">{{ item.dateLastUpdate }}</td>
+          <td class="px-4 py-2 flex gap-2" v-if="auth && (auth.idgrup == 'JBT-032' || auth.idgrup === 'JBT-037' || auth.idgrup === 'JBT-039' || auth.idgrup === 'JBT-040')">
+            <router-link
+              v-if='auth && (auth.idgrup == "JBT-032" || auth.idgrup === "JBT-037" || auth.idgrup === "JBT-039" || auth.idgrup === "JBT-040")'
+              :to="{ name: 'information-document-update', params: { id: item.id } }"
+              @click.stop
+              class="bg-white rounded px-2 py-1 shadow hover:bg-purple-100 transition text-xs text-sidebar font-semibold"
+            >Edit</router-link>
+            <button
+              v-if='auth && (auth.idgrup == "JBT-032" || auth.idgrup === "JBT-037" || auth.idgrup === "JBT-039" || auth.idgrup === "JBT-040")'
+              @click.stop="deleteAnnouncement(item)"
+              class="bg-red-100 rounded px-2 py-1 shadow hover:bg-red-200 transition text-xs text-red-600 font-semibold"
+            >Archive</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <!-- ...existing code... -->
 </template>
 
 <script setup>
@@ -172,6 +244,7 @@ const deleteAnnouncement = (item) => {
 
 const showModal = ref(false)
 const selectedCard = ref(null)
+const viewMode = ref('card'); // 'card' atau 'table'
 
 // Prevent background scroll when modal is open
 watch(showModal, (val) => {
@@ -210,7 +283,7 @@ onMounted(async () => {
       ...item,
       nomorSurat: item.nomorSurat || item.nomor_surat || item.nomor || '-',
       tanggalBerlaku: item.tanggalBerlaku || item.tanggal_berlaku || item.tanggal || '-',
-      date: item.date || item.updated_at || item.tanggal_update || '-',
+      date: item.updated_at ? item.updated_at : item.created_at ? item.created_at : '-',
       title: item.title || item.judul || '-',
       icon: item.icon || '/default-icon.svg',
       desc: item.desc || item.keterangan || item.deskripsi || '',
@@ -222,7 +295,7 @@ onMounted(async () => {
       name: detail.value.name || detail.value.title || detail.value.judul || '-',
       nomorSurat: detail.value.nomorSurat || detail.value.nomor_surat || detail.value.nomor || '-',
       tanggalBerlaku: detail.value.tanggalBerlaku || detail.value.tanggal_berlaku || detail.value.tanggal || '-',
-      date: detail.value.date || detail.value.updated_at || detail.value.tanggal_update || '-',
+      date: detail.value.updated_at ? detail.value.updated_at : detail.value.created_at ? detail.value.created_at : '-',
       desc: detail.value.desc || detail.value.keterangan || detail.value.deskripsi || '',
     };
 

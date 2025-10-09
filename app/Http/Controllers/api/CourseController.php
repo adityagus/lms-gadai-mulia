@@ -2,19 +2,21 @@
 
 namespace App\Http\Controllers\api;
 
-use App\Http\Controllers\AlgoliaController;
 use App\Models\Course;
 use App\Models\Category;
-use App\Services\AlgoliaService;
 use Illuminate\Support\Str;
 use App\Models\Announcement;
 use Illuminate\Http\Request;
+use App\Services\AlgoliaService;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Cache;
 use Algolia\AlgoliaSearch\SearchClient;
+use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Storage;
+use App\Http\Controllers\AlgoliaController;
 use Illuminate\Support\Facades\Request as FacadesRequest;
+
 class CourseController extends Controller
 {
   public function index(Request $request)
@@ -252,6 +254,10 @@ class CourseController extends Controller
         'data' => []
       ]);
     }
+    
+    $cabang = Session::get('auth.cabang');
+    $jbt = Session::get('auth.idgrup');
+    
 
     // Search courses
     $courses = Course::with('category:id,name')
@@ -264,14 +270,31 @@ class CourseController extends Controller
       ->limit(10)
       ->get();
 
-    // Search documents (announcements)
-    $documents = Announcement::where(function ($q) use ($query) {
-      $q->where('title', 'LIKE', "%{$query}%")
-        ->orWhere('no_surat', 'LIKE', "%{$query}%");
-      // ->orWhere('menu.name', 'LIKE', "%{$query}%");
-    })
+      // Search documents (announcements)
+      if($cabang == null){
+      $documents = Announcement::where(function ($q) use ($query) {
+        $q->where('title', 'LIKE', "%{$query}%")
+          ->orWhere('no_surat', 'LIKE', "%{$query}%");
+        // ->orWhere('menu.name', 'LIKE', "%{$query}%");
+      })
+        ->limit(10)
+        ->get();
+    }else{
+      $documents = Announcement::where(function ($q) use ($query) {
+        $q->where('title', 'LIKE', "%{$query}%")
+          ->orWhere('no_surat', 'LIKE', "%{$query}%");
+        // ->orWhere('menu.name', 'LIKE', "%{$query}%");
+      })
+      ->whereHas('document_position', function ($q) use ($jbt) {
+        $q->where('kd_jbt', $jbt);
+      })
+      ->whereHas('document_regional', function ($q) use ($cabang) {
+        $q->where('regional_id', $cabang);
+      })
+      ->orderBy('tgl_berlaku', 'desc')
       ->limit(10)
       ->get();
+    }
 
     // Transform data untuk response
     $courseResults = $courses->map(function ($course) {
