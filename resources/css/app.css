@@ -1,3 +1,6 @@
+@import '@bhplugin/vue3-datatable/dist/style.css';
+
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
