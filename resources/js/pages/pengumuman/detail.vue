@@ -16,38 +16,29 @@
   <div class="flex items-center justify-between mb-4">
     <!-- Filter Area Tabs -->
     <div class="flex gap-2" v-if="auth?.cabang === ''">
-      <button
-        v-for="tab in memoTabs"
-        :key="tab.kd_wilayah"
-        v-if="memoTabs.length > 1"
-        @click="activeMemoTab = tab.kd_wilayah"
-        :class="['px-3 py-1 rounded-lg font-semibold text-xs transition', activeMemoTab === tab.kd_wilayah ? 'bg-sidebar text-white shadow' : 'bg-white text-sidebar hover:bg-purple-100']"
-      >
+      <button v-for="tab in memoTabs" :key="tab.kd_wilayah" v-if="memoTabs.length > 1" @click="activeMemoTab = tab.kd_wilayah"
+        :class="['px-3 py-1 rounded-lg font-semibold text-xs transition', activeMemoTab === tab.kd_wilayah ? 'bg-sidebar text-white shadow' : 'bg-white text-sidebar hover:bg-purple-100']">
         {{ tab.nm_wilayah }}
       </button>
     </div>
-<!-- Layout Menu Icon -->
+    <!-- Layout Menu Icon -->
     <div class="flex gap-2" v-if="auth?.cabang === ''">
-      <button
-        @click="viewMode = 'card'"
-        :class="['px-3 py-1 rounded-lg font-semibold text-xs transition flex items-center gap-1', viewMode === 'card' ? 'bg-sidebar text-white shadow' : 'bg-white text-sidebar hover:bg-purple-100']"
-      >
+      <button @click="viewMode = 'card'"
+        :class="['px-3 py-1 rounded-lg font-semibold text-xs transition flex items-center gap-1', viewMode === 'card' ? 'bg-sidebar text-white shadow' : 'bg-white text-sidebar hover:bg-purple-100']">
         <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <rect x="3" y="3" width="7" height="7" rx="1.5" stroke-width="2"/>
-          <rect x="14" y="3" width="7" height="7" rx="1.5" stroke-width="2"/>
-          <rect x="14" y="14" width="7" height="7" rx="1.5" stroke-width="2"/>
-          <rect x="3" y="14" width="7" height="7" rx="1.5" stroke-width="2"/>
+          <rect x="3" y="3" width="7" height="7" rx="1.5" stroke-width="2" />
+          <rect x="14" y="3" width="7" height="7" rx="1.5" stroke-width="2" />
+          <rect x="14" y="14" width="7" height="7" rx="1.5" stroke-width="2" />
+          <rect x="3" y="14" width="7" height="7" rx="1.5" stroke-width="2" />
         </svg>
         Card
       </button>
-      <button
-        @click="viewMode = 'table'"
-        :class="['px-3 py-1 rounded-lg font-semibold text-xs transition flex items-center gap-1', viewMode === 'table' ? 'bg-sidebar text-white shadow' : 'bg-white text-sidebar hover:bg-purple-100']"
-      >
+      <button @click="viewMode = 'table'"
+        :class="['px-3 py-1 rounded-lg font-semibold text-xs transition flex items-center gap-1', viewMode === 'table' ? 'bg-sidebar text-white shadow' : 'bg-white text-sidebar hover:bg-purple-100']">
         <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <rect x="3" y="6" width="18" height="2" rx="1" stroke-width="2"/>
-          <rect x="3" y="11" width="18" height="2" rx="1" stroke-width="2"/>
-          <rect x="3" y="16" width="18" height="2" rx="1" stroke-width="2"/>
+          <rect x="3" y="6" width="18" height="2" rx="1" stroke-width="2" />
+          <rect x="3" y="11" width="18" height="2" rx="1" stroke-width="2" />
+          <rect x="3" y="16" width="18" height="2" rx="1" stroke-width="2" />
         </svg>
         Table
       </button>
@@ -115,38 +106,40 @@
 
   <!-- Table/List Layout -->
   <div v-else>
-    <table class="min-w-full bg-white rounded-lg shadow border border-gray-200">
-      <thead>
-        <tr class="bg-gray-100 text-sidebar">
-          <th class="px-4 py-2 text-left text-xs font-bold">Title</th>
-          <th class="px-4 py-2 text-left text-xs font-bold">Nomor Surat</th>
-          <th class="px-4 py-2 text-left text-xs font-bold">Tanggal Berlaku</th>
-          <th class="px-4 py-2 text-left text-xs font-bold">Last Update</th>
-          <th class="px-4 py-2 text-left text-xs font-bold" v-if="auth && (auth.idgrup == 'JBT-032' || auth.idgrup === 'JBT-037' || auth.idgrup === 'JBT-039' || auth.idgrup === 'JBT-040')">Aksi</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr v-for="item in filteredCards" :key="item.submenu_id" class="border-b hover:bg-purple-50 transition">
-          <td class="px-4 py-2 text-sidebar font-semibold cursor-pointer" @click="openDetail(item)">{{ item.title }}</td>
-          <td class="px-4 py-2 text-xs">{{ item.no_surat }}</td>
-          <td class="px-4 py-2 text-xs">{{ item.tgl_berlaku }}</td>
-          <td class="px-4 py-2 text-xs">{{ item.dateLastUpdate }}</td>
-          <td class="px-4 py-2 flex gap-2" v-if="auth && (auth.idgrup == 'JBT-032' || auth.idgrup === 'JBT-037' || auth.idgrup === 'JBT-039' || auth.idgrup === 'JBT-040')">
-            <router-link
-              v-if='auth && (auth.idgrup == "JBT-032" || auth.idgrup === "JBT-037" || auth.idgrup === "JBT-039" || auth.idgrup === "JBT-040")'
-              :to="{ name: 'information-document-update', params: { id: item.id } }"
-              @click.stop
-              class="bg-white rounded px-2 py-1 shadow hover:bg-purple-100 transition text-xs text-sidebar font-semibold"
-            >Edit</router-link>
-            <button
-              v-if='auth && (auth.idgrup == "JBT-032" || auth.idgrup === "JBT-037" || auth.idgrup === "JBT-039" || auth.idgrup === "JBT-040")'
-              @click.stop="deleteAnnouncement(item)"
-              class="bg-red-100 rounded px-2 py-1 shadow hover:bg-red-200 transition text-xs text-red-600 font-semibold"
-            >Archive</button>
-          </td>
-        </tr>
-      </tbody>
-    </table>
+    <div class="datatable bg-white mb-16">
+      <vue3-datatable
+        :rows="tableRows"
+        :columns="tableCols"
+        :totalRows="tableRows.length"
+        :search="search"
+        :sortable="true"
+        :selectRowOnClick="true"
+        @row-click='handleRowClick'
+      >
+        <template #action="{ row, value }">
+          <div class="flex gap-2 justify-center items-center">
+            <button 
+              @click.stop="router.push({ name: 'information-document-update', params: { id: value.id } })"
+              class="bg-white border border-sidebar text-sidebar px-2 py-1 rounded shadow hover:bg-purple-100 transition text-xs font-semibold inline-flex items-center gap-1"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-3 h-3">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M16.862 3.487a2.1 2.1 0 1 1 2.97 2.97L8.91 17.38a2.1 2.1 0 0 1-.88.53l-3.07.92a.525.525 0 0 1-.65-.65l.92-3.07a2.1 2.1 0 0 1 .53-.88L16.862 3.487z" />
+              </svg>
+              Edit
+            </button>
+            <button 
+              @click.stop="deleteAnnouncementFromTable(value.id)"
+              class="bg-red-100 border border-red-300 text-red-600 px-2 py-1 rounded shadow hover:bg-red-200 transition text-xs font-semibold inline-flex items-center gap-1"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-3 h-3">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+              Archive
+            </button>
+          </div>
+        </template>
+      </vue3-datatable>
+    </div>
   </div>
   <!-- ...existing code... -->
 </template>
@@ -157,6 +150,7 @@ import { softDeleteAnnouncement } from '@/services/announcementService';
 import OpenModalPDF from '@/components/openModalPDF.vue';
 import { ref, computed, onMounted, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import Vue3Datatable from '@bhplugin/vue3-datatable';
 import { getDetailAnnouncement, getLastDocumentPreview } from '@/services/announcementService';
 import { getSession } from '@/services/authService';
 import { getWilayah } from '@/services/masterService';
@@ -197,13 +191,82 @@ const filteredCards = computed(() => {
   );
 });
 
+const search = ref('');
+
+const isAdmin = computed(() =>
+  auth.value &&
+  (
+    auth.value.idgrup == 'JBT-032' ||
+    auth.value.idgrup === 'JBT-037' ||
+    auth.value.idgrup === 'JBT-039' ||
+    auth.value.idgrup === 'JBT-040'
+  )
+);
+
+const tableCols = computed(() => {
+  const cols = [
+    { field: 'id', title: 'ID', isUnique: true },
+    { field: 'title', title: 'Judul' },
+    { field: 'nomorSurat', title: 'Nomor Surat' },
+    { field: 'tglBerlaku', title: 'Tanggal Berlaku' },
+    { field: 'lastUpdate', title: 'Terakhir Diperbarui' }
+  ];
+  if (isAdmin.value) {
+    cols.push({ 
+      field: 'action', 
+      title: 'Aksi', 
+      sortable: false,
+      type: 'html', // Tambahkan type html untuk render HTML content
+      width: '180px'
+    });
+  }
+  return cols;
+});
+
+const tableRows = computed(() => {
+  console.log('Generating tableRows from filteredCards:', filteredCards.value);
+  return filteredCards.value.map((item, index) => {
+    const row = {
+      id: item.id || item.id_pengumuman || item.submenu_id || index,
+      title: item.title,
+      nomorSurat: item.no_surat,
+      tglBerlaku: item.tgl_berlaku, // gunakan field yang sudah diformat dari backend
+      lastUpdate: item.dateLastUpdate // gunakan field yang sudah diformat dari backend
+    };
+    
+    // Tambahkan field action untuk admin (tombol HTML)
+    
+    
+    console.log('Row created:', row);
+    return row;
+  });
+});
+
+
 async function openDetail(card) {
+  console.log('Opening detail for card:', card);
   if (modalRef.value && modalRef.value.openModal) {
     modalRef.value.openModal(card);
     await getLastDocumentPreview(card.id);
   }
 
   console.log('openDetail', modalRef.value, card)
+}
+
+function openDetailById(id) {
+  console.log('openDetailById called with id:', id);
+  console.log('filteredCards:', filteredCards.value);
+  const card = filteredCards.value.find(item => item.id === id);
+  console.log('Found card:', card);
+  if (card) openDetail(card);
+}
+
+function handleRowClick(row) {
+  console.log('Row clicked:', row);
+  const card = filteredCards.value.find(item => item.id === row.id);
+  if (card) {
+    openDetail(card);
+  }
 }
 
 const deleteAnnouncement = (item) => {
@@ -240,6 +303,29 @@ const deleteAnnouncement = (item) => {
         timer: 1500
       });
     });
+}
+
+const deleteAnnouncementFromTable = (id) => {
+  console.log('deleteAnnouncementFromTable called with id:', id);
+  
+  // Cari item berdasarkan id dari filteredCards
+  const item = filteredCards.value.find(card => {
+    const cardId = card.id || card.id_pengumuman || card.submenu_id;
+    return cardId == id;
+  });
+  
+  if (item) {
+    // Gunakan function deleteAnnouncement yang sudah ada
+    deleteAnnouncement(item);
+  } else {
+    console.error('Item not found for deletion:', id);
+    Swal.fire({
+      title: "Error!",
+      text: "Item not found!",
+      icon: "error",
+      timer: 1500
+    });
+  }
 }
 
 const showModal = ref(false)
@@ -281,9 +367,10 @@ onMounted(async () => {
     // Mapping agar field sesuai dengan template
     cards.value = items.map(item => ({
       ...item,
+      id: item.id || item.id_pengumuman || item.submenu_id, // pastikan ada ID
       nomorSurat: item.nomorSurat || item.nomor_surat || item.nomor || '-',
-      tanggalBerlaku: item.tanggalBerlaku || item.tanggal_berlaku || item.tanggal || '-',
-      date: item.updated_at ? item.updated_at : item.created_at ? item.created_at : '-',
+      tanggalBerlaku: item.tgl_berlaku || '-',
+      date: item.dateLastUpdate || '-',
       title: item.title || item.judul || '-',
       icon: item.icon || '/default-icon.svg',
       desc: item.desc || item.keterangan || item.deskripsi || '',
@@ -295,7 +382,7 @@ onMounted(async () => {
       name: detail.value.name || detail.value.title || detail.value.judul || '-',
       nomorSurat: detail.value.nomorSurat || detail.value.nomor_surat || detail.value.nomor || '-',
       tanggalBerlaku: detail.value.tanggalBerlaku || detail.value.tanggal_berlaku || detail.value.tanggal || '-',
-      date: detail.value.updated_at ? detail.value.updated_at : detail.value.created_at ? detail.value.created_at : '-',
+      date: detail.value.dateLastUpdate ? detail.value.dateLastUpdate : '-',
       desc: detail.value.desc || detail.value.keterangan || detail.value.deskripsi || '',
     };
 
@@ -317,6 +404,56 @@ onMounted(async () => {
 <style scoped>
 .announcement-card {
   transition: box-shadow 0.2s, transform 0.2s;
+}
+
+.announcement-card:hover {
+  box-shadow: 0 8px 32px 0 rgba(127, 51, 255, 0.37), 0 1.5px 6px 0 #7F33FF;
+  transform: translateY(-2px) scale(1.03);
+  border-color: #7F33FF;
+}
+
+.pattern-bg {
+  background-image: url('https://www.toptal.com/designers/subtlepatterns/uploads/dot-grid.png');
+  background-size: 40px 40px;
+}
+
+.bg-sidebar {
+  background: #7F33FF;
+}
+
+.filter-white-svg {
+  filter: brightness(0) invert(1);
+}
+
+.line-clamp-2 {
+
+  /* Untuk satu baris clamp nomor surat */
+  .line-clamp-1 {
+    display: -webkit-box;
+    line-clamp: 1;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  display: -webkit-box;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* Hide scrollbar utility */
+.scrollbar-hidden {
+  scrollbar-width: none;
+  /* Firefox */
+  -ms-overflow-style: none;
+  /* IE 10+ */
+}
+
+.scrollbar-hidden::-webkit-scrollbar {
+  display: none;
+  /* Chrome/Safari/Webkit */
 }
 
 .announcement-card:hover {
