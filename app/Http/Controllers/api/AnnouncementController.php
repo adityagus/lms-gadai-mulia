@@ -111,10 +111,10 @@ class AnnouncementController extends Controller
     $announcements->transform(function ($announcement) {
       // timezone
       $announcement->dateLastUpdate = $announcement->updated_at
-        ? Carbon::parse($announcement->updated_at)->timezone('Asia/Jakarta')->format('d M Y H:i:s') . ' WIB'
-        : $announcement->created_at
-            ? Carbon::parse($announcement->created_at)->timezone('Asia/Jakarta')->format('d M Y H:i:s') . ' WIB'
-            : null;
+        ? Carbon::parse($announcement->updated_at)->format('d M Y H:i:s') . ' WIB'
+        : ($announcement->created_at
+          ? Carbon::parse($announcement->created_at)->format('d M Y H:i:s') . ' WIB'
+          : null);
 
       $announcement->tgl_berlaku = $announcement->tgl_berlaku
         ? Carbon::parse($announcement->tgl_berlaku)->format('d-m-Y')
