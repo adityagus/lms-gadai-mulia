@@ -8,7 +8,7 @@
       </div>
       <!-- Download Attachment if available -->
       <div class="" v-if="content.lampiran || content.url">
-        <a :href="`/storage/${content.lampiran || content.url}`" target="_blank"
+        <a :href="`/storage/aktif/${content.lampiran || content.url}`" target="_blank"
           class="inline-block px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition cursor-pointer">
           Download Lampiran
         </a>

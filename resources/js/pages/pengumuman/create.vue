@@ -84,8 +84,9 @@
               Upload File PDF <span class="text-red-500">*</span>
             </label>
             <input id="file" type="file" accept="application/pdf" @change="onFileChange"
-              class="w-full border rounded px-3 py-2 focus:outline-sidebar" :class="{ 'border-red-500': errors.file }"
-              :required="!isEditMode" />
+            class="w-full border rounded px-3 py-2 focus:outline-sidebar" :class="{ 'border-red-500': errors.file }"
+            :required="!isEditMode" />
+            <span class='text-xs text-gray-500'>(Max. File size: {{ MAX_FILE_SIZE_MB }} MB)</span>
             <small class="block text-gray-500" v-if='isEditMode'>
               Boleh dikosongkan jika tidak ingin mengganti file
             </small>
@@ -97,7 +98,7 @@
             </span>
             <!-- Tampilkan file lama jika mode edit dan file lama ada -->
             <div v-if="isEditMode && urlThumbnail" class="mb-2">
-              <a :href="`/storage/${urlThumbnail}`" target="_blank" class="text-blue-500 underline">Lihat File Lama</a>
+              <a :href="`/storage/aktif/${urlThumbnail}`" target="_blank" class="text-blue-500 underline">Lihat File Lama</a>
             </div>
           </div>
         </div>
@@ -376,6 +377,9 @@ function prevStep() {
 console.log("Category create from route:", createType);
 const file = ref(null)
 const fileName = ref('')
+const uploadProgress = ref(0)
+const MAX_FILE_SIZE_MB = 2
+
 const typeDocuments = ref('')
 const areas = ref([
   { id_area: 'ho', nm_area: 'HO', children: [] },
@@ -507,73 +511,75 @@ function handleTypeChange(submenuId) {
 
 
 const onSubmit = handleSubmit(async () => {
-  
-  console.log('Submitting form:', values);
-
-  // if (!validate()) return
   try {
+    const formData = new FormData();
+    formData.append('title', title.value || '');
+    formData.append('no_surat', no_surat.value || '');
+    formData.append('tgl_berlaku', tgl_berlaku.value || '');
+    formData.append('submenu_id', submenu_id.value || '');
+    formData.append('type', type.value || '');
+    formData.append('content', content.value || '');
 
-    // Kirim data jabatan (step 3) ke session dulu
-    // await wizardStep(2, { kd_jabatan: kd_jabatan.value });
-    // Baru trigger simpan wizard ke database
+    (regionals_id.value || []).forEach(id => formData.append('regionals_id[]', id));
+    (kd_jabatan.value || []).forEach(id => formData.append('kd_jabatan[]', id));
 
-
-    const formData = new FormData()
-    for (const key in values) {
-      console.log('key', key, values[key]);
-      if(key == 'dokumen' && !file.value) continue; // skip dokumen, ditangani terpisah
-      
-      if (Array.isArray(values[key])) {
-        values[key].forEach(val => formData.append(key + '[]', val))
-      } else {
-        formData.append(key, values[key])
-      }
+    if (file.value) {
+      formData.append('dokumen', file.value, file.value.name);
+      dokumen.value = file.value; // set vee-validate field at submit time
     }
 
-    console.log('isEditMode:', isEditMode.value);
     if (isEditMode.value) {
-      await updateAnnouncement(formData, announcementId)
-      Swal.fire({
-            title: "Updated!",
-            text: "Content has been updated.",
-            icon: "success",
-            timer: 1500
-          });
+      // pass announcementId and onUploadProgress
+      await updateAnnouncement(formData, announcementId, (ev) => {
+        uploadProgress.value = ev.total ? Math.round((ev.loaded * 100) / ev.total) : 0;
+      });
+      Swal.fire({ title: "Updated!", text: "Content has been updated.", icon: "success", timer: 1500 });
     } else {
-      await createAnnouncement(formData)
-      Swal.fire({
-            title: "Created!",
-            text: "Content has been created.",
-            icon: "success",
-            timer: 1500
-          });
+      await createAnnouncement(formData, (ev) => {
+        uploadProgress.value = ev.total ? Math.round((ev.loaded * 100) / ev.total) : 0;
+      });
+      Swal.fire({ title: "Created!", text: "Content has been created.", icon: "success", timer: 1500 });
     }
 
-    // await finishWizard();
-    router.push(`/detail-pengumuman/${values.submenu_id}`) // arahkan ke detail pengumuman sesuai tipe
+    router.push(`/detail-pengumuman/${submenu_id.value}`);
   } catch (error) {
-    console.log(error)
+    console.error(error);
     Swal.fire({
-            title: "Error!",
-            text: `${error.response.data.message || error.message || 'An error occurred.'}`,
-            icon: "error",
-            timer: 1500
-          });
+      title: "Error!",
+      text: `${error?.response?.data?.message || error?.message || 'An error occurred.'}`,
+      icon: "error",
+      timer: 2000
+    });
+  } finally {
+    uploadProgress.value = 0;
   }
-}
-)
+});
 
 function onFileChange(e) {
-  const f = e.target.files[0]
-  if (f) {
-    file.value = f
-    console.log('Selected file:', file.value);
-    dokumen.value = file.value
-    fileName.value = f.name
-  } else {
-    dokumen.value = null
-    fileName.value = ''
+  const f = e.target.files?.[0];
+  if (!f) {
+    file.value = null;
+    fileName.value = '';
+    return;
   }
+
+  if ((f.size / 1024 / 1024) > MAX_FILE_SIZE_MB) {
+    Swal.fire({
+      title: 'File terlalu besar',
+      text: `Ukuran file maksimal ${MAX_FILE_SIZE_MB} MB.`,
+      icon: 'warning'
+    });
+    e.target.value = ''; // reset input
+    file.value = null;
+    fileName.value = '';
+    return;
+  }
+
+  // HANYA simpan di ref lokal — jangan set dokumen.value di sini
+  file.value = f;
+  fileName.value = f.name;
+  uploadProgress.value = 0;
+  console.log('Selected file:', f.name, f.size);
 }
 </script>
 

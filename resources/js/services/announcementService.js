@@ -25,7 +25,7 @@ export const getDetailAnnouncement = async (id) => {
 export const getDocumentById = async (document_id) => {
   try {
     const response = await apiInstance.get(`/announcements/document/${document_id}`);
-    console.log(response);
+    // kembalikan payload sesuai penggunaan di komponen (data)
     return response.data;
   } catch (error) {
     console.error('Error fetching document by ID:', error);
@@ -33,9 +33,19 @@ export const getDocumentById = async (document_id) => {
   }
 }
 
-export const createAnnouncement = async (data) => {
+/**
+ * Create announcement
+ * @param {FormData|Object} data - FormData (for file upload) or plain object
+ * @param {Function} [onUploadProgress] - optional axios onUploadProgress callback
+ * @returns {Promise<any>}
+ */
+export const createAnnouncement = async (data, onUploadProgress) => {
   try {
-    const response = await apiInstance.post('/announcements', data);
+    const config = {
+      headers: { 'Content-Type': 'multipart/form-data' },
+      onUploadProgress
+    };
+    const response = await apiInstance.post('/announcements', data, config);
     return response.data;
   } catch (error) {
     console.error('Error creating announcement:', error);
@@ -43,15 +53,29 @@ export const createAnnouncement = async (data) => {
   }
 }
 
-export const updateAnnouncement = async (data, id) => {
+/**
+ * Update announcement
+ * @param {FormData|Object} data - FormData (for file upload) or plain object
+ * @param {string|number} [id] - optional announcement id; if omitted, posts to /announcements
+ * @param {Function} [onUploadProgress] - optional axios onUploadProgress callback
+ * @returns {Promise<any>}
+ */
+export const updateAnnouncement = async (data, id, onUploadProgress) => {
   try {
-    const response = await apiInstance.post(`/announcements/${id}`, data);
+    const url = id ? `/announcements/${id}` : `/announcements`;
+    const config = {
+      headers: { 'Content-Type': 'multipart/form-data' },
+      onUploadProgress
+    };
+    const response = await apiInstance.post(url, data, config);
     return response.data;
   } catch (error) {
     console.error('Error updating announcement:', error);
     throw error;
   }
 }
+
+
 
 export const getLastDocumentPreview = async (document_id) => {
   try {
