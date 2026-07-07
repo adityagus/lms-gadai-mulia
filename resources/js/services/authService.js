@@ -3,6 +3,7 @@ import { apiInstance, apiInstanceAuth } from '../utils/axios';
 export const login = async (data) => {
   try {
     const response = await apiInstanceAuth.post('/login', data);
+    console.log('response new', response);
     return response.data;
   } catch (error) {
     console.error('Error during login:', error);
@@ -20,7 +21,7 @@ export const signOut = async () => {
   }
 }
 
-  
+
 
 export const getSession = async () => {
   try {

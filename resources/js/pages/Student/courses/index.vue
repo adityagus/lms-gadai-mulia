@@ -1,12 +1,12 @@
 <template>
   <header class="flex items-center justify-between gap-[30px]">
     <div>
-      <h1 class="font-extrabold text-[28px] leading-[42px]">List Courses</h1>
-      <p class="text-[#838C9D] mt-[1]">Lihat daftar kursus</p>
+      <h1 class="font-extrabold text-[28px] leading-[42px]">Daftar Kelas</h1>
+      <p class="text-[#838C9D] mt-[1]">Lihat semua kelas yang tersedia</p>
     </div>
   </header>
   <section id="CourseList" class="flex flex-col w-full rounded-[30px] gap-[30px]">
-    <!-- Main content (CardCourses) when data is ready -->
+    <!-- Konten utama (CardCourses) saat data sudah siap -->
     <div v-for="item in courses" :key="item.id" v-if='!loading'>
       <div
         class="relative group cursor-pointer rounded-2xl bg-white border border-gray-200 shadow-md px-0 py-0 overflow-hidden transition-all duration-200 hover:shadow-xl hover:scale-[1.025] hover:border-[#662FFF]"
@@ -19,14 +19,14 @@
           <div class="flex-1 flex flex-col justify-between p-5">
             <div>
               <div class="flex items-center gap-2 mb-2">
-                <span class="inline-block px-3 py-1 rounded-full text-xs font-semibold bg-[#F3E8FF] text-[#662FFF]">{{ item.category?.name || 'Uncategorized' }}</span>
+                <span class="inline-block px-3 py-1 rounded-full text-xs font-semibold bg-[#F3E8FF] text-[#662FFF]">{{ item.category?.name || 'Tanpa Kategori' }}</span>
                 <span class="ml-auto text-xs text-gray-400">ID: {{ item.id }}</span>
               </div>
               <h2 class="font-bold text-lg text-[#2D1A5A] mb-1 line-clamp-2">{{ item.name }}</h2>
               <p class="text-sm text-gray-500 line-clamp-2 mb-2">{{ item.description || 'Tidak ada deskripsi.' }}</p>
             </div>
             <div class="flex items-center justify-between mt-4">
-              <span class="text-xs text-gray-400">Created: {{ item.created_at ? item.created_at.split('T')[0] : '-' }}</span>
+              <span class="text-xs text-gray-400">Dibuat: {{ item.created_at ? item.created_at.split('T')[0] : '-' }}</span>
             </div>
           </div>
         </div>
@@ -34,7 +34,7 @@
       </div>
     </div>
 
-    <!-- Loading content (CardSkeleton) while data is loading -->
+    <!-- Konten loading (CardSkeleton) saat data sedang dimuat -->
     <template v-if='loading'>
       <div v-for="n in 5" :key='n'>
         <CardSkeletonStudent />
@@ -65,20 +65,20 @@ const totalPages = ref(5);
 const loading = ref(true); 
 const pagination = ref(1);
 
+// Fungsi untuk mengambil data kelas
 const fetchCourses = async (page = 1) => {
     try {
       const result = await getCourses(page)
       courses.value = result.data
       totalPages.value = result.last_page
     } catch (error) {
-      console.log("ERROR", error);
+      console.log("Terjadi kesalahan saat mengambil data kelas:", error);
     } finally {
       loading.value = false;
     }
 }
 
-
-
+// Fungsi untuk menuju halaman detail kelas
 const goToDetail = (id) => {
   router.push({name: 'content-preview', params: { id }});
 };
@@ -87,6 +87,7 @@ onMounted(() => {
   fetchCourses(currentPage.value);
 });
 
+// Fungsi untuk pindah halaman
 const goToPage = (page) => {
   currentPage.value = page;
   pagination.value = page;

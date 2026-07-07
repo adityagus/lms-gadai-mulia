@@ -22,12 +22,14 @@
         "vue-loader": "^16.8.3"
     },
     "dependencies": {
+        "@bhplugin/vue3-datatable": "^2.0.2",
         "@ckeditor/ckeditor5-build-classic": "^41.4.2",
         "@ckeditor/ckeditor5-vue": "^6.0.0",
         "@primeuix/themes": "^1.1.2",
         "@tanstack/vue-query": "^5.83.0",
         "@vee-validate/zod": "^4.15.1",
         "@vuepic/vue-datepicker": "^11.0.2",
+        "aos": "^2.3.4",
         "ckeditor5": "^42.0.2",
         "primevue": "^4.3.5",
         "secure-ls": "^2.0.0",

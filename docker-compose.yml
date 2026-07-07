@@ -1,0 +1,44 @@
+services:
+
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: lmsgadai-web
+    ports:
+      - "80:80"
+    environment:
+      DB_HOST: "mysql-shared-instance"
+      DB_PORT: "3306"
+      DB_USERNAME: "root"
+      DB_PASSWORD: "aditya@123"
+      DB2_HOST: "postgres-shared-instance"
+      DB2_PORT: "5432"
+
+    volumes:
+      - .:/var/www/html
+
+    networks:
+      - default
+      - global-shared-network
+
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+  # minio:
+  #   image: minio/minio
+  #   container_name: minio-selada
+  #   ports:
+  #     - "9090:9000"
+  #     - "9091:9001"
+  #   environment:
+  #     MINIO_ROOT_USER: minioadmin
+  #     MINIO_ROOT_PASSWORD: minioadmin
+  #   command: server /data --console-address ":9001"
+  #   volumes:
+  #     - minio_selada_data:/data
+  #   networks:
+  #     - default
+
+networks:
+  global-shared-network:
+    external: true

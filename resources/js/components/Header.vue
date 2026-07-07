@@ -1,5 +1,15 @@
 <template>
   <div id="TopBar" class="flex items-center justify-between gap-[30px]">
+    <!-- Tombol hamburger, hanya tampil di mobile -->
+    <button
+      class="md:hidden mr-2 bg-sidebar p-2 rounded-lg shadow-lg focus:outline-none transition duration-200 hover:scale-105"
+      @click="$emit('toggleSidebar')">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"
+        class="w-7 h-7 text-white">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+      </svg>
+    </button>
+
     <div
       class="flex items-center w-full max-w-[450px] rounded-full border border-[#CFDBEF] gap-3 px-5 transition-all duration-300 focus-within:ring-2 focus-within:ring-[#662FFF]">
       <button
@@ -11,7 +21,7 @@
     </div>
 
     <!-- Modal Search Custom -->
-    <div v-if="showSearch" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50" @click="closeSearch">
+    <div v-if="showSearch" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 px-3" @click="closeSearch">
       <div class="bg-white rounded-2xl shadow-2xl w-[500px] max-h-[600px] relative" @click.stop>
         <!-- Header -->
         <div class="flex items-center justify-between p-6 border-b border-gray-100">

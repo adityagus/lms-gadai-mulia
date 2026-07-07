@@ -72,10 +72,26 @@ class Announcement extends Model
     {
         return $this->hasMany(DocumentRegion::class, 'document_id', 'id');
     }
-    
-    public function mst_area() {
-        $data = \DB::table('mst_area')->get();
-        return $data;
-    }
 
-  }
+    /**
+     * Scope a query to only include announcements accessible by the user's role and region.
+     *
+     * @param \Illuminate\Database\Eloquent\Builder $query
+     * @param string|null $jbt
+     * @param string|null $cabang
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopeForUser($query, $jbt, $cabang)
+    {
+        if ($cabang !== null && $cabang !== '') {
+            return $query->whereHas('document_position', function ($q) use ($jbt) {
+                $q->where('kd_jbt', $jbt);
+            })
+            ->whereHas('document_regional', function ($q) use ($cabang) {
+                $q->where('regional_id', $cabang);
+            });
+        }
+
+        return $query;
+    }
+}

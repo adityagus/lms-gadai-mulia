@@ -8,11 +8,11 @@
   />
   
   <!-- User Dashboard Section -->
-  <section class="mb-8">
+  <section class="">
     <h2 class="font-bold text-xl mb-2">Hi, {{ user.nama }} 👋</h2>
     <p class="text-gray-500 mb-4">Selamat datang di dashboard beladiri!</p>
     <!-- Kursus dan Dokumen Terakhir -->
-    <div class="grid grid-cols-2 gap-6 mt-8">
+    <div class="grid grid-cols-2 gap-6 mt-4">
       <div class="bg-white rounded-xl p-6 shadow">
         <p class="text-lg font-semibold mb-2">Kursus Terakhir Dilihat </p>
         <ul>
@@ -32,6 +32,45 @@
         </ul>
       </div>
     </div>
+  </section>
+
+  <section class="-mt-6">
+    <div class="bg-white rounded-[20px] p-6 shadow-[0_4px_4px_0_#E0E2EF] mt-4">
+    <h3 class="font-extrabold text-xl leading-[30px] mb-4">Dokumen Terbaru Diupload</h3>
+    <div class="overflow-x-auto">
+      <table class="min-w-full divide-y divide-gray-200 text-sm">
+        <thead>
+          <tr>
+            <th class="px-4 py-3 text-left font-bold text-[#838C9D] uppercase tracking-wider">Judul Dokumen</th>
+            <th class="px-4 py-3 text-left font-bold text-[#838C9D] uppercase tracking-wider">Kategori</th>
+            <th class="px-4 py-3 text-left font-bold text-[#838C9D] uppercase tracking-wider">Tanggal Upload</th>
+            <th class="px-4 py-3 text-left font-bold text-[#838C9D] uppercase tracking-wider">Diupload Oleh</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-gray-100">
+          <tr v-for="doc in latestUploadedDocuments" :key="doc.id" class="hover:bg-gray-50 transition-colors">
+            <td class="px-4 py-3 whitespace-nowrap">
+              <a href="#" @click.prevent="openDetail(doc)" class="text-blue-600 hover:underline font-semibold">{{ doc.title }}</a>
+            </td>
+            <td class="px-4 py-3 whitespace-nowrap text-gray-600">
+              <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
+                {{ doc.menu?.name || 'Dokumen' }}
+              </span>
+            </td>
+            <td class="px-4 py-3 whitespace-nowrap text-gray-500">{{ formatDate(doc.created_at) }}</td>
+            <td class="px-4 py-3 whitespace-nowrap">
+              <span class="inline-flex items-center gap-1.5 py-1 px-2 rounded-lg text-xs font-semibold bg-blue-50 text-blue-600">
+                {{ doc.uploader_name }}
+              </span>
+            </td>
+          </tr>
+          <tr v-if="!latestUploadedDocuments || latestUploadedDocuments.length === 0">
+            <td colspan="4" class="px-4 py-8 text-center text-gray-400">Belum ada dokumen terbaru.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
   </section>
 
   <!-- Overview Perusahaan -->
@@ -80,6 +119,7 @@
             <p class="text-[#838C9D]">Total Formulir</p>
           </div>
         </div>
+
       </div>
       <!-- <div class="flex flex-col flex-1 rounded-[20px] p-5 gap-5 bg-white shadow-[0_4px_4px_0_#E0E2EF]">
          <div class="relative flex items-center justify-center shrink-0 m-auto rounded-full w-[230px] h-[230px]">
@@ -114,6 +154,7 @@ import axios from 'axios'
 import CardCourses from '../courses/card.vue'
 import { adminOverview, userOverview } from '../../services/masterService'
 import { getLastDocumentPreview } from '../../services/announcementService'
+import { recordDocumentView } from '../../services/documentViewService'
 import OpenModalPDF from '@/components/openModalPDF.vue';
 
 
@@ -128,11 +169,31 @@ const showModal = ref(false);
 const modalRef = ref(null);
 const lastCourses = ref([])
 const lastDocuments = ref([])
+const latestUploadedDocuments = ref([])
+
+const formatDate = (dateStr) => {
+  if (!dateStr) return '-';
+  const date = new Date(dateStr);
+  return date.toLocaleDateString('id-ID', {
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit'
+  });
+}
 
 async function openDetail(card) {
   if (modalRef.value && modalRef.value.openModal) {
     modalRef.value.openModal(card);
-    await getLastDocumentPreview(card.id);
+    try {
+      await Promise.all([
+        getLastDocumentPreview(card.id),
+        recordDocumentView(card.id)
+      ]);
+    } catch (err) {
+      console.error('Failed to log document view or update preview history:', err);
+    }
   }
   
   console.log('openDetail', modalRef.value, card)
@@ -149,6 +210,7 @@ onMounted(async () => {
     user.value = userRes.data.user
     userStats.value = userRes.data.stats
     overview.value = adminRes.data.stats
+    latestUploadedDocuments.value = adminRes.data.latest_documents || []
     // Ambil kursus dan dokumen terakhir
     lastCourses.value = userRes.data.last_courses || []
     lastDocuments.value = userRes.data.last_documents || []

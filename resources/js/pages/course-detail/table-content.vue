@@ -9,7 +9,7 @@
             Isi Materi
           </h2>
           <RouterLink
-            :to="`/course/create-contents/${courseId}`"
+            :to="`/course/create-contents/${props.courseId}`"
             class="w-fit rounded-full p-[14px_20px] font-semibold text-[#FFFFFF] bg-[#662FFF] text-nowrap"
           >
             Tambah Materi
@@ -119,13 +119,12 @@ import Swal from 'sweetalert2';
 const totalPages = ref(5);
 const pagination = ref(1);
 const currentContents = ref({});
-const courseId = ref(null);
 
 const props = defineProps({
-  contents: {
-    type: Object,
-    required: true
-  },
+    contents: {
+        type: Object,
+        required: true
+    },
   courseId: {
     type: [String, Number],
     required: true
@@ -138,10 +137,6 @@ const emit = defineEmits(['update:contents']);
 // Initialize current contents with props
 currentContents.value = props.contents;
 console.log("Initial props:", props);
-
-onMounted(() => {
-  courseId.value = props.courseId;
-});
 
 // Watch for changes in props.contents
 watch(() => props.contents, (newContents) => {

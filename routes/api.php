@@ -11,6 +11,7 @@ use App\Http\Controllers\api\ContentController;
 use App\Http\Controllers\InformationController;
 use App\Http\Controllers\api\FileUploadController;
 use App\Http\Controllers\api\AnnouncementController;
+use App\Http\Controllers\api\DocumentViewController;
 
 /*
 |--------------------------------------------------------------------------
@@ -76,8 +77,8 @@ Route::post('/announcements', [AnnouncementController::class, 'store']);
 Route::post('/announcements/{document_id}', [AnnouncementController::class, 'update']);
 Route::patch('/announcements/{document_id}/restore', [AnnouncementController::class, 'restore']);
 Route::delete('/announcements/{document_id}', [AnnouncementController::class, 'destroy']);
-
 // 🔹 Master data
+
 Route::prefix('master')->group(function () {
     Route::get('jabatan', [MasterController::class, 'getJabatan']);
     Route::get('areas', [MasterController::class, 'getAreas']);
@@ -91,9 +92,14 @@ Route::post('/wizard/step/{step}', [WizardController::class, 'saveStep']);
 Route::get('/wizard/session', [WizardController::class, 'getSession']);
 Route::post('/wizard/finish', [WizardController::class, 'finish']);
 
-
-
-
+// 🔹 Document View Tracker
+Route::middleware(['web', 'api'])->group(function () {
+    Route::post('/document-views', [DocumentViewController::class, 'store']);
+    Route::get('/document-views/stats', [DocumentViewController::class, 'stats']);
+    Route::get('/document-views/document/{document_id}/check', [DocumentViewController::class, 'check']);
+    Route::get('/document-views/document/{document_id}/unviewed', [DocumentViewController::class, 'unviewedUsers']);
+    Route::get('/document-views/document/{document_id}/viewed', [DocumentViewController::class, 'viewedUsers']);
+});
 
 });
 

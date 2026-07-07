@@ -11,6 +11,7 @@ use App\Http\Controllers\InformationController;
 use App\Http\Controllers\migrasiDataController;
 use App\Http\Controllers\api\FileUploadController;
 use App\Http\Controllers\api\AnnouncementController;
+use App\Http\Controllers\api\DocumentViewController;
 
 /*
 |--------------------------------------------------------------------------
@@ -106,8 +107,14 @@ Route::get('csrf-token', function (Request $request) {
     return response()->json(['csrf_token' => csrf_token()]);
 });
 
-// migrasi data
-
+// 🔹 Document View Tracker
+Route::middleware(['web'])->group(function () {
+    Route::post('/document-views', [DocumentViewController::class, 'store']);
+    Route::get('/document-views/stats', [DocumentViewController::class, 'stats']);
+    Route::get('/document-views/document/{document_id}/check', [DocumentViewController::class, 'check']);
+    Route::get('/document-views/document/{document_id}/unviewed', [DocumentViewController::class, 'unviewedUsers']);
+    Route::get('/document-views/document/{document_id}/viewed', [DocumentViewController::class, 'viewedUsers']);
+});
 
 // 🔹 Catch-all for SPA (Vue/React/Next.js front-end)
 // ⚠️ TARUH PALING BAWAH

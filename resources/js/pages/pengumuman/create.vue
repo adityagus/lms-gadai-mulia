@@ -205,6 +205,7 @@ watch(createType, (newVal) => {
 });
 
 
+const regionals_arr = [];
 const step = ref(1)
 const stepLabels = [name, 'Wilayah', 'Jabatan']
 const daftarJabatan = ref([]);
@@ -299,17 +300,15 @@ function toggleAllJabatan(e) {
 }
 
 const isAllCabangChecked = computed(() => {
-  // Hitung semua id_area dan anaknya
-  const allIds = [];
+  const allChildIds = [];
   areas.value.forEach(area => {
-    allIds.push(area.id_area);
     if (area.children && area.children.length > 0) {
       area.children.forEach(child => {
-        allIds.push(child.id_area);
+        allChildIds.push(child.id_area);
       });
     }
   });
-  return regionals_id.value.length === allIds.length;
+  return allChildIds.length > 0 && regionals_id.value.length === allChildIds.length;
 });
 
 function toggleAllCabang(e) {
@@ -333,7 +332,7 @@ const loadContentData = async () => {
   const data = await getDocumentById(announcementId);
   const result = data.data
   console.log('Loaded document data:', result);
-
+  
   title.value = result.title;
   no_surat.value = result.no_surat;
   tgl_berlaku.value = result.tgl_berlaku;
@@ -341,7 +340,7 @@ const loadContentData = async () => {
   kd_jabatan.value = (result.document_position || [])
     .map(item => item.kd_jbt) || [];
   regionals_id.value = (result.document_regional || [])
-    .map(item => item.regional_id) || [];
+    .map(item => String(item.regional_id)) || [];
   urlThumbnail.value = result.url;
   content.value = result.content;
   type.value = result.type;

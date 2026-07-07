@@ -1,5 +1,5 @@
 <template>
-  <div v-if="showModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
+  <div v-if="showModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40 mx-5">
     <div class="bg-white w-[1200px] rounded-2xl shadow-2xl p-0 relative flex flex-col max-h-[95vh]">
       <button @click="closeModal" class="absolute top-3 right-3 text-gray-400 hover:text-gray-700 text-xl font-bold z-50">&times;</button>
       <div v-if="selectedCard" class="overflow-y-auto scrollbar-hidden px-8 pt-8 pb-2 flex-1 rounded-2xl" style="max-height:calc(95vh - 70px);">

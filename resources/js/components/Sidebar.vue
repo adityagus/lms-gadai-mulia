@@ -1,363 +1,152 @@
 <template>
   <div>
-    <!-- Hamburger Button (Mobile) -->
-    <button @click="sidebarOpen = true"
-      class="md:hidden fixed top-4 left-4 z-50 bg-sidebar p-2 rounded-lg shadow-lg focus:outline-none">
-      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"
-        class="w-7 h-7 text-white">
-        <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
-      </svg>
-    </button>
-    <!-- Overlay -->
-    <div v-if="sidebarOpen" class="fixed inset-0 bg-black bg-opacity-40 z-40 md:hidden" @click="sidebarOpen = false"></div>
-    <aside
-      :class="['sidebar-container fixed h-[calc(100vh-20px)] w-full max-w-[280px] my-[10px] ml-[10px] bg-[#060A23] overflow-hidden flex flex-1 rounded-[20px] z-50 transition-transform duration-300', sidebarOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0']">
-      <div class="scroll-container flex w-full overflow-y-scroll hide-scrollbar">
+    <div v-if="sidebarOpen && isMobile"
+      :class="['fixed inset-0 bg-black bg-opacity-40 z-40 md:hidden transition-opacity duration-300']" @click="$emit('closeSidebar')">
+    </div>
+    <aside v-if="sidebarOpen || !isMobile"
+      :class="['sidebar-container fixed h-[calc(100vh-20px)] w-full max-w-[280px] my-[10px] bg-[#060A23] overflow-hidden flex flex-1 rounded-[20px] z-50 ml-[10px] transition-transform duration-300', sidebarOpen ? 'translate-x-0 ' : '-translate-x-full md:translate-x-0', 'shadow-2xl']">
+      <div class="scroll-container flex w-full overflow-y-scroll hide-scrollbar custom-scrollbar">
         <nav class="flex flex-col w-full h-fit p-[30px] gap-10 z-10">
-          <router-link to="/">
-            <img src="/assets/images/logos/lms.png" alt="logo" />
+          <router-link to="/" class="flex justify-center">
+            <img src="/assets/images/logos/lms.png" alt="logo" class="transition duration-200 hover:scale-105" />
           </router-link>
           <ul class="flex flex-col gap-1">
             <p class="font-semibold text-xs leading-[18px] text-white">
-              GENERAL
+              UMUM
             </p>
-            <li :class="{ 'active': $route.name === 'overview' }">
-              <div @click="handleMainMenuClick('/overview')">
-                <div
-                  class="flex items-center gap-3 w-full py-2 px-5 rounded-xl transition-all duration-300 hover:shadow-[-10px_-6px_10px_0_#7F33FF_inset] cursor-pointer">
-                  <img src="/assets/images/icons/3dcube-white.svg" class="w-6 h-6" alt="icon" />
-                  <span class="font-semibold text-white">Overview</span>
-                </div>
+            <li :class="{ 'active': $route.name === 'overview' }" class="transition-all duration-200">
+              <div @click="handleMainMenuClick('/overview')"
+                class="flex items-center gap-3 w-full py-3 px-5 rounded-xl transition-all duration-200 hover:bg-[#7F33FF33] cursor-pointer group">
+                <img src="/assets/images/icons/3dcube-white.svg" class="w-6 h-6" alt="icon" />
+                <span class="font-semibold text-white group-hover:text-[#7F33FF] transition">Ringkasan</span>
               </div>
             </li>
-            <li :class="{ 'active': $route.path === '/lms' || $route.path === '/student/lms' }">
-              <div @click="handleMainMenuClick('/lms')">
-                <div
-                  class="flex items-center gap-3 w-full py-2 px-5 rounded-lg transition-all duration-300 hover:shadow-[-10px_-6px_10px_0_#7F33FF_inset] cursor-pointer">
-                  <img src="/assets/images/icons/note-favorite-white.svg" class="w-6 h-6" alt="icon" />
-                  <span class="font-semibold text-white">LMS</span>
-                </div>
+            <li :class="{ 'active': $route.path === '/lms' || $route.path === '/student/lms' }" class="transition-all duration-200">
+              <div @click="handleMainMenuClick('/lms')"
+                class="flex items-center gap-3 w-full py-3 px-5 rounded-lg transition-all duration-200 hover:bg-[#7F33FF33] cursor-pointer group">
+                <img src="/assets/images/icons/note-favorite-white.svg" class="w-6 h-6" alt="icon" />
+                <span class="font-semibold text-white group-hover:text-[#7F33FF] transition">Pembelajaran</span>
               </div>
             </li>
-            <li>
+            <li class="transition-all duration-200">
               <div @click="handleParentClick('info')"
-                :class="['flex items-center gap-3 w-full py-2 px-5 rounded-lg transition-all duration-300 cursor-pointer', openMenu === 'info' ? 'active' : '']">
+                :class="['flex items-center gap-3 w-full py-3 px-5 rounded-lg transition-all duration-200 cursor-pointer group', openMenu === 'info' ? 'active' : '', 'hover:bg-[#7F33FF33]']">
                 <img src="/assets/images/icons/crown-white.svg" class="" alt="icon" />
-                <span class="font-semibold text-white">Informasi</span>
-                <svg :class="['ml-auto transition-transform w-7', openMenu === 'info' ? 'rotate-90' : '']" width="25" height="25"
+                <span class="font-semibold text-white group-hover:text-[#7F33FF] transition">Informasi</span>
+                <svg width="24" height="24" :class="['ml-auto transition-transform w-7', openMenu === 'info' ? 'rotate-90' : '']" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M9 5L16 12L9 19" stroke-width="2" stroke='white' stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+                
+                
+
+                <!-- <svg :class="['ml-auto transition-transform w-7', openMenu === 'info' ? 'rotate-90' : '']" width="25" height="25"
                   fill="white" stroke="currentColor" stroke-width="2">
                   <path d="M6 9l6-3-6-3" />
-                </svg>
-
+                </svg> -->
               </div>
-              <ul v-if="openMenu === 'info'" class="pl-12 mt-2 space-y-2">
-                <li :class="{ 'active': activeSub === '/pengumuman' }">
-                  <div @click.prevent="handleSubClick('/pengumuman')" href="#"
-                    class="text-white hover:text-gray-300 px-5 cursor-pointer">
-                    <span class="font-semibold text-white">Pengumuman</span>
-                  </div>
-                </li>
-                <li :class="{ 'active': activeSub === '/formulir' }">
-                  <div @click.prevent="handleSubClick('/formulir')" href="#"
-                    class="text-white hover:text-gray-300 px-5 cursor-pointer">
-                    <span class="font-semibold text-white">Formulir</span>
-                  </div>
-                </li>
-              </ul>
+              <transition name="fade">
+                <ul v-if="openMenu === 'info'" class="pl-12 mt-2 space-y-2">
+                  <li :class="{ 'active': activeSub === '/pengumuman' }" class="transition-all duration-200">
+                    <div @click.prevent="handleSubClick('/pengumuman')" href="#"
+                      class="text-white hover:text-[#7F33FF] px-5 py-2 rounded-lg cursor-pointer transition-all duration-200">
+                      <span class="font-semibold text-white group-hover:text-[#7F33FF] transition">Pengumuman</span>
+                    </div>
+                  </li>
+                  <li :class="{ 'active': activeSub === '/formulir' }" class="transition-all duration-200">
+                    <div @click.prevent="handleSubClick('/formulir')" href="#"
+                      class="text-white hover:text-[#7F33FF] px-5 py-2 rounded-lg cursor-pointer transition-all duration-200">
+                      <span class="font-semibold text-white group-hover:text-[#7F33FF] transition">Formulir</span>
+                    </div>
+                  </li>
+                </ul>
+              </transition>
             </li>
-
           </ul>
           <ul class="flex flex-col gap-4" v-if='auth && (auth.idgrup === "JBT-032" || auth.idgrup === "JBT-038")'>
             <p class="font-semibold text-xs leading-[18px] text-white">
               Master
             </p>
-            <!-- <li :class="{ 'active': $route.path === '/admin/migrasi-data' }">
-              <div @click="handleMainMenuClick('/admin/migrasi-data')">
-                <div
-                  class="flex items-center gap-3 w-full py-2 px-5 rounded-lg transition-all duration-300 hover:shadow-[-10px_-6px_10px_0_#7F33FF_inset] cursor-pointer">
-                  <img src="/assets/images/icons/profile-2user-white.svg" class="w-6 h-6" alt="icon" />
-                  <span class="font-semibold text-white">Migrasi Data</span>
-                </div>
-              </div>
-            </li> -->
-            <li :class="{ 'active': $route.path === '/master/categories' }">
-              <div @click="handleMainMenuClick('/master/categories')">
-                <div
-                  class="flex items-center gap-3 w-full py-2 px-5 rounded-lg transition-all duration-300 hover:shadow-[-10px_-6px_10px_0_#7F33FF_inset] cursor-pointer">
-                  <img src="/assets/images/icons/crown-white.svg" class="w-6 h-6" alt="icon" />
-                  <span class="font-semibold text-white">
-                    Categories
-                  </span>
-                </div>
+            <li :class="{ 'active': $route.path === '/master/categories' }" class="transition-all duration-200">
+              <div @click="handleMainMenuClick('/master/categories')"
+                class="flex items-center gap-3 w-full py-3 px-5 rounded-lg transition-all duration-200 hover:bg-[#7F33FF33] cursor-pointer group">
+                <img src="/assets/images/icons/crown-white.svg" class="w-6 h-6" alt="icon" />
+                <span class="font-semibold text-white group-hover:text-[#7F33FF] transition">
+                  Kategori
+                </span>
               </div>
             </li>
-            <!-- menu migrasi data -->
-            <!-- <li>
-              <a href="/instructors">
-                <div
-                  class="flex items-center gap-3 w-full py-2 px-5 rounded-lg transition-all duration-300 hover:shadow-[-10px_-6px_10px_0_#7F33FF_inset]">
-                  <img src="/assets/images/icons/teacher-white.svg" class="w-6 h-6" alt="icon" />
-                  <span class="font-semibold text-white">Instructors</span>
-                </div>
-              </a>
+            <li :class="{ 'active': $route.path === '/master/audit-logs' }" class="transition-all duration-200">
+              <div @click="handleMainMenuClick('/master/audit-logs')"
+                class="flex items-center gap-3 w-full py-3 px-5 rounded-lg transition-all duration-200 hover:bg-[#7F33FF33] cursor-pointer group">
+                <img src="/assets/images/icons/note-favorite-white.svg" class="w-6 h-6" alt="icon" />
+                <span class="font-semibold text-white group-hover:text-[#7F33FF] transition">
+                  Log Dokumen
+                </span>
+              </div>
             </li>
-            <li>
-              <a href="#">
-                <div
-                  class="flex items-center gap-3 w-full py-2 px-5 rounded-lg transition-all duration-300 hover:shadow-[-10px_-6px_10px_0_#7F33FF_inset]">
-                  <img src="/assets/images/icons/security-card-white.svg" class="w-6 h-6" alt="icon" />
-                  <span class="font-semibold text-white">Subscription</span>
-                </div>
-              </a>
-            </li>
-            <li>
-              <a href="#">
-                <div
-                  class="flex items-center gap-3 w-full py-2 px-5 rounded-lg transition-all duration-300 hover:shadow-[-10px_-6px_10px_0_#7F33FF_inset]">
-                  <img src="/assets/images/icons/cup-white.svg" class="w-6 h-6" alt="icon" />
-                  <span class="font-semibold text-white">Rewards</span>
-                </div>
-              </a>
-            </li>
-            <li>
-              <a href="#">
-                <div
-                  class="flex items-center gap-3 w-full py-2 px-5 rounded-lg transition-all duration-300 hover:shadow-[-10px_-6px_10px_0_#7F33FF_inset]">
-                  <img src="/assets/images/icons/setting-2-white.svg" class="w-6 h-6" alt="icon" />
-                  <span class="font-semibold text-white">Settings</span>
-                </div>
-              </a>
-            </li> -->
           </ul>
         </nav>
       </div>
       <img src="/assets/images/backgrounds/sidebar-glow.png" class="absolute object-contain object-bottom bottom-0" alt="background" />
     </aside>
   </div>
-  <!-- <aside class="sidebar-container fixed h-[calc(100vh)] w-full max-w-[280px]  overflow-hidden flex flex-1 bg-blue-400">
-      <div
-    class="relative flex h-full w-full max-w-[20rem] flex-col  bg-clip-border p-4 text-white shadow-xl shadow-blue-gray-900/5 overflow-scroll">
-    <div class="flex items-center gap-4 p-4 mb-2">
-      <img src="https://docs.material-tailwind.com/img/logo-ct-dark.png" alt="brand" class="w-8 h-8" />
-      <h5 class="block font-sans text-xl antialiased font-semibold leading-snug tracking-normal text-blue-gray-900">
-        Sidebar
-      </h5>
-    </div>
-    <nav class="flex min-w-[240px] flex-col gap-1 p-2 font-sans text-base font-normal text-blue-gray-700">
-      <div class="relative block w-full">
-        <div role="button"
-          class="flex items-center w-full p-0 leading-tight transition-all rounded-lg outline-none text-start hover:bg-blue-gray-50 hover:bg-opacity-80 hover:text-blue-gray-900 focus:bg-blue-gray-50 focus:bg-opacity-80 focus:text-blue-gray-900 active:bg-blue-gray-50 active:bg-opacity-80 active:text-blue-gray-900">
-          <button type="button"
-            class="flex items-center justify-between w-full p-3 font-sans text-xl antialiased font-semibold leading-snug text-left transition-colors border-b-0 select-none border-b-blue-gray-100 text-blue-gray-700 hover:text-blue-gray-900">
-            <div class="grid mr-4 place-items-center">
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"
-                class="w-5 h-5">
-                <path fill-rule="evenodd"
-                  d="M2.25 2.25a.75.75 0 000 1.5H3v10.5a3 3 0 003 3h1.21l-1.172 3.513a.75.75 0 001.424.474l.329-.987h8.418l.33.987a.75.75 0 001.422-.474l-1.17-3.513H18a3 3 0 003-3V3.75h.75a.75.75 0 000-1.5H2.25zm6.04 16.5l.5-1.5h6.42l.5 1.5H8.29zm7.46-12a.75.75 0 00-1.5 0v6a.75.75 0 001.5 0v-6zm-3 2.25a.75.75 0 00-1.5 0v3.75a.75.75 0 001.5 0V9zm-3 2.25a.75.75 0 00-1.5 0v1.5a.75.75 0 001.5 0v-1.5z"
-                  clip-rule="evenodd"></path>
-              </svg>
-            </div>
-            <p class="block mr-auto font-sans text-base antialiased font-normal leading-relaxed text-blue-gray-900">
-              Dashboard
-            </p>
-            <span class="ml-4">
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5"
-                stroke="currentColor" aria-hidden="true" class="w-4 h-4 mx-auto transition-transform">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5"></path>
-              </svg>
-            </span>
-          </button>
-        </div>
-        <div class="overflow-hidden">
-          <div class="block w-full py-1 font-sans text-sm antialiased font-light leading-normal text-gray-700">
-            <nav class="flex min-w-[240px] flex-col gap-1 p-0 font-sans text-base font-normal text-blue-gray-700">
-              <div role="button"
-                class="flex items-center w-full p-3 leading-tight transition-all rounded-lg outline-none text-start hover:bg-blue-gray-50 hover:bg-opacity-80 hover:text-blue-gray-900 focus:bg-blue-gray-50 focus:bg-opacity-80 focus:text-blue-gray-900 active:bg-blue-gray-50 active:bg-opacity-80 active:text-blue-gray-900">
-                <div class="grid mr-4 place-items-center">
-                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="3"
-                    stroke="currentColor" aria-hidden="true" class="w-5 h-3">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5"></path>
-                  </svg>
-                </div>
-                Analytics
-              </div>
-              <div role="button"
-                class="flex items-center w-full p-3 leading-tight transition-all rounded-lg outline-none text-start hover:bg-blue-gray-50 hover:bg-opacity-80 hover:text-blue-gray-900 focus:bg-blue-gray-50 focus:bg-opacity-80 focus:text-blue-gray-900 active:bg-blue-gray-50 active:bg-opacity-80 active:text-blue-gray-900">
-                <div class="grid mr-4 place-items-center">
-                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="3"
-                    stroke="currentColor" aria-hidden="true" class="w-5 h-3">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5"></path>
-                  </svg>
-                </div>
-                Reporting
-              </div>
-              <div role="button"
-                class="flex items-center w-full p-3 leading-tight transition-all rounded-lg outline-none text-start hover:bg-blue-gray-50 hover:bg-opacity-80 hover:text-blue-gray-900 focus:bg-blue-gray-50 focus:bg-opacity-80 focus:text-blue-gray-900 active:bg-blue-gray-50 active:bg-opacity-80 active:text-blue-gray-900">
-                <div class="grid mr-4 place-items-center">
-                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="3"
-                    stroke="currentColor" aria-hidden="true" class="w-5 h-3">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5"></path>
-                  </svg>
-                </div>
-                Projects
-              </div>
-            </nav>
-          </div>
-        </div>
-      </div>
-      <div class="relative block w-full">
-        <div role="button"
-          class="flex items-center w-full p-0 leading-tight transition-all rounded-lg outline-none text-start hover:bg-blue-gray-50 hover:bg-opacity-80 hover:text-blue-gray-900 focus:bg-blue-gray-50 focus:bg-opacity-80 focus:text-blue-gray-900 active:bg-blue-gray-50 active:bg-opacity-80 active:text-blue-gray-900">
-          <button type="button"
-            class="flex items-center justify-between w-full p-3 font-sans text-xl antialiased font-semibold leading-snug text-left transition-colors border-b-0 select-none border-b-blue-gray-100 text-blue-gray-700 hover:text-blue-gray-900">
-            <div class="grid mr-4 place-items-center">
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"
-                class="w-5 h-5">
-                <path fill-rule="evenodd"
-                  d="M7.5 6v.75H5.513c-.96 0-1.764.724-1.865 1.679l-1.263 12A1.875 1.875 0 004.25 22.5h15.5a1.875 1.875 0 001.865-2.071l-1.263-12a1.875 1.875 0 00-1.865-1.679H16.5V6a4.5 4.5 0 10-9 0zM12 3a3 3 0 00-3 3v.75h6V6a3 3 0 00-3-3zm-3 8.25a3 3 0 106 0v-.75a.75.75 0 011.5 0v.75a4.5 4.5 0 11-9 0v-.75a.75.75 0 011.5 0v.75z"
-                  clip-rule="evenodd"></path>
-              </svg>
-            </div>
-            <p class="block mr-auto font-sans text-base antialiased font-normal leading-relaxed text-blue-gray-900">
-              E-Commerce
-            </p>
-            <span class="ml-4">
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5"
-                stroke="currentColor" aria-hidden="true" class="w-4 h-4 mx-auto transition-transform">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5"></path>
-              </svg>
-            </span>
-          </button>
-        </div>
-        <div class="overflow-hidden">
-          <div class="block w-full py-1 font-sans text-sm antialiased font-light leading-normal text-gray-700">
-            <nav class="flex min-w-[240px] flex-col gap-1 p-0 font-sans text-base font-normal text-blue-gray-700">
-              <div role="button"
-                class="flex items-center w-full p-3 leading-tight transition-all rounded-lg outline-none text-start hover:bg-blue-gray-50 hover:bg-opacity-80 hover:text-blue-gray-900 focus:bg-blue-gray-50 focus:bg-opacity-80 focus:text-blue-gray-900 active:bg-blue-gray-50 active:bg-opacity-80 active:text-blue-gray-900">
-                <div class="grid mr-4 place-items-center">
-                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="3"
-                    stroke="currentColor" aria-hidden="true" class="w-5 h-3">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5"></path>
-                  </svg>
-                </div>
-                Orders
-              </div>
-              <div role="button"
-                class="flex items-center w-full p-3 leading-tight transition-all rounded-lg outline-none text-start hover:bg-blue-gray-50 hover:bg-opacity-80 hover:text-blue-gray-900 focus:bg-blue-gray-50 focus:bg-opacity-80 focus:text-blue-gray-900 active:bg-blue-gray-50 active:bg-opacity-80 active:text-blue-gray-900">
-                <div class="grid mr-4 place-items-center">
-                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="3"
-                    stroke="currentColor" aria-hidden="true" class="w-5 h-3">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5"></path>
-                  </svg>
-                </div>
-                Products
-              </div>
-            </nav>
-          </div>
-        </div>
-      </div>
-      <hr class="my-2 border-blue-gray-50" />
-      <div role="button"
-        class="flex items-center w-full p-3 leading-tight transition-all rounded-lg outline-none text-start hover:bg-blue-gray-50 hover:bg-opacity-80 hover:text-blue-gray-900 focus:bg-blue-gray-50 focus:bg-opacity-80 focus:text-blue-gray-900 active:bg-blue-gray-50 active:bg-opacity-80 active:text-blue-gray-900">
-        <div class="grid mr-4 place-items-center">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"
-            class="w-5 h-5">
-            <path fill-rule="evenodd"
-              d="M6.912 3a3 3 0 00-2.868 2.118l-2.411 7.838a3 3 0 00-.133.882V18a3 3 0 003 3h15a3 3 0 003-3v-4.162c0-.299-.045-.596-.133-.882l-2.412-7.838A3 3 0 0017.088 3H6.912zm13.823 9.75l-2.213-7.191A1.5 1.5 0 0017.088 4.5H6.912a1.5 1.5 0 00-1.434 1.059L3.265 12.75H6.11a3 3 0 012.684 1.658l.256.513a1.5 1.5 0 001.342.829h3.218a1.5 1.5 0 001.342-.83l.256-.512a3 3 0 012.684-1.658h2.844z"
-              clip-rule="evenodd"></path>
-          </svg>
-        </div>
-        Inbox
-        <div class="grid ml-auto place-items-center justify-self-end">
-          <div
-            class="relative grid items-center px-2 py-1 font-sans text-xs font-bold uppercase rounded-full select-none whitespace-nowrap bg-blue-gray-500/20 text-blue-gray-900">
-            <span class="">14</span>
-          </div>
-        </div>
-      </div>
-      <div role="button"
-        class="flex items-center w-full p-3 leading-tight transition-all rounded-lg outline-none text-start hover:bg-blue-gray-50 hover:bg-opacity-80 hover:text-blue-gray-900 focus:bg-blue-gray-50 focus:bg-opacity-80 focus:text-blue-gray-900 active:bg-blue-gray-50 active:bg-opacity-80 active:text-blue-gray-900">
-        <div class="grid mr-4 place-items-center">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"
-            class="w-5 h-5">
-            <path fill-rule="evenodd"
-              d="M18.685 19.097A9.723 9.723 0 0021.75 12c0-5.385-4.365-9.75-9.75-9.75S2.25 6.615 2.25 12a9.723 9.723 0 003.065 7.097A9.716 9.716 0 0012 21.75a9.716 9.716 0 006.685-2.653zm-12.54-1.285A7.486 7.486 0 0112 15a7.486 7.486 0 015.855 2.812A8.224 8.224 0 0112 20.25a8.224 8.224 0 01-5.855-2.438zM15.75 9a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0z"
-              clip-rule="evenodd"></path>
-          </svg>
-        </div>
-        Profile
-      </div>
-      <div role="button"
-        class="flex items-center w-full p-3 leading-tight transition-all rounded-lg outline-none text-start hover:bg-blue-gray-50 hover:bg-opacity-80 hover:text-blue-gray-900 focus:bg-blue-gray-50 focus:bg-opacity-80 focus:text-blue-gray-900 active:bg-blue-gray-50 active:bg-opacity-80 active:text-blue-gray-900">
-        <div class="grid mr-4 place-items-center">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"
-            class="w-5 h-5">
-            <path fill-rule="evenodd"
-              d="M11.078 2.25c-.917 0-1.699.663-1.85 1.567L9.05 4.889c-.02.12-.115.26-.297.348a7.493 7.493 0 00-.986.57c-.166.115-.334.126-.45.083L6.3 5.508a1.875 1.875 0 00-2.282.819l-.922 1.597a1.875 1.875 0 00.432 2.385l.84.692c.095.078.17.229.154.43a7.598 7.598 0 000 1.139c.015.2-.059.352-.153.43l-.841.692a1.875 1.875 0 00-.432 2.385l.922 1.597a1.875 1.875 0 002.282.818l1.019-.382c.115-.043.283-.031.45.082.312.214.641.405.985.57.182.088.277.228.297.35l.178 1.071c.151.904.933 1.567 1.85 1.567h1.844c.916 0 1.699-.663 1.85-1.567l.178-1.072c.02-.12.114-.26.297-.349.344-.165.673-.356.985-.57.167-.114.335-.125.45-.082l1.02.382a1.875 1.875 0 002.28-.819l.923-1.597a1.875 1.875 0 00-.432-2.385l-.84-.692c-.095-.078-.17-.229-.154-.43a7.614 7.614 0 000-1.139c-.016-.2.059-.352.153-.43l.84-.692c.708-.582.891-1.59.433-2.385l-.922-1.597a1.875 1.875 0 00-2.282-.818l-1.02.382c-.114.043-.282.031-.449-.083a7.49 7.49 0 00-.985-.57c-.183-.087-.277-.227-.297-.348l-.179-1.072a1.875 1.875 0 00-1.85-1.567h-1.843zM12 15.75a3.75 3.75 0 100-7.5 3.75 3.75 0 000 7.5z"
-              clip-rule="evenodd"></path>
-          </svg>
-        </div>
-        Settings
-      </div>
-      <div role="button"
-        class="flex items-center w-full p-3 leading-tight transition-all rounded-lg outline-none text-start hover:bg-blue-gray-50 hover:bg-opacity-80 hover:text-blue-gray-900 focus:bg-blue-gray-50 focus:bg-opacity-80 focus:text-blue-gray-900 active:bg-blue-gray-50 active:bg-opacity-80 active:text-blue-gray-900">
-        <div class="grid mr-4 place-items-center">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"
-            class="w-5 h-5">
-            <path fill-rule="evenodd"
-              d="M12 2.25a.75.75 0 01.75.75v9a.75.75 0 01-1.5 0V3a.75.75 0 01.75-.75zM6.166 5.106a.75.75 0 010 1.06 8.25 8.25 0 1011.668 0 .75.75 0 111.06-1.06c3.808 3.807 3.808 9.98 0 13.788-3.807 3.808-9.98 3.808-13.788 0-3.808-3.807-3.808-9.98 0-13.788a.75.75 0 011.06 0z"
-              clip-rule="evenodd"></path>
-          </svg>
-        </div>
-        Log Out
-      </div>
-    </nav>
-  </div>
-      
-    </aside> -->
-
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, nextTick } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { getSession } from '../services/authService';
+
+const props = defineProps({
+  sidebarOpen: Boolean
+});
+const emit = defineEmits(['closeSidebar']);
 
 const route = useRoute();
 const router = useRouter();
 const openMenu = ref('');
 const activeSub = ref(route.path);
-const sidebarOpen = ref(false);
 const auth = ref(null);
+const isMobile = ref(window.innerWidth < 768);
 
+const handleResize = () => {
+  isMobile.value = window.innerWidth < 768;
+  if (!isMobile.value) {
+    emit('closeSidebar');
+  }
+};
+
+// Klik menu utama seperti "Overview" atau "LMS"
+const handleMainMenuClick = async (mainPath) => {
+  openMenu.value = '';
+  activeSub.value = mainPath;
+  // Tutup sidebar lebih dulu, lalu navigasi
+  emit('closeSidebar');
+  await nextTick();
+  router.push(mainPath);
+};
+
+// Klik menu dengan sub-menu seperti "Informasi"
 const handleParentClick = (menu) => {
-  // Jika klik parent menu, reset submenu aktif
   if (openMenu.value !== menu) {
     activeSub.value = '';
   }
   openMenu.value = openMenu.value === menu ? '' : menu;
 };
 
-const handleSubClick = (subPath) => {
+// Klik sub-menu seperti "Pengumuman" atau "Formulir"
+const handleSubClick = async (subPath) => {
   activeSub.value = subPath;
-  // Pastikan parent menu tetap aktif jika submenu diklik
   if (openMenu.value !== 'info') {
     openMenu.value = 'info';
   }
+  emit('closeSidebar');
+  await nextTick();
   router.push(subPath);
-  sidebarOpen.value = false; // close sidebar on mobile after click
-};
-
-// Tutup openMenu jika pindah ke menu utama
-const handleMainMenuClick = (mainPath) => {
-  openMenu.value = '';
-  activeSub.value = mainPath;
-  router.push(mainPath);
-  sidebarOpen.value = false;
 };
 
 onMounted(async () => {
-  // Cek jika route saat ini adalah salah satu sub-menu info
+  window.addEventListener('resize', handleResize);
   const infoSubs = ['/pengumuman', '/overview/subitem2', '/overview/subitem3'];
   if (infoSubs.includes(route.path)) {
     openMenu.value = 'info';
@@ -366,6 +155,14 @@ onMounted(async () => {
   const restAuth = await getSession();
   auth.value = restAuth.auth;
 });
+
+if (typeof window !== 'undefined') {
+  window.addEventListener('resize', () => {
+    if (window.innerWidth >= 768) {
+      emit('closeSidebar');
+    }
+  });
+}
 </script>
 
 <style>
@@ -373,5 +170,56 @@ onMounted(async () => {
   background-color: #7F33FF !important;
   color: white !important;
   border-radius: 10px !important;
+  box-shadow: 0 2px 8px #7F33FF44;
+}
+/* Pastikan menu aktif tetap jelas saat hover */
+.active:hover,
+.active:focus {
+  background-color: #7F33FF !important;
+  color: white !important;
+  filter: none !important;
+  opacity: 1 !important;
+}
+/* Untuk span di dalam menu aktif agar tidak berubah warna saat hover */
+.active .group-hover\:text-\[\#7F33FF\] {
+  color: white !important;
+}
+/* Untuk sub menu aktif juga tetap jelas saat hover */
+li.active > div,
+li.active > div:hover,
+li.active > div:focus {
+  background-color: #7F33FF !important;
+  color: white !important;
+  filter: none !important;
+  opacity: 1 !important;
+}
+li.active > div > span,
+li.active > div:hover > span,
+li.active > div:focus > span {
+  color: white !important;
+}
+.fade-enter-active, .fade-leave-active {
+  transition: opacity 0.2s;
+}
+.fade-enter-from, .fade-leave-to {
+  opacity: 0;
+}
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: #7F33FF55;
+  border-radius: 6px;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+@media (min-width: 768px) {
+  .sidebar-container {
+    transform: translateX(0) !important;
+  }
 }
 </style>

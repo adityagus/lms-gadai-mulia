@@ -19,6 +19,7 @@ import courseStudent from "@/pages/Student/courses/index.vue";
 import DetailPengumuman from "@/pages/pengumuman/detail.vue";
 import PengumumanCreate from "@/pages/pengumuman/create.vue";
 import CategoryManagement from "@/pages/master/category.vue";
+import AuditLog from "@/pages/admin/AuditLog.vue";
 import { values } from "lodash";
 
 console.log("masuk route");
@@ -182,6 +183,11 @@ const routes = [
                 name: "categories",
                 component: CategoryManagement,
             },
+            {
+                path: "/master/audit-logs",
+                name: "audit-logs",
+                component: AuditLog,
+            },
         ],
     },
     {
@@ -230,14 +236,13 @@ async function getSessionAuth() {
 
 // Middleware: Cek akses berdasarkan sessionStorage (atau localStorage)
 router.beforeEach(async (to, from, next) => {
-  try{
-    const resauth  = await getSession();
-    const auth = resauth.auth;
-
-    
-    // if (typeof window !== "undefined") {
-    //     window.auth = auth || null;
-    // }
+    let auth = null;
+    try {
+        const resauth = await getSession();
+        auth = resauth ? resauth.auth : null;
+    } catch (e) {
+        console.error("Session verification failed, treating as guest:", e);
+    }
 
     // Jika tidak login dan bukan halaman public, redirect ke login
     const isPublic =
@@ -265,21 +270,8 @@ router.beforeEach(async (to, from, next) => {
         }
     }
 
-    // // Jika akses /student, hanya non-admin
-    // if (to.path.startsWith("/student")) {
-    //     if (auth && auth.idgrup !== "JBT-032") {
-    //         return next();
-    //     } else {
-    //         return next({ path: "/lms" });
-    //     }
-    // }
-
     // Default: lanjutkan
     return next();
-    
-  }catch(e){
-    console.log(e);
-  }
 });
 
 export default router;

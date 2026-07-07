@@ -1,5 +1,3 @@
-
-
 <template>
   <div class="relative p-6 bg-white z-1 sm:p-0">
     <div class="relative flex flex-col justify-center w-full h-screen sm:p-0 lg:flex-row">

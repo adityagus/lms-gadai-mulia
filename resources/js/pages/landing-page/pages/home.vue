@@ -45,8 +45,8 @@
             : 'text-gray-700 hover:text-indigo-600'
         ]">FAQ</a>
       </div>
-      <a 
-        href="/sign-in" 
+      <router-link 
+        to="/sign-in" 
         :class="[
           'font-semibold py-2 px-6 rounded-lg shadow transition-all duration-300 transform hover:scale-105',
           isScrolled 
@@ -55,22 +55,22 @@
         ]"
       >
         {{ idgrup ? "Dashboard" : 'Login' }}
-      </a>
+      </router-link>
     </div>
   </nav>
 
   <!-- Hero Section -->
   <section class="landing-hero bg-gradient-to-br from-indigo-50 to-white min-h-screen flex flex-col justify-center items-center text-center px-4 pt-32" data-aos="fade-up" data-aos-duration="1500">
-    <div class="max-w-2xl mx-auto py-20">
-      <h1 class="text-4xl md:text-6xl font-extrabold text-indigo-800 mb-6 leading-tight">
-        Selamat Datang di <span class="text-indigo-600">Beladiri</span>
+    <div class="max-w-full py-28 md:mx-32">
+      <h1 class="text-2xl md:text-4xl font-extrabold text-indigo-800 mb-4 leading-tight">
+          Selamat Datang di <span class="text-indigo-600">Beladiri</span>
       </h1>
-      <p class="text-lg md:text-2xl text-gray-700 mb-8">
+      <p class="text-md md:text-xl text-gray-700 mb-8">
         Platform <strong>Belajar Mandiri</strong> (Beladiri) modern untuk pelatihan, kursus, dan pengembangan SDM berbasis digital. Mudah, aman, dan terintegrasi.
       </p>
-      <a href="/sign-in" class="inline-block bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 px-8 rounded-lg shadow-lg transition-colors text-lg">
+      <router-link to="/sign-in" class="inline-block bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 px-8 rounded-lg shadow-lg transition-colors text-lg">
         Lihat Kursus
-      </a>
+      </router-link>
     </div>
     <!-- <div class="w-full flex justify-center">
       <img src="/assets/images/online-learning.svg" alt="Beladiri" class="max-w-md w-full h-auto" loading="lazy">
@@ -138,21 +138,39 @@
       <h2 class="text-3xl font-bold text-indigo-700 mb-4">Kursus Populer</h2>
       <p class="text-gray-700">Pilih kursus terbaik sesuai kebutuhan Anda dan mulai belajar mandiri sekarang!</p>
     </div>
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto justify-items-center">
-      <div v-for="course in courses" :key="course.id" class="course-card w-full bg-white rounded-lg shadow-lg flex flex-col ">
-        <img
-          :src="course.thumbnail_url || '/assets/images/online-learning.svg'"
-          :alt="course.name"
-          class="w-full h-48 object-cover rounded-t-lg transition-transform duration-300 group-hover:scale-110"
-        >
-        <div class="p-6 flex flex-col items-center">
-          <h3 class="font-semibold text-lg text-indigo-700 text-center group-hover:text-indigo-800 transition-colors duration-300">{{ course.name }}</h3>
-          <p class="text-gray-600 mb-4 text-center text-sm my-4 group-hover:text-gray-700 transition-colors duration-300">{{ truncateDescription(course.description, 20) }}</p>
-          <router-link :to="{path:`/detail-course/${course.id}`, hash:'#details'}" class="bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700 transition-all duration-300 transform group-hover:scale-105 group-hover:shadow-lg">Lihat Detail</router-link>
-        </div>
-      </div>
-      <div v-if="courses.length === 0" class="col-span-3 text-center text-gray-500 py-10">Belum ada kursus populer.</div>
+<div class="flex flex-wrap justify-center gap-8 max-w-6xl mx-auto">
+  
+  <div 
+    v-for="course in courses" 
+    :key="course.id" 
+    class="course-card group w-full md:w-[calc(33.333%-1.34rem)] bg-white rounded-lg shadow-lg flex flex-col"
+  >
+    <img
+      :src="course.thumbnail_url || '/assets/images/online-learning.svg'"
+      :alt="course.name"
+      class="w-full h-48 object-cover rounded-t-lg transition-transform duration-300 group-hover:scale-110"
+    >
+    <div class="p-6 flex flex-col items-center">
+      <h3 class="font-semibold text-lg text-indigo-700 text-center group-hover:text-indigo-800 transition-colors duration-300">
+        {{ course.name }}
+      </h3>
+      <p class="text-gray-600 mb-4 text-center text-sm my-4 group-hover:text-gray-700 transition-colors duration-300">
+        {{ truncateDescription(course.description, 20) }}
+      </p>
+      <router-link 
+        :to="{path:`/detail-course/${course.id}`, hash:'#details'}" 
+        class="bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700 transition-all duration-300 transform group-hover:scale-105 group-hover:shadow-lg"
+      >
+        Lihat Detail
+      </router-link>
     </div>
+  </div>
+
+  <!-- Jika data kosong, karena menggunakan flexbox, kita beri w-full agar memanjang penuh di tengah -->
+  <div v-if="courses.length === 0" class="w-full text-center text-gray-500 py-10">
+    Belum ada kursus populer.
+  </div>
+</div>
   </section>
 
   <!-- Testimonial Section -->
@@ -280,12 +298,12 @@ onMounted(async () => {
   const restSession = await getSession();
   console.log("restSession awal", restSession);
 
-  idgrup.value = restSession.auth.idgrup;
+  idgrup.value = restSession?.auth?.idgrup ?? null;
   // Add scroll event listener
   window.addEventListener('scroll', handleScroll);
   
   try {
-    const res = await fetch('/api/courses?is_popular=1');
+    const res = await fetch('/api/courses');
     if (res.ok) {
       const data = await res.json();
       console.log("data", data);

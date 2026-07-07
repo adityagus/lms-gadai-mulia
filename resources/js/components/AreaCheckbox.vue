@@ -41,7 +41,7 @@ function toggleParent(area) {
         :indeterminate="!isParentChecked(props.area) && props.area.children && props.area.children.length > 0 && props.area.children.some(child => isParentChecked(child))"
         @change="() => toggleParent(props.area)"
       />
-      {{ props.area.nm_area }}
+      {{ props.area.nm_area }} {{ props.area.id_area }}
     </label>
     <div v-if="props.area.children && props.area.children.length > 0" :style="{ marginLeft: '1.5rem' }">
       <AreaCheckbox

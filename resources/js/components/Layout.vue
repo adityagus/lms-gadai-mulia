@@ -3,9 +3,9 @@
     <router-view :key="$route.meta.values"></router-view>
   </div>
   <div v-else class="flex min-h-screen bg-[#F6F7FB]">
-    <Sidebar />
+    <Sidebar :sidebarOpen="sidebarOpen" @closeSidebar="sidebarOpen = false" />
     <main class="flex flex-col flex-1 gap-6 md:gap-[30px] p-4 md:p-[30px] md:ml-[290px] transition-all duration-300">
-      <Header />
+      <Header @toggleSidebar="sidebarOpen = true" />
       <router-view :key="$route.meta.values"></router-view>
       <Bot v-if="$route.name !== 'content-preview'" />
       <!-- <Outlet/> -->
@@ -26,6 +26,7 @@ watch( () => route.path, () => {
   isManagerPreviewPage.value = (route.name === 'content-preview' || route.name === 'content-admin-preview');
 });
 
+const sidebarOpen = ref(false)
 // const isStudentPreviewPage = computed(() =>
 //   route.name === 'StudentPreview'
 // );

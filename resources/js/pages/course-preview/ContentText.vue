@@ -16,7 +16,7 @@
     </div>
 
     <!-- Content Body -->
-    <article id="Content-wrapper" class="ck-content max-w-none">
+    <article id="Content-wrapper" class="ck-content max-w-none" ref="contentWrapper">
       <div v-if="content.body" v-html="content.body"></div>
       <div v-else-if="content.content" v-html="content.content"></div>
       <div v-else class="text-center py-8">
@@ -27,7 +27,7 @@
 </template>
 
 <script setup>
-import { defineProps } from 'vue';
+import { ref, onMounted, onUpdated, defineProps } from 'vue';    
 
 const props = defineProps({
   content: {
@@ -35,9 +35,56 @@ const props = defineProps({
     default: () => ({})
   }
 });
+
+
+
+const contentWrapper = ref(null);
+
+
+function replaceOembedWithIframe() {
+    if (!contentWrapper.value) return;
+    const oembeds = contentWrapper.value.querySelectorAll('oembed[url]');
+    oembeds.forEach(el => {
+        const url = el.getAttribute('url');
+        if (url && (url.includes('youtube.com') || url.includes('youtu.be'))) {
+            // Support various YouTube URL formats
+            let videoId = null;
+            // youtube.com/watch?v=xxxx
+            const match1 = url.match(/[?&]v=([\w-]{11})/);
+            // youtu.be/xxxx
+            const match2 = url.match(/youtu\.be\/([\w-]{11})/);
+            // youtube.com/embed/xxxx
+            const match3 = url.match(/embed\/([\w-]{11})/);
+            if (match1) videoId = match1[1];
+            else if (match2) videoId = match2[1];
+            else if (match3) videoId = match3[1];
+            if (videoId) {
+                const iframe = document.createElement('iframe');
+                iframe.style.aspectRatio = '16/9';
+                iframe.style.height = 'auto';
+                iframe.style.maxWidth = '100%';
+                iframe.style.display = 'block';
+                iframe.src = `https://www.youtube.com/embed/${videoId}`;
+                iframe.frameBorder = '0';
+                iframe.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture';
+                iframe.allowFullscreen = true;
+                el.parentNode.replaceChild(iframe, el);
+            }
+        }
+    });
+}
+
+onMounted(() => {
+    replaceOembedWithIframe();
+});
+onUpdated(() => {
+    replaceOembedWithIframe();
+});
 </script>
 
 <style scoped>
+
+
 
 body{
     font-family: "Poppins";
@@ -90,6 +137,7 @@ body{
     display: block;
     font-size: 1.5em;
     margin-block-start: 0.83__qem;
+
     margin-block-end: 0.83em;
     margin-inline-start: 0;
     margin-inline-end: 0;

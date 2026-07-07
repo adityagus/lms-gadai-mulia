@@ -2,7 +2,7 @@
   <header class="flex items-center justify-between gap-[30px]">
     <div>
       <h1 class="font-extrabold text-[28px] leading-[42px]">Kelola Kelas</h1>
-      <p class="text-[#838C9D] mt-[1]">Give the best future for your great employees</p>
+      <p class="text-[#838C9D] mt-[1]">Berikan masa depan terbaik untuk karyawan hebat Anda</p>
     </div>
     <div class="flex items-center gap-3">
       <!-- <RouterLink to="#" class="w-fit rounded-full border border-[#060A23] p-[14px_20px] font-semibold text-nowrap">
@@ -16,22 +16,18 @@
   </header>
   <section id="CourseList" class="flex flex-col w-full rounded-[30px] p-[30px] gap-[30px]">
 
-
-      <!-- Main content (CardCourses) when data is ready -->
+      <!-- Konten utama (CardCourses) saat data sudah siap -->
       <div v-for="item in courses" :key="item.id" v-if='!loading'>
           <CardCourses :id="item.id" :imageUrl="item.thumbnail_url" :name="item.name" :totalStudent="'12'"
             :category="item.category?.name" @delete-course='handleDelete' :readonly='!auth || (auth.idgrup !== "JBT-032" && auth.idgrup !== "JBT-038")' />
         </div>
 
-      <!-- Loading content (CardSkeleton) while data is loading -->
+      <!-- Konten loading (CardSkeleton) saat data sedang dimuat -->
       <template v-if='loading'>
         <div v-for="n in 5" :key='n'>
           <CardSkeleton />
         </div>
       </template>
-    <!-- <CardCourses id='item.id' name/>
-    <CardCourses />
-    <CardCourses /> -->
 
     <div id="Pagination" class="flex items-center gap-3" v-if='courses.length > 0'>
       <button type="button" v-for='(key) in totalPages' :key='key' @click='goToPage(key)'
@@ -62,58 +58,52 @@ const loading = ref(true);
 const pagination = ref(1);
 const auth = ref(null);
 
+// Fungsi untuk mengambil data kursus
 const fetchCourses = async (page = 1) => {
-  // console.log('initsecond', page);
     try {
-      console.log("page", page);
+      // console.log("Halaman", page);
       const result = await getCourses(page)
-      console.log("result", result.data);
+      // console.log("Hasil", result.data);
       courses.value = result.data
       totalPages.value = result.last_page
     } catch (error) {
-      console.log("ERROR", error);
+      console.log("Terjadi kesalahan:", error);
     } finally {
-      loading.value = false; // After 500ms, stop loading and show actual content
-      // resolve();
+      loading.value = false; // Setelah 500ms, hentikan loading dan tampilkan konten
     }
 }
 
+// Fungsi untuk menghapus kursus
 const handleDelete = async (id) => {
-  console.log('tesss');
+  // console.log('hapus');
   Swal.fire({
-  title: "Are you sure?",
-  text: "You won't be able to revert this course!",
-  icon: "warning",
-  showCancelButton: true,
-  confirmButtonColor: "#3085d6",
-  cancelButtonColor: "#d33",
-  confirmButtonText: "Yes, delete it!"
-}).then(async (result) => {
-  if (result.isConfirmed) {
-    
-     try {
-      const result = await deleteCourse(id)
-      console.log("result", result);
-      if(result.status == 200){
-        Swal.fire({
-          title: "Deleted!",
-          text: "Your file has been deleted.",
-          icon: "success",
-          timer: 1500
-        });
-        
-        fetchCourses(pagination.value);
-        
-      }
-    
-      throw new Error({'message': "Tidak dapat dikirim"});
-      
-      
-    } catch (error) {
-      console.log("ERROR", error);
-    } 
-  }
-});
+    title: "Apakah Anda yakin?",
+    text: "Anda tidak dapat mengembalikan kursus ini!",
+    icon: "warning",
+    showCancelButton: true,
+    confirmButtonColor: "#3085d6",
+    cancelButtonColor: "#d33",
+    confirmButtonText: "Ya, hapus!"
+  }).then(async (result) => {
+    if (result.isConfirmed) {
+      try {
+        const result = await deleteCourse(id)
+        // console.log("result", result);
+        if(result.status == 200){
+          Swal.fire({
+            title: "Berhasil dihapus!",
+            text: "Kursus telah dihapus.",
+            icon: "success",
+            timer: 1500
+          });
+          fetchCourses(pagination.value);
+        }
+        throw new Error({'message': "Tidak dapat dikirim"});
+      } catch (error) {
+        console.log("Terjadi kesalahan:", error);
+      } 
+    }
+  });
 }
 
 onMounted(async () => {
@@ -121,13 +111,14 @@ onMounted(async () => {
     fetchCourses(currentPage.value),
     getSession()
   ]);
-  console.log("courses", courses);
+  // console.log("courses", courses);
   auth.value = resAuth.auth;
 });
-// Function to handle page change
+
+// Fungsi untuk pindah halaman
 const goToPage = (page) => {
   currentPage.value = page;
-  console.log("currentPage.value", currentPage.value);
+  // console.log("currentPage.value", currentPage.value);
   pagination.value = page;
   loading.value = true;
   fetchCourses(page);

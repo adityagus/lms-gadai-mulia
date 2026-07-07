@@ -326,7 +326,10 @@ const onSubmit = handleSubmit(async () => {
     }
 
     // Redirect back to course detail
-    router.push(`/courses/${courseId}`);
+    router.push({
+        name: 'courseDetail',
+        params: { id: courseId }
+    });
   } catch (error) {
     console.error('Error saving content:', error);
     console.error('Error response:', error.response?.data);

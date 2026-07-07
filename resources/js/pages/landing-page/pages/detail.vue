@@ -30,7 +30,7 @@
               </div>
               <div class="flex flex-wrap gap-4 mt-2">
                 <div class="flex flex-col items-center">
-                  <span class="font-bold text-lg">{{ course.students && course.students !== 'null' ? course.students : '-' }}</span>
+                  <span class="font-bold text-lg">{{ course.students && course.students !== 'null' ? course.students.length : '-' }}</span>
                   <span class="text-xs text-gray-400">Member</span>
                 </div>
                 <div class="flex flex-col items-center">
@@ -124,7 +124,8 @@
               <li><b>Update:</b> <span v-if="course.updated_at">{{ new Date(course.updated_at).toLocaleDateString('id-ID', {
                   year:
                   'numeric', month: 'long', day: 'numeric' }) }}</span></li>
-              <li><b>Member:</b> {{ course.students && course.students !== 'null' ? course.students : '-' }}</li>
+                 rte {{ course.students }}
+              <li><b>Member:</b> {{ course.students && course.students !== 'null' ? course.students.length : '-' }}</li>
             </ul>
             <button class="w-full py-2 px-4 mt-4 bg-[#662FFF] text-white rounded-lg hover:bg-[#7F33FF] transition duration-200">
               <router-link :to="`/student/courses/${course.id}`">

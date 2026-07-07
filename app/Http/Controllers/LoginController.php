@@ -2,76 +2,96 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Login;
+use App\Contracts\Repositories\UserRepositoryInterface;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Facades\Hash;
 
 class LoginController extends Controller
 {
+    /**
+     * @var UserRepositoryInterface
+     */
+    protected $userRepository;
+
+    /**
+     * LoginController Constructor.
+     *
+     * @param UserRepositoryInterface $userRepository
+     */
+    public function __construct(UserRepositoryInterface $userRepository)
+    {
+        $this->userRepository = $userRepository;
+    }
+
+    /**
+     * Handle user login.
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse|\Illuminate\Http\RedirectResponse
+     */
     public function aksiLogin(Request $request)
     {
-      
-        // Pastikan variabel di-assign sebelum digunakan
         $username = $request->input('user');
         $password = $request->input('pass');
-        // Debugging line to check input
-        // dd($username, $password);
 
-        // Cek user login menggunakan model Login (db2)
-
-        $users = Login::cekLogin($username);
+        $users = $this->userRepository->cekLogin($username);
+        // dd($users);
         $usersArray = $users->toArray();
         $user = null;
         if ($users && count($users) > 0) {
             $user = $usersArray[0];
         }
-
+        // dd($user);
+        // dd($user);
         if ($user) {
-            if (crypt($password, $user->password) == $user->password) {
-            // if (true) {
-                $nama = $user->nm_depan ?? ($user->nama ?? '');
-                if (!empty($user->nm_belakang)) {
-                    $nama .= ' ' . $user->nm_belakang;
-                }
+            if (Hash::check($password, $user->password_hash)) {
 
-                // Simpan data tambahan ke session jika perlu
+                $nama = $user->full_name ?? '';
+
                 $datasession = [
                     'nama' => Str::title($nama),
                     'user' => $user->username,
-                    'cabang' => $user->fk_cabang_user ?? null,
-                    'jabatan' => $user->nm_jabatan ?? null,
-                    'idgrup' => $user->kd_jabatan ?? ($user->id_jabatan ?? null),
+                    'cabang' => $user->branch_code ?? null,
+                    'jabatan' => $user->position_name ?? null,
+                    'idgrup' => $user->position_code ?? null,
                     'status' => 'login'
                 ];
 
                 session()->put('auth', $datasession);
-                // session()->save();
+                // dd(Session::all());
 
-                // Kembalikan response JSON, frontend yang handle localStorage dan redirect
-                $redirectUrl = ($datasession['idgrup'] === 'JBT-032') ? '/lms' : '/lms';
+                $redirectUrl = '/lms';
                 return response()->json([
                     'success' => true,
                     'user' => $datasession,
                     'redirect' => $redirectUrl
                 ]);
             } else {
-                return back()->with('sukses', "Oops... Username/Password Salah!!!Cek");
+                return response()->json([
+                    'success' => false,
+                    'message' => "Oops... Username/Password Salah!!!Cek"
+                ]);
             }
         } else {
-            return back()->with('sukses', "Oops... Username/Password Salah!!!");
+            return response()->json([
+                'success' => false,
+                'message' => "Oops... Username/Password Salah!!!"
+            ]);
         }
     }
     
+    /**
+     * Handle user logout.
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function logout(Request $request)
     {
-        // Hapus data session
         Session::flush();
-
-        // Redirect ke halaman login atau halaman lain yang diinginkan
         return Redirect::to('/sign-in');
     }
 }

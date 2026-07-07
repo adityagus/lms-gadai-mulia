@@ -2,21 +2,35 @@
 
 namespace App\Services;
 
-use Illuminate\Http\Request;
+use App\Contracts\SearchServiceInterface;
 use App\Models\Course;
 use App\Models\Announcement;
 use Algolia\AlgoliaSearch\SearchClient;
 use Illuminate\Support\Facades\Log;
 
-class AlgoliaService
+class AlgoliaService implements SearchServiceInterface
 {
     /**
-     * Refresh Algolia index for both courses and documents (announcements)
+     * @var SearchClient
      */
-    public function refresh(Request $request)
+    private $client;
+
+    /**
+     * AlgoliaService Constructor.
+     *
+     * @param SearchClient $client
+     */
+    public function __construct(SearchClient $client)
     {
-        $client = SearchClient::create(env('ALGOLIA_APP_ID'), env('ALGOLIA_SECRET'));
-        $index = $client->initIndex('course_gadai_mulia');
+        $this->client = $client;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function refresh(): array
+    {
+        $index = $this->client->initIndex('course_gadai_mulia');
 
         // Courses
         $courses = Course::with('category:id,name')->get();
@@ -29,7 +43,7 @@ class AlgoliaService
                 'tagline' => $course->tagline,
                 'description' => $course->description,
                 'category' => $course->category ? $course->category->name : null,
-                'thumbnail_url' => env('MIX_IMG_URL') . $course->thumbnail,
+                'thumbnail_url' => config('services.mix.img_url') . $course->thumbnail,
             ];
         })->toArray();
 
@@ -44,7 +58,7 @@ class AlgoliaService
                 'tagline' => $doc->no_surat ?? '',
                 'description' => $doc->content ?? '',
                 'category' => 'Document',
-                'thumbnail_url' => env('MIX_IMG_URL') . ($doc->url ?? ''),
+                'thumbnail_url' => config('services.mix.img_url') . ($doc->url ?? ''),
             ];
         })->toArray();
 
@@ -53,24 +67,23 @@ class AlgoliaService
         $index->clearObjects();
         $index->saveObjects($allObjects);
 
-        return response()->json([
+        return [
             'success' => true,
             'courses_uploaded' => count($algoliaCourses),
             'documents_uploaded' => count($algoliaDocuments),
             'total_uploaded' => count($allObjects),
             'message' => 'Algolia index refreshed with latest courses and documents.'
-        ]);
+        ];
     }
 
     /**
-     * Update or add a single course to Algolia
+     * @inheritDoc
      */
-    public function updateCourse($course)
+    public function updateCourse($course): void
     {
         try {
             $course->load('category');
-            $client = SearchClient::create(env('ALGOLIA_APP_ID'), env('ALGOLIA_SECRET'));
-            $index = $client->initIndex('course_gadai_mulia');
+            $index = $this->client->initIndex('course_gadai_mulia');
             $algoliaData = [
                 'objectID' => 'course_' . $course->id,
                 'id' => $course->id,
@@ -79,7 +92,7 @@ class AlgoliaService
                 'tagline' => $course->tagline,
                 'description' => $course->description,
                 'category' => $course->category ? $course->category->name : null,
-                'thumbnail_url' => env('MIX_IMG_URL') . $course->thumbnail,
+                'thumbnail_url' => config('services.mix.img_url') . $course->thumbnail,
             ];
             $index->saveObject($algoliaData);
             Log::info('Algolia index updated for course: ' . $course->id);
@@ -89,13 +102,12 @@ class AlgoliaService
     }
 
     /**
-     * Update or add a single document (announcement) to Algolia
+     * @inheritDoc
      */
-    public function updateDocument($document)
+    public function updateDocument($document): void
     {
         try {
-            $client = SearchClient::create(env('ALGOLIA_APP_ID'), env('ALGOLIA_SECRET'));
-            $index = $client->initIndex('course_gadai_mulia');
+            $index = $this->client->initIndex('course_gadai_mulia');
             $algoliaData = [
                 'objectID' => 'document_' . $document->id,
                 'id' => $document->id,
@@ -104,7 +116,7 @@ class AlgoliaService
                 'tagline' => $document->no_surat ?? '',
                 'description' => $document->content ?? '',
                 'category' => 'Document',
-                'thumbnail_url' => env('MIX_IMG_URL') . ($document->url ?? ''),
+                'thumbnail_url' => config('services.mix.img_url') . ($document->url ?? ''),
             ];
             $index->saveObject($algoliaData);
             Log::info('Algolia index updated for document: ' . $document->id);
@@ -114,13 +126,12 @@ class AlgoliaService
     }
 
     /**
-     * Delete a course or document from Algolia by type and id
+     * @inheritDoc
      */
-    public function deleteFromAlgolia($type, $id)
+    public function delete(string $type, int $id): void
     {
         try {
-            $client = SearchClient::create(env('ALGOLIA_APP_ID'), env('ALGOLIA_SECRET'));
-            $index = $client->initIndex('course_gadai_mulia');
+            $index = $this->client->initIndex('course_gadai_mulia');
             $objectID = $type . '_' . $id;
             $index->deleteObject($objectID);
             Log::info('Deleted from Algolia: ' . $objectID);

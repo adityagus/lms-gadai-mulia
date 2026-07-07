@@ -15,11 +15,16 @@
   <!-- Baris filter area dan layout menu -->
   <div class="flex items-center justify-between mb-4">
     <!-- Filter Area Tabs -->
-    <div class="flex gap-2" v-if="auth?.cabang === ''">
-      <button v-for="tab in memoTabs" :key="tab.kd_wilayah" v-if="memoTabs.length > 1" @click="activeMemoTab = tab.kd_wilayah"
+    <div class="flex gap-2" v-if="auth?.cabang === '' || !auth?.cabang">
+      <!-- START: AREA TAB STATIC -->
+      <button v-for="tab in memoTabs" :key="tab.kd_wilayah" @click="activeMemoTab = tab.kd_wilayah"
         :class="['px-3 py-1 rounded-lg font-semibold text-xs transition', activeMemoTab === tab.kd_wilayah ? 'bg-sidebar text-white shadow' : 'bg-white text-sidebar hover:bg-purple-100']">
-        {{ tab.nm_wilayah }}
+        <span v-if="tab.kd_wilayah === 'all'">All</span>
+        <span v-if="tab.kd_wilayah === 2">Jaya</span>
+        <span v-if="tab.kd_wilayah === 3">Jabar</span>
+        <span v-if="tab.kd_wilayah === 4">Kepri</span>
       </button>
+      <!-- END: AREA TAB STATIC -->
     </div>
     <!-- Layout Menu Icon -->
     <div class="flex gap-2" v-if="auth?.cabang === ''">
@@ -154,6 +159,7 @@ import Vue3Datatable from '@bhplugin/vue3-datatable';
 import { getDetailAnnouncement, getLastDocumentPreview } from '@/services/announcementService';
 import { getSession } from '@/services/authService';
 import { getWilayah } from '@/services/masterService';
+import { recordDocumentView } from '@/services/documentViewService';
 import Swal from 'sweetalert2';
 
 const route = useRoute();
@@ -247,7 +253,14 @@ async function openDetail(card) {
   console.log('Opening detail for card:', card);
   if (modalRef.value && modalRef.value.openModal) {
     modalRef.value.openModal(card);
-    await getLastDocumentPreview(card.id);
+    try {
+      await Promise.all([
+        getLastDocumentPreview(card.id),
+        recordDocumentView(card.id)
+      ]);
+    } catch (err) {
+      console.error('Failed to log document view or update preview history:', err);
+    }
   }
 
   console.log('openDetail', modalRef.value, card)
