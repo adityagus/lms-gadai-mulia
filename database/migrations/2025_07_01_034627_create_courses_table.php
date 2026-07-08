@@ -11,19 +11,19 @@ class CreateCoursesTable extends Migration
      *
      * @return void
      */
-    public function up()
-    {
-        Schema::create('courses', function (Blueprint $table) {
-            $table->id();
-            $table->string('name', 255);
-            $table->string('slug');
-            $table->string('thumbnail');
-            $table->text('about');
-            $table->integer('category_id');
-            $table->boolean('is_popular');
-            $table->timestamps();
-        });
-    }
+    // public function up()
+    // {
+    //     Schema::create('courses', function (Blueprint $table) {
+    //         $table->id();
+    //         $table->string('name', 255);
+    //         $table->string('slug');
+    //         $table->string('thumbnail');
+    //         $table->text('about');
+    //         $table->integer('category_id');
+    //         $table->boolean('is_popular');
+    //         $table->timestamps();
+    //     });
+    // }
 
     /**
      * Reverse the migrations.

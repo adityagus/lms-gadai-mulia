@@ -1,6 +1,6 @@
 <template>
   <div>
-    <SkeletonBreadcrumb v-if='loading'/>
+    <SkeletonBreadcrumb v-if='loading' />
     <nav v-else class="flex items-center text-sm text-gray-500 mb-4" aria-label="Breadcrumb">
       <router-link to="/pengumuman" class="hover:underline text-purple-600 font-semibold">Pengumuman</router-link>
       <span class="mx-2">/</span>
@@ -22,22 +22,33 @@
             <tr v-if="loading">
               <td colspan="4" class="py-8 text-center text-gray-500">
                 <div class="flex items-center gap-2 justify-center">
-                  <svg class="animate-spin h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"></path></svg>
+                  <svg class="animate-spin h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none"
+                    viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"></path>
+                  </svg>
                   Loading data arsip...
                 </div>
               </td>
             </tr>
-            <tr v-else v-for="item in archives" :key="item.id" :class="(archives.length > 0 && $index % 2 === 1) ? 'bg-gray-50' : ''" class="hover:bg-blue-50 transition">
+            <tr v-else v-for="item in archives" :key="item.id"
+              :class="(archives.length > 0 && $index % 2 === 1) ? 'bg-gray-50' : ''"
+              class="hover:bg-blue-50 transition">
               <td class="px-4 py-2 font-medium text-sidebar">{{ item.title }}</td>
               <td class="px-4 py-2">{{ formatDate(item.deleted_at) }}</td>
               <td class="px-4 py-2">
-                <span v-if="item.deleted_by" class="inline-block px-2 py-1 text-xs rounded bg-blue-100 text-blue-700 font-semibold">{{ item.deleted_by }}</span>
+                <span v-if="item.deleted_by"
+                  class="inline-block px-2 py-1 text-xs rounded bg-blue-100 text-blue-700 font-semibold">{{
+                    item.deleted_by }}</span>
                 <span v-else class="text-gray-400">-</span>
               </td>
               <td class="px-4 py-2">
                 <div class="flex gap-2 justify-center">
-                  <button @click="restore(item.id)" class="px-3 py-1 bg-green-500 text-white rounded-l-lg rounded-r-none font-semibold hover:bg-green-600 transition border border-green-600">Restore</button>
-                  <button @click="remove(item.id)" class="px-3 py-1 bg-red-500 text-white rounded-r-lg rounded-l-none font-semibold hover:bg-red-600 transition border border-red-600">Delete Permanen</button>
+                  <button @click="restore(item.id)"
+                    class="px-3 py-1 bg-green-500 text-white rounded-lg font-semibold hover:bg-green-600 transition border border-green-600">Restore</button>
+                  <button @click="remove(item.id)" v-if="auth.idgrup == 'JBT-032'"
+                    class="px-3 py-1 bg-red-500 text-white rounded-lg font-semibold hover:bg-red-600 transition border border-red-600">Delete
+                    Permanen</button>
                 </div>
               </td>
             </tr>
@@ -45,7 +56,11 @@
         </table>
       </div>
       <div v-if="archives.length === 0" class="flex flex-col items-center justify-center py-12 text-gray-400">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7v4a2 2 0 01-2 2H7a2 2 0 01-2-2V7m5 4v6m4-6v6M5 7h14a2 2 0 012 2v10a2 2 0 01-2 2H5a2 2 0 01-2-2V9a2 2 0 012-2z" /></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 mb-2" fill="none" viewBox="0 0 24 24"
+          stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M19 7v4a2 2 0 01-2 2H7a2 2 0 01-2-2V7m5 4v6m4-6v6M5 7h14a2 2 0 012 2v10a2 2 0 01-2 2H5a2 2 0 01-2-2V9a2 2 0 012-2z" />
+        </svg>
         Tidak ada data arsip.
       </div>
     </div>
@@ -60,16 +75,29 @@ import SkeletonBreadcrumb from '@/components/SkeletonBreadcrumb.vue';
 import { useRoute } from 'vue-router';
 import { hardDeleteAnnouncement } from '../../services/announcementService';
 import Swal from 'sweetalert2';
+import { getSession } from '../../services/authService';
+
 
 const route = useRoute();
 const archives = ref([]);
 const loading = ref(true);
+const auth = ref();
+
 const props = defineProps({
   submenu_id: {
     type: Number,
     required: false,
   }
 });
+
+const userSession = async () => {
+  const response = await getSession();
+  if (response.status === 200) {
+    user.value = response.data;
+  }
+}
+
+
 
 // Determine submenu_id from prop or query
 const getSubmenuId = () => {
@@ -118,7 +146,7 @@ const restore = async (id) => {
         },
         willClose: () => {
           Swal.hideLoading();
-        },timer: 1500
+        }, timer: 1500
       });
       await restoreAnnouncement(id);
       fetchArchives();
@@ -149,7 +177,16 @@ const remove = async (id) => {
   }
 };
 
-onMounted(() => {
+onMounted(async () => {
+  try {
+    const [resAuth] = await Promise.all([
+      getSession()
+    ]);
+    auth.value = resAuth.auth
+    console.log('session 2', auth);
+  } catch (error) {
+    console.error('Error fetching session:', error);
+  }
   fetchArchives();
 });
 </script>
@@ -158,29 +195,38 @@ onMounted(() => {
 table {
   border-collapse: collapse;
 }
-th, td {
+
+th,
+td {
   border-bottom: 1px solid #e5e7eb;
 }
+
 tr:last-child td {
   border-bottom: none;
 }
+
 .bg-blue-100 {
   background: #dbeafe;
 }
+
 .text-blue-700 {
   color: #1d4ed8;
 }
+
 .hover\:bg-blue-50:hover {
   background: #eff6ff;
 }
+
 /* Button group style for action buttons */
 .flex.gap-2 button {
   min-width: 120px;
-  box-shadow: 0 1px 4px 0 rgba(0,0,0,0.04);
+  box-shadow: 0 1px 4px 0 rgba(0, 0, 0, 0.04);
 }
+
 .flex.gap-2 button:first-child {
   border-right: none;
 }
+
 .flex.gap-2 button:last-child {
   border-left: none;
 }

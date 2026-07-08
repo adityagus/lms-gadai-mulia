@@ -6,6 +6,7 @@ use App\Contracts\Repositories\DocumentViewRepositoryInterface;
 use App\Models\DocumentView;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Cache;
 
 class DocumentViewRepository implements DocumentViewRepositoryInterface
 {
@@ -30,7 +31,7 @@ class DocumentViewRepository implements DocumentViewRepositoryInterface
     public function recordView(string $username, int $documentId): void
     {
         $now = now();
-        
+
         // Menggunakan SQL raw untuk efisiensi Upsert MySQL tanpa memicu SELECT query tambahan
         DB::statement("
             INSERT INTO document_views (username, document_id, first_viewed_at, last_viewed_at, view_count, created_at, updated_at)
@@ -57,13 +58,15 @@ class DocumentViewRepository implements DocumentViewRepositoryInterface
      */
     public function getUsersWhoHaveNotViewed(int $documentId): Collection
     {
-        // 1. Ambil semua user aktif dari database eksternal (db2)
-        $allUsers = DB::connection('db2')
-            ->table('auth.users as a')
-            ->select('a.username', 'a.full_name')
-            ->join('master.employee as b', 'a.employee_id', '=', 'b.employee_id')
-            ->where('a.is_active', '=', 'true') // DB pgsql boolean value check
-            ->get();
+        // 1. Ambil semua user aktif dari database eksternal (db2) dengan cache 30 menit (1800 detik)
+        $allUsers = Cache::remember('db2_active_users', 1800, function () {
+            return DB::connection('db2')
+                ->table('tbluser as a')
+                ->select('a.username', DB::raw("CONCAT(b.nm_depan, ' ', b.nm_belakang) as full_name"))
+                ->join('tblkaryawan as b', 'a.fk_karyawan', '=', 'b.npk')
+                ->where('a.active', '=', 't')
+                ->get();
+        });
 
         // 2. Ambil username yang sudah melihat dokumen Y
         $viewedUsernames = $this->model->where('document_id', $documentId)
@@ -87,28 +90,30 @@ class DocumentViewRepository implements DocumentViewRepositoryInterface
             return collect();
         }
 
-        $usernames = $views->pluck('username')->toArray();
-
-        // 2. Ambil user profile dari db2 -> auth.users
-        $users = DB::connection('db2')
-            ->table('auth.users as a')
-            ->select('a.username', 'a.full_name')
-            ->join('master.employee as b', 'a.employee_id', '=', 'b.employee_id')
-            ->whereIn('a.username', $usernames)
-            ->get();
+        // 2. Gunakan cache mapping username -> full_name dari db2 (30 menit)
+        $userMap = Cache::remember('db2_user_fullname_map', 1800, function () {
+            return DB::connection('db2')
+                ->table('tbluser as a')
+                ->select('a.username', DB::raw("CONCAT(b.nm_depan, ' ', b.nm_belakang) as full_name"))
+                ->join('tblkaryawan as b', 'a.fk_karyawan', '=', 'b.npk')
+                ->get()
+                ->pluck('full_name', 'username');
+        });
 
         // 3. Gabungkan info tracking view (first_viewed_at, last_viewed_at, view_count)
-        $viewsByUsername = $views->keyBy('username');
-
-        return $users->map(function ($user) use ($viewsByUsername) {
-            $viewInfo = $viewsByUsername->get($user->username);
-            if ($viewInfo) {
-                $user->first_viewed_at = $viewInfo->first_viewed_at ? $viewInfo->first_viewed_at->toDateTimeString() : null;
-                $user->last_viewed_at = $viewInfo->last_viewed_at ? $viewInfo->last_viewed_at->toDateTimeString() : null;
-                $user->view_count = $viewInfo->view_count;
+        return $views->map(function ($view) use ($userMap) {
+            if (!$userMap->has($view->username)) {
+                return null;
             }
+
+            $user = new \stdClass();
+            $user->username = $view->username;
+            $user->full_name = $userMap->get($view->username);
+            $user->first_viewed_at = $view->first_viewed_at ? $view->first_viewed_at->toDateTimeString() : null;
+            $user->last_viewed_at = $view->last_viewed_at ? $view->last_viewed_at->toDateTimeString() : null;
+            $user->view_count = $view->view_count;
             return $user;
-        });
+        })->filter()->values();
     }
 
     /**
@@ -123,11 +128,12 @@ class DocumentViewRepository implements DocumentViewRepositoryInterface
                 'd.id as document_id',
                 'd.title as document_title',
                 'd.no_surat as document_no_surat',
+                'd.created_at',
                 DB::raw('COUNT(dv.username) as total_users_read'),
                 DB::raw('IFNULL(SUM(dv.view_count), 0) as total_clicks')
             )
             ->whereNull('d.deleted_at')
-            ->groupBy('d.id', 'd.title', 'd.no_surat')
+            ->groupBy('d.id', 'd.title', 'd.no_surat', 'd.created_at')
             ->get();
     }
 }

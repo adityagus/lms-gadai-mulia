@@ -21,7 +21,8 @@
     </div>
 
     <!-- Modal Search Custom -->
-    <div v-if="showSearch" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 px-3" @click="closeSearch">
+    <div v-if="showSearch" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 px-3"
+      @click="closeSearch">
       <div class="bg-white rounded-2xl shadow-2xl w-[500px] max-h-[600px] relative" @click.stop>
         <!-- Header -->
         <div class="flex items-center justify-between p-6 border-b border-gray-100">
@@ -40,8 +41,10 @@
               placeholder="Ketik nama kelas, dokumen, kategori, atau deskripsi..."
               class="w-full px-4 py-3 pl-12 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
               autofocus />
-            <svg class="absolute left-4 top-3.5 w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z">
+            <svg class="absolute left-4 top-3.5 w-5 h-5 text-gray-400" fill="none" stroke="currentColor"
+              viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z">
               </path>
             </svg>
           </div>
@@ -50,8 +53,12 @@
         <!-- Tabs -->
         <div class="px-6 pt-2 pb-4">
           <div class="flex gap-2 border-b border-gray-200 mb-2">
-            <button :class="['px-4 py-2 font-semibold', searchTab === 'kelas' ? 'border-b-2 border-blue-500 text-blue-600' : 'text-gray-500']" @click="searchTab = 'kelas'">Kelas</button>
-            <button :class="['px-4 py-2 font-semibold', searchTab === 'informasi' ? 'border-b-2 border-blue-500 text-blue-600' : 'text-gray-500']" @click="searchTab = 'informasi'">Informasi</button>
+            <button
+              :class="['px-4 py-2 font-semibold', searchTab === 'kelas' ? 'border-b-2 border-blue-500 text-blue-600' : 'text-gray-500']"
+              @click="searchTab = 'kelas'">Kelas</button>
+            <button
+              :class="['px-4 py-2 font-semibold', searchTab === 'informasi' ? 'border-b-2 border-blue-500 text-blue-600' : 'text-gray-500']"
+              @click="searchTab = 'informasi'">Informasi</button>
           </div>
         </div>
 
@@ -71,13 +78,14 @@
           </div>
 
           <!-- Results: Courses -->
-          <div v-else-if="searchTab === 'kelas' && searchResultsCourse.length > 0" class="space-y-3 max-h-72 overflow-y-auto">
+          <div v-else-if="searchTab === 'kelas' && searchResultsCourse.length > 0"
+            class="space-y-3 max-h-72 overflow-y-auto">
             <div v-for="item in searchResultsCourse" :key="'course-' + item.id"
               class="flex items-center gap-4 p-4 rounded-xl hover:bg-gray-50 cursor-pointer transition-colors border border-gray-100 hover:border-blue-200"
               @click="gotoDetail(item)">
               <div class="flex-shrink-0">
-                <img :src="item.thumbnail_url" alt="Course thumbnail" class="w-16 h-16 object-cover rounded-lg shadow-sm"
-                  v-if="item.thumbnail_url" />
+                <img :src="item.thumbnail_url" alt="Course thumbnail"
+                  class="w-16 h-16 object-cover rounded-lg shadow-sm" v-if="item.thumbnail_url" />
                 <div v-else class="w-16 h-16 bg-gray-200 rounded-lg flex items-center justify-center">
                   <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -91,7 +99,8 @@
                 <h4 class="font-semibold text-gray-900 truncate">{{ item.title }}</h4>
                 <p class="text-sm text-gray-500 line-clamp-2 mt-1">{{ item.tagline }}</p>
                 <div class="flex items-center mt-2">
-                  <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                  <span
+                    class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
                     {{ item.category || 'Uncategorized' }}
                   </span>
                 </div>
@@ -106,17 +115,18 @@
           </div>
 
           <!-- Results: Documents -->
-          <div v-else-if="searchTab === 'informasi' && searchResultsDocument.length > 0" class="space-y-3 max-h-72 overflow-y-auto">
+          <div v-else-if="searchTab === 'informasi' && searchResultsDocument.length > 0"
+            class="space-y-3 max-h-72 overflow-y-auto">
             <div v-for="item in searchResultsDocument" :key="'doc-' + item.id"
               class="flex items-center gap-4 p-4 rounded-xl hover:bg-gray-50 cursor-pointer transition-colors border border-gray-100 hover:border-blue-200"
               @click="openDocumentDetail(item)">
               <div class="flex-shrink-0">
-                <img :src="item.thumbnail_url" alt="Document thumbnail" class="w-16 h-16 object-cover rounded-lg shadow-sm fill-[#662FFF]"
-                  v-if="item.thumbnail_url" />
+                <img :src="item.thumbnail_url" alt="Document thumbnail"
+                  class="w-16 h-16 object-cover rounded-lg shadow-sm fill-[#662FFF]" v-if="item.thumbnail_url" />
                 <div v-else class="w-16 h-16 bg-gray-200 rounded-lg flex items-center justify-center">
                   <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                      d="M7 7h10M7 11h10M7 15h6"></path>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h10M7 11h10M7 15h6">
+                    </path>
                   </svg>
                 </div>
               </div>
@@ -124,7 +134,8 @@
                 <h4 class="font-semibold text-gray-900">{{ item.title }}</h4>
                 <p class="text-sm text-gray-500 line-clamp-2 mt-1">{{ item.tagline }}</p>
                 <div class="flex items-center mt-2">
-                  <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                  <span
+                    class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
                     {{ item.category || 'Uncategorized' }}
                   </span>
                 </div>
@@ -151,7 +162,8 @@
           <!-- Default State -->
           <div v-else-if="!searchQuery" class="text-center py-8">
             <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z">
               </path>
             </svg>
             <h3 class="mt-2 text-sm font-medium text-gray-900">Cari</h3>
@@ -162,24 +174,23 @@
     </div>
 
     <!-- Modal Course Detail -->
-    <div v-if="showModal && selectedCourse" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
+    <div v-if="showModal && selectedCourse"
+      class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
       <div class="bg-white rounded-xl shadow-lg p-6 w-[350px] relative">
-        <button @click="closeModal" class="absolute top-2 right-2 text-gray-400 hover:text-gray-700 text-xl font-bold">&times;</button>
+        <button @click="closeModal"
+          class="absolute top-2 right-2 text-gray-400 hover:text-gray-700 text-xl font-bold">&times;</button>
         <img :src="selectedCourse.thumbnail_url" alt="cover" class="w-20 h-20 object-cover rounded mb-3"
           v-if="selectedCourse.thumbnail_url" />
         <h2 class="font-bold text-lg mb-1">{{ selectedCourse.title }}</h2>
         <p class="text-sm text-gray-500 mb-2">{{ selectedCourse.tagline }}</p>
         <p class="mb-2">{{ selectedCourse.description }}</p>
-        <span class="inline-block px-3 py-1 rounded bg-blue-100 text-blue-700 text-xs">{{ selectedCourse.category }}</span>
+        <span class="inline-block px-3 py-1 rounded bg-blue-100 text-blue-700 text-xs">{{ selectedCourse.category
+          }}</span>
       </div>
     </div>
-  <!-- Modal Document Detail pakai komponen openModalPdf -->
-  <openModalPdf 
-    ref="modalRef"
-    :cards="[selectedDocument]"
-    v-model:showModal="showModal"
-    v-model:selectedCard="selectedDocument"
-    @close="closeModal" />
+    <!-- Modal Document Detail pakai komponen openModalPdf -->
+    <openModalPdf ref="modalRef" :cards="[selectedDocument]" v-model:showModal="showModal"
+      v-model:selectedCard="selectedDocument" @close="closeModal" />
     <!-- End: Modal Search Algolia Style -->
 
     <div class="relative flex items-center justify-end gap-[14px] group">
@@ -196,9 +207,6 @@
             <a href="#">My Account</a>
           </li>
           <li class="font-semibold">
-            <a href="#">Subscriptions</a>
-          </li>
-          <li class="font-semibold">
             <a href="#">Settings</a>
           </li>
           <li class="font-semibold">
@@ -212,11 +220,9 @@
 
 <script setup>
 import { ref, nextTick, onMounted } from 'vue';
-import { AisInstantSearch, AisSearchBox, AisHits } from 'vue-instantsearch/vue3/es';
-import { liteClient } from 'algoliasearch/lite';
 import { useRouter } from 'vue-router';
 import { getSession, signOut } from '@/services/authService';
-import { searchContent } from '@/services/courseService'; 
+import { searchContent } from '@/services/courseService';
 import openModalPdf from './openModalPDF.vue'
 import Swal from 'sweetalert2';
 
@@ -240,7 +246,7 @@ const routeByName = router.options.routes.find(r => r.name === 'courseDetail');
 console.log(routeByName);
 
 
-onMounted(async() => {
+onMounted(async () => {
   try {
     const [resAuth] = await Promise.all([
       getSession()
@@ -332,7 +338,7 @@ function openDocumentDetail(document) {
   selectedDocument.value = document;
   selectedCourse.value = null;
   showModal.value = true;
-  
+
   closeSearch();
 }
 
@@ -368,42 +374,54 @@ function closeModal() {
 .announcement-card {
   transition: box-shadow 0.2s, transform 0.2s;
 }
+
 .announcement-card:hover {
   box-shadow: 0 8px 32px 0 rgba(127, 51, 255, 0.37), 0 1.5px 6px 0 #7F33FF;
   transform: translateY(-2px) scale(1.03);
   border-color: #7F33FF;
 }
+
 .pattern-bg {
   background-image: url('https://www.toptal.com/designers/subtlepatterns/uploads/dot-grid.png');
   background-size: 40px 40px;
 }
+
 .bg-sidebar {
   background: #7F33FF;
 }
+
 .filter-white-svg {
   filter: brightness(0) invert(1);
 }
+
 .line-clamp-2 {
-/* Untuk satu baris clamp nomor surat */
-.line-clamp-1 {
-  display: -webkit-box;
-  line-clamp: 1;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
+
+  /* Untuk satu baris clamp nomor surat */
+  .line-clamp-1 {
+    display: -webkit-box;
+    line-clamp: 1;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
   display: -webkit-box;
   line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
+
 /* Hide scrollbar utility */
 .scrollbar-hidden {
-  scrollbar-width: none; /* Firefox */
-  -ms-overflow-style: none; /* IE 10+ */
+  scrollbar-width: none;
+  /* Firefox */
+  -ms-overflow-style: none;
+  /* IE 10+ */
 }
+
 .scrollbar-hidden::-webkit-scrollbar {
-  display: none; /* Chrome/Safari/Webkit */
+  display: none;
+  /* Chrome/Safari/Webkit */
 }
 </style>

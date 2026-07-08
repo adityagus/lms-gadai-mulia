@@ -101,7 +101,7 @@ class AnnouncementController extends Controller
     {
         try {
             $announcement = Announcement::with(['document_position:document_id,kd_jbt', 'menu:id,id_menu', 'document_regional'])
-                ->findOrFail($document_id); 
+                ->findOrFail($document_id);
 
             return response()->json([
                 'success' => true,
@@ -125,6 +125,8 @@ class AnnouncementController extends Controller
     public function update(UpdateAnnouncementRequest $request, $document_id)
     {
         try {
+            $content = $request->all();
+            // dd($content);
             $announcement = $this->announcementService->updateAnnouncement(
                 (int) $document_id,
                 $request->validated(),

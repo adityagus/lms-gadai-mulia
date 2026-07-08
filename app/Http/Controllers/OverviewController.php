@@ -18,15 +18,18 @@ class OverviewController extends Controller
         $cabang = $user['cabang'] ?? null;
 
         // Hitung total pengumuman dan formulir berdasarkan menu_id masing-masing
+        //jangan include dengan softdelete
         $total_pengumuman = Announcement::with('menu')
             ->forUser($jbt, $cabang)
-            ->whereHas('menu', function($q){
+            ->whereNull('deleted_at')
+            ->whereHas('menu', function ($q) {
                 $q->where('id_menu', 1);
             })->count();
-        
+
         $total_formulir = Announcement::with('menu')
             ->forUser($jbt, $cabang)
-            ->whereHas('menu', function($q){
+            ->whereNull('deleted_at')
+            ->whereHas('menu', function ($q) {
                 $q->where('id_menu', 2);
             })->count();
 
@@ -34,7 +37,8 @@ class OverviewController extends Controller
 
         $latest_documents = Announcement::with('menu')
             ->forUser($jbt, $cabang)
-            ->orderBy('created_at', 'desc')
+            ->whereNull('deleted_at')
+            ->orderByRaw('COALESCE(updated_at, created_at) DESC')
             ->limit(5)
             ->get();
 
@@ -42,24 +46,35 @@ class OverviewController extends Controller
 
         $uploaderNames = [];
         if (!empty($usernames)) {
-            $uploaderNames = DB::connection('db2')
-                ->table('auth.users')
-                ->whereIn('username', $usernames)
-                ->pluck('full_name', 'username')
-                ->toArray();
+            try {
+                $uploaderNames = DB::connection('db2')
+                    ->table('tbluser as a')
+                    ->join('tblkaryawan as b', 'a.fk_karyawan', '=', 'b.npk')
+                    ->whereIn('a.username', $usernames)
+                    ->select('a.username', DB::raw("CONCAT(b.nm_depan, ' ', b.nm_belakang) as full_name"))
+                    ->pluck('full_name', 'username')
+                    ->toArray();
+            } catch (\Exception $e) {
+                \Log::warning('Could not fetch user names from db2: ' . $e->getMessage());
+                // Silently ignore to prevent breaking the dashboard
+            }
         }
 
-        $latest_docs_data = $latest_documents->map(function($doc) use ($uploaderNames) {
+        $latest_docs_data = $latest_documents->map(function ($doc) use ($uploaderNames) {
             return [
                 'id' => $doc->id,
                 'title' => $doc->title,
                 'submenu_id' => $doc->submenu_id,
                 'url' => $doc->url,
-                'tgl_berlaku' => $doc->tgl_berlaku,
+                'tgl_berlaku' => $doc->tgl_berlaku ? \Carbon\Carbon::parse($doc->tgl_berlaku)->format('d-m-Y') : null,
                 'content' => $doc->content,
                 'type' => $doc->type,
                 'no_surat' => $doc->no_surat,
                 'created_at' => $doc->created_at ? $doc->created_at->toISOString() : null,
+                'dateLastUpdate' => $doc->updated_at
+                    ? $doc->updated_at->format('d M Y H:i:s') . ' WIB'
+                    : ($doc->created_at ? $doc->created_at->format('d M Y H:i:s') . ' WIB' : null),
+                // 'dateLastUpdate' => $doc->updated_at ? $doc->updated_at->toISOString() : $doc->created_at->toISOString(),
                 'uploader_name' => $uploaderNames[$doc->created_by] ?? $doc->created_by ?? 'System',
                 'menu' => $doc->menu ? [
                     'id' => $doc->menu->id,
@@ -100,4 +115,3 @@ class OverviewController extends Controller
         ]);
     }
 }
-    

@@ -20,6 +20,6 @@ console.log("ContentPdf component loaded with content:", contentUrl);
 const pdfUrl = ref(contentUrl || '')
 
 watch(() => props.content, (newContent) => {
-  pdfUrl.value = contentUrl || ''
+  pdfUrl.value = imgUrl + (newContent || '')
 }, { immediate: true })
 </script>

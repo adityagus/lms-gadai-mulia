@@ -7,7 +7,7 @@ const props = defineProps({
 const emit = defineEmits(['update:checked']);
 
 function getAllChildIds(area) {
-  let ids = [area.id_area];
+  let ids = [String(area.id_area)];
   if (area.children && area.children.length > 0) {
     area.children.forEach(child => {
       ids = ids.concat(getAllChildIds(child));
@@ -16,17 +16,19 @@ function getAllChildIds(area) {
   return ids;
 }
 function isParentChecked(area) {
-  if (!area.children || area.children.length === 0) return props.checked.includes(area.id_area);
+  const checkedStrings = (props.checked || []).map(String);
+  if (!area.children || area.children.length === 0) return checkedStrings.includes(String(area.id_area));
   return area.children.every(child => isParentChecked(child));
 }
 function toggleParent(area) {
   const allIds = getAllChildIds(area);
-  const allChecked = allIds.every(id => props.checked.includes(id));
+  const checkedStrings = (props.checked || []).map(String);
+  const allChecked = allIds.every(id => checkedStrings.includes(id));
   let newChecked;
   if (allChecked) {
-    newChecked = props.checked.filter(id => !allIds.includes(id));
+    newChecked = props.checked.filter(id => !allIds.includes(String(id)));
   } else {
-    newChecked = Array.from(new Set([...props.checked, ...allIds]));
+    newChecked = Array.from(new Set([...props.checked.map(String), ...allIds]));
   }
   emit('update:checked', newChecked);
 }
@@ -41,7 +43,7 @@ function toggleParent(area) {
         :indeterminate="!isParentChecked(props.area) && props.area.children && props.area.children.length > 0 && props.area.children.some(child => isParentChecked(child))"
         @change="() => toggleParent(props.area)"
       />
-      {{ props.area.nm_area }} {{ props.area.id_area }}
+      {{ props.area.nm_area }}
     </label>
     <div v-if="props.area.children && props.area.children.length > 0" :style="{ marginLeft: '1.5rem' }">
       <AreaCheckbox

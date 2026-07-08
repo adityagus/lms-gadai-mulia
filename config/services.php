@@ -30,10 +30,7 @@ return [
         'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
     ],
 
-    'algolia' => [
-        'app_id' => env('ALGOLIA_APP_ID'),
-        'secret' => env('ALGOLIA_SECRET'),
-    ],
+
 
     'mix' => [
         'url' => env('ENV_MIX_URL'),

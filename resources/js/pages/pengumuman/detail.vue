@@ -16,15 +16,12 @@
   <div class="flex items-center justify-between mb-4">
     <!-- Filter Area Tabs -->
     <div class="flex gap-2" v-if="auth?.cabang === '' || !auth?.cabang">
-      <!-- START: AREA TAB STATIC -->
+      <!-- START: AREA TAB DYNAMIC -->
       <button v-for="tab in memoTabs" :key="tab.kd_wilayah" @click="activeMemoTab = tab.kd_wilayah"
         :class="['px-3 py-1 rounded-lg font-semibold text-xs transition', activeMemoTab === tab.kd_wilayah ? 'bg-sidebar text-white shadow' : 'bg-white text-sidebar hover:bg-purple-100']">
-        <span v-if="tab.kd_wilayah === 'all'">All</span>
-        <span v-if="tab.kd_wilayah === 2">Jaya</span>
-        <span v-if="tab.kd_wilayah === 3">Jabar</span>
-        <span v-if="tab.kd_wilayah === 4">Kepri</span>
+        <span>{{ formatWilayahName(tab.nm_wilayah) }}</span>
       </button>
-      <!-- END: AREA TAB STATIC -->
+      <!-- END: AREA TAB DYNAMIC -->
     </div>
     <!-- Layout Menu Icon -->
     <div class="flex gap-2" v-if="auth?.cabang === ''">
@@ -63,7 +60,8 @@
             <img :src="detail.icon" class="w-8 h-8 filter-white-svg" alt="icon" />
             <!-- <img :src="item.icon" class="w-8 h-8 filter-white-svg" alt="icon" /> -->
           </div>
-          <span class="text-sidebar text-lg font-bold transition-all duration-300 mt-3 hover:line-clamp-none cursor-pointer"
+          <span
+            class="text-sidebar text-lg font-bold transition-all duration-300 mt-3 hover:line-clamp-none cursor-pointer"
             :title="item.title">{{ item.title }}</span>
         </div>
         <div class="bg-gray-50 rounded-lg p-3 flex flex-col gap-2 mb-2 border border-gray-100">
@@ -82,15 +80,16 @@
             <span class="text-xs font-bold text-sidebar">{{ item.tgl_berlaku }}</span>
           </div>
         </div>
-        <div class="text-xs text-gray-500 mb-16">Terakhir update: <br><span class="font-semibold text-sidebar">{{ item.dateLastUpdate
-            }}</span></div>
+        <div class="text-xs text-gray-500 mb-16">Terakhir update: <br><span class="font-semibold text-sidebar">{{
+          item.dateLastUpdate
+        }}</span></div>
         <!-- Tombol aksi di tengah bawah -->
         <div class="absolute bottom-8 left-1/2 -translate-x-1/2 flex gap-4 mt-2 justify-center items-center w-max"
           v-if='auth && (auth.idgrup == "JBT-032" || auth.idgrup === "JBT-037" || auth.idgrup === "JBT-039" || auth.idgrup === "JBT-040")'>
           <router-link :to="{ name: 'information-document-update', params: { id: item.id } }" @click.stop
             class="bg-white rounded-full px-4 py-2 shadow hover:bg-purple-100 transition group/edit flex items-center gap-2">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"
-              class="w-5 h-5 text-sidebar group-hover/edit:text-purple-700">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
+              stroke="currentColor" class="w-5 h-5 text-sidebar group-hover/edit:text-purple-700">
               <path stroke-linecap="round" stroke-linejoin="round"
                 d="M16.862 3.487a2.1 2.1 0 1 1 2.97 2.97L8.91 17.38a2.1 2.1 0 0 1-.88.53l-3.07.92a.525.525 0 0 1-.65-.65l.92-3.07a2.1 2.1 0 0 1 .53-.88L16.862 3.487z" />
             </svg>
@@ -98,8 +97,8 @@
           </router-link>
           <button @click.stop="deleteAnnouncement(item)"
             class="bg-red-100 rounded-full px-4 py-2 shadow hover:bg-red-200 transition group/delete flex items-center gap-2">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"
-              class="w-5 h-5 text-red-600 group-hover/delete:text-red-800">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
+              stroke="currentColor" class="w-5 h-5 text-red-600 group-hover/delete:text-red-800">
               <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
             </svg>
             <span class="text-xs font-semibold text-red-600">Archive</span>
@@ -112,31 +111,29 @@
   <!-- Table/List Layout -->
   <div v-else>
     <div class="datatable bg-white mb-16">
-      <vue3-datatable
-        :rows="tableRows"
-        :columns="tableCols"
-        :totalRows="tableRows.length"
-        :search="search"
-        :sortable="true"
-        :selectRowOnClick="true"
-        @row-click='handleRowClick'
-      >
-        <template #action="{ row, value }">
-          <div class="flex gap-2 justify-center items-center">
-            <button 
-              @click.stop="router.push({ name: 'information-document-update', params: { id: value.id } })"
-              class="bg-white border border-sidebar text-sidebar px-2 py-1 rounded shadow hover:bg-purple-100 transition text-xs font-semibold inline-flex items-center gap-1"
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-3 h-3">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M16.862 3.487a2.1 2.1 0 1 1 2.97 2.97L8.91 17.38a2.1 2.1 0 0 1-.88.53l-3.07.92a.525.525 0 0 1-.65-.65l.92-3.07a2.1 2.1 0 0 1 .53-.88L16.862 3.487z" />
+      <vue3-datatable :rows="tableRows" :columns="tableCols" :totalRows="tableRows.length" :search="search"
+        :sortable="true" :selectRowOnClick="true" @row-click='handleRowClick'>
+        <template #tglBerlaku="{ value }">
+          <div class="text-xs text-gray-700 text-center">{{ value?.tglBerlakuFormatted || '-' }}</div>
+        </template>
+        <template #lastUpdate="{ value }">
+          <span class="text-xs font-medium text-gray-700">{{ value?.dateLastUpdate || '-' }}</span>
+        </template>
+        <template #action="{ value }">
+          <div class="flex gap-2 justify-center items-center" v-if="value">
+            <button @click.stop="router.push({ name: 'information-document-update', params: { id: value?.id } })"
+              class="bg-white border border-sidebar text-sidebar px-2 py-1 rounded shadow hover:bg-purple-100 transition text-xs font-semibold inline-flex items-center gap-1">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
+                stroke="currentColor" class="w-3 h-3">
+                <path stroke-linecap="round" stroke-linejoin="round"
+                  d="M16.862 3.487a2.1 2.1 0 1 1 2.97 2.97L8.91 17.38a2.1 2.1 0 0 1-.88.53l-3.07.92a.525.525 0 0 1-.65-.65l.92-3.07a2.1 2.1 0 0 1 .53-.88L16.862 3.487z" />
               </svg>
               Edit
             </button>
-            <button 
-              @click.stop="deleteAnnouncementFromTable(value.id)"
-              class="bg-red-100 border border-red-300 text-red-600 px-2 py-1 rounded shadow hover:bg-red-200 transition text-xs font-semibold inline-flex items-center gap-1"
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-3 h-3">
+            <button @click.stop="deleteAnnouncementFromTable(value?.id)"
+              class="bg-red-100 border border-red-300 text-red-600 px-2 py-1 rounded shadow hover:bg-red-200 transition text-xs font-semibold inline-flex items-center gap-1">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
+                stroke="currentColor" class="w-3 h-3">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
               </svg>
               Archive
@@ -184,17 +181,38 @@ const cards = ref([]);
 //   { title: 'Title draw memo ...', count: 0, icon: 'https://unpkg.com/heroicons@2.0.13/24/solid/book-open.svg', desc: 'Memo draw detail ...', date: '02.08.2016', type: 'draw', nomorSurat: '006/DRAW/2016', tanggalBerlaku: '02.08.2016' },
 // ])
 
+const formatWilayahName = (name) => {
+  if (!name) return '';
+  const lower = name.toLowerCase();
+  if (lower === 'all') return 'All';
+  if (lower === 'jakarta') return 'Jaya';
+  if (lower === 'jawa barat') return 'Jabar';
+  if (lower === 'kepri') return 'Kepri';
+
+  return name.split(' ')
+    .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+    .join(' ');
+};
+
 const filteredCards = computed(() => {
   const tab = activeMemoTab.value;
   const allCards = cards.value || [];
 
   if (tab === 'all') return allCards;
-  
-  
-  return allCards.filter(card =>
-    Array.isArray(card.document_regional) &&
-    card.document_regional.some(dr => dr.regional_id.toString().charAt(1) == tab)
-  );
+
+  return allCards.filter(card => {
+    if (!Array.isArray(card.document_regional)) return false;
+    return card.document_regional.some(dr => {
+      if (dr.regional_id === undefined || dr.regional_id === null) return false;
+      const regionalStr = dr.regional_id.toString();
+      // 1. Direct match with region ID (e.g. 2 === 2)
+      if (regionalStr === tab.toString()) return true;
+
+      // 2. Pad branch/area code to 4 digits and check the region digit (e.g. 509 -> "0509" -> matches region 5)
+      const padded = regionalStr.padStart(4, '0');
+      return padded.length === 4 && padded.charAt(1) === tab.toString();
+    });
+  });
 });
 
 const search = ref('');
@@ -214,13 +232,13 @@ const tableCols = computed(() => {
     { field: 'id', title: 'ID', isUnique: true },
     { field: 'title', title: 'Judul' },
     { field: 'nomorSurat', title: 'Nomor Surat' },
-    { field: 'tglBerlaku', title: 'Tanggal Berlaku' },
+    { field: 'tglBerlaku', title: 'Tanggal Berlaku', cellClass: 'text-center', headerClass: 'text-center justify-center' },
     { field: 'lastUpdate', title: 'Terakhir Diperbarui' }
   ];
   if (isAdmin.value) {
-    cols.push({ 
-      field: 'action', 
-      title: 'Aksi', 
+    cols.push({
+      field: 'action',
+      title: 'Aksi',
       sortable: false,
       type: 'html', // Tambahkan type html untuk render HTML content
       width: '180px'
@@ -236,13 +254,15 @@ const tableRows = computed(() => {
       id: item.id || item.id_pengumuman || item.submenu_id || index,
       title: item.title,
       nomorSurat: item.no_surat,
-      tglBerlaku: item.tgl_berlaku, // gunakan field yang sudah diformat dari backend
-      lastUpdate: item.dateLastUpdate // gunakan field yang sudah diformat dari backend
+      tglBerlaku: item.tgl_berlaku_raw || '', // gunakan raw date (YYYY-MM-DD) untuk sorting kronologis
+      tglBerlakuFormatted: item.tgl_berlaku || '-', // tampilkan format human-readable di tabel
+      lastUpdate: item.updated_at || item.created_at || '', // gunakan raw timestamp/ISO date untuk sorting kronologis
+      dateLastUpdate: item.dateLastUpdate || '-' // tampilkan format human-readable di tabel
     };
-    
+
     // Tambahkan field action untuk admin (tombol HTML)
-    
-    
+
+
     console.log('Row created:', row);
     return row;
   });
@@ -320,13 +340,13 @@ const deleteAnnouncement = (item) => {
 
 const deleteAnnouncementFromTable = (id) => {
   console.log('deleteAnnouncementFromTable called with id:', id);
-  
+
   // Cari item berdasarkan id dari filteredCards
   const item = filteredCards.value.find(card => {
     const cardId = card.id || card.id_pengumuman || card.submenu_id;
     return cardId == id;
   });
-  
+
   if (item) {
     // Gunakan function deleteAnnouncement yang sudah ada
     deleteAnnouncement(item);

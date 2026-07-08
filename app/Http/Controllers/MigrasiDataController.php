@@ -3,10 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\Document;
-use App\Models\AksesJabatan;
+use App\Models\DocumentPosition;
 use App\Models\Announcement;
 use Illuminate\Http\Request;
-use App\Models\DocumentRegion;
+use App\Models\AksesCabang;
 use Illuminate\Support\Carbon;
 use Maatwebsite\Excel\Facades\Excel;
 use PhpOffice\PhpSpreadsheet\Shared\Date;
@@ -19,8 +19,8 @@ class MigrasiDataController extends Controller
     {
         $data = [
             'documents' => Announcement::all()->toArray(),
-            'document_regions' => DocumentRegion::all()->toArray(),
-            'akses_jabatan' => AksesJabatan::all()->toArray(),
+            'document_regions' => AksesCabang::all()->toArray(),
+            'akses_jabatan' => DocumentPosition::all()->toArray(),
         ];
 
         return Excel::download(new class($data) implements WithMultipleSheets {
@@ -88,15 +88,17 @@ class MigrasiDataController extends Controller
         if ($newDocId) {
           if ($row[1] == 999) {
             foreach (Cabang::all() as $cabang) {
-              DocumentRegion::updateOrCreate([
-                'document_id' => $newDocId,
-                'regional_id' => $cabang->id,
+              AksesCabang::updateOrCreate([
+                'id_document' => $newDocId,
+                'id_cabang' => $cabang->id,
+                'akses' => 1,
               ]);
             }
           } else {
-            DocumentRegion::updateOrCreate([
-              'document_id' => $newDocId,
-              'regional_id' => $row[1],
+            AksesCabang::updateOrCreate([
+              'id_document' => $newDocId,
+              'id_cabang' => $row[1],
+              'akses' => 1,
             ]);
           }
         }
@@ -107,7 +109,7 @@ class MigrasiDataController extends Controller
           continue;
         if ($row[2] == 999) {
           foreach (Jabatan::all() as $jabatan) {
-            AksesJabatan::updateOrCreate([
+            DocumentPosition::updateOrCreate([
               'document_id' => $row[1] ?? null,
               'kd_jbt' => $jabatan->id,
               'user' => $row[3] ?? null,
@@ -115,7 +117,7 @@ class MigrasiDataController extends Controller
             ]);
           }
         } else {
-          AksesJabatan::updateOrCreate([
+          DocumentPosition::updateOrCreate([
             'document_id' => $row[1] ?? null,
             'kd_jbt' => $row[2] ?? null,
             'user' => $row[3] ?? null,

@@ -1,12 +1,8 @@
 <template>
-  
+
   <!-- openmodalpdf -->
-    <OpenModalPDF
-    ref="modalRef"
-    v-model:showModal="showModal"
-    v-model:selectedCard="selectedCard"
-  />
-  
+  <OpenModalPDF ref="modalRef" v-model:showModal="showModal" v-model:selectedCard="selectedCard" />
+
   <!-- User Dashboard Section -->
   <section class="">
     <h2 class="font-bold text-xl mb-2">Hi, {{ user.nama }} 👋</h2>
@@ -36,45 +32,49 @@
 
   <section class="-mt-6">
     <div class="bg-white rounded-[20px] p-6 shadow-[0_4px_4px_0_#E0E2EF] mt-4">
-    <h3 class="font-extrabold text-xl leading-[30px] mb-4">Dokumen Terbaru Diupload</h3>
-    <div class="overflow-x-auto">
-      <table class="min-w-full divide-y divide-gray-200 text-sm">
-        <thead>
-          <tr>
-            <th class="px-4 py-3 text-left font-bold text-[#838C9D] uppercase tracking-wider">Judul Dokumen</th>
-            <th class="px-4 py-3 text-left font-bold text-[#838C9D] uppercase tracking-wider">Kategori</th>
-            <th class="px-4 py-3 text-left font-bold text-[#838C9D] uppercase tracking-wider">Tanggal Upload</th>
-            <th class="px-4 py-3 text-left font-bold text-[#838C9D] uppercase tracking-wider">Diupload Oleh</th>
-          </tr>
-        </thead>
-        <tbody class="divide-y divide-gray-100">
-          <tr v-for="doc in latestUploadedDocuments" :key="doc.id" class="hover:bg-gray-50 transition-colors">
-            <td class="px-4 py-3 whitespace-nowrap">
-              <a href="#" @click.prevent="openDetail(doc)" class="text-blue-600 hover:underline font-semibold">{{ doc.title }}</a>
-            </td>
-            <td class="px-4 py-3 whitespace-nowrap text-gray-600">
-              <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
-                {{ doc.menu?.name || 'Dokumen' }}
-              </span>
-            </td>
-            <td class="px-4 py-3 whitespace-nowrap text-gray-500">{{ formatDate(doc.created_at) }}</td>
-            <td class="px-4 py-3 whitespace-nowrap">
-              <span class="inline-flex items-center gap-1.5 py-1 px-2 rounded-lg text-xs font-semibold bg-blue-50 text-blue-600">
-                {{ doc.uploader_name }}
-              </span>
-            </td>
-          </tr>
-          <tr v-if="!latestUploadedDocuments || latestUploadedDocuments.length === 0">
-            <td colspan="4" class="px-4 py-8 text-center text-gray-400">Belum ada dokumen terbaru.</td>
-          </tr>
-        </tbody>
-      </table>
+      <h3 class="font-extrabold text-xl leading-[30px] mb-4">Dokumen Terbaru Diupload</h3>
+      <div class="overflow-x-auto">
+        <table class="min-w-full divide-y divide-gray-200 text-sm">
+          <thead>
+            <tr>
+              <th class="px-4 py-3 text-left font-bold text-[#838C9D] uppercase tracking-wider">Judul Dokumen</th>
+              <th class="px-4 py-3 text-left font-bold text-[#838C9D] uppercase tracking-wider">Kategori</th>
+              <th class="px-4 py-3 text-left font-bold text-[#838C9D] uppercase tracking-wider">Tanggal Upload</th>
+              <th class="px-4 py-3 text-left font-bold text-[#838C9D] uppercase tracking-wider">Diupload Oleh</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-gray-100">
+            <tr v-for="doc in latestUploadedDocuments" :key="doc.id" class="hover:bg-gray-50 transition-colors">
+              <td class="px-4 py-3 whitespace-nowrap">
+                <a href="#" @click.prevent="openDetail(doc)" class="text-blue-600 hover:underline font-semibold">{{
+                  doc.title }}</a>
+              </td>
+              <td class="px-4 py-3 whitespace-nowrap text-gray-600">
+                <span
+                  class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
+                  {{ doc.menu?.name || 'Dokumen' }}
+                </span>
+              </td>
+              <td class="px-4 py-3 whitespace-nowrap text-gray-500">{{ doc.dateLastUpdate }}</td>
+              <td class="px-4 py-3 whitespace-nowrap">
+                <span
+                  class="inline-flex items-center gap-1.5 py-1 px-2 rounded-lg text-xs font-semibold bg-blue-50 text-blue-600">
+                  {{ doc.uploader_name }}
+                </span>
+              </td>
+            </tr>
+            <tr v-if="!latestUploadedDocuments || latestUploadedDocuments.length === 0">
+              <td colspan="4" class="px-4 py-8 text-center text-gray-400">Belum ada dokumen terbaru.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </div>
-  </div>
   </section>
 
   <!-- Overview Perusahaan -->
-  <div class="overview" v-if='user.idgrup === "JBT-032" || user.idgrup === "JBT-038" || user.idgrup === "JBT-037" || user.idgrup === "JBT-039" || user.idgrup === "JBT-040"'>
+  <div class="overview"
+    v-if='user.idgrup === "JBT-032" || user.idgrup === "JBT-038" || user.idgrup === "JBT-037" || user.idgrup === "JBT-039" || user.idgrup === "JBT-040"'>
     <header class="flex items-center justify-between gap-[30px]">
       <div>
         <h1 class="font-extrabold text-[28px] leading-[42px]">Overview Company</h1>
@@ -195,7 +195,7 @@ async function openDetail(card) {
       console.error('Failed to log document view or update preview history:', err);
     }
   }
-  
+
   console.log('openDetail', modalRef.value, card)
 }
 
@@ -203,10 +203,10 @@ async function openDetail(card) {
 onMounted(async () => {
   try {
     // Ambil data user
-  const [userRes, adminRes] = await Promise.all([
-    userOverview(),
-    adminOverview()
-  ]);
+    const [userRes, adminRes] = await Promise.all([
+      userOverview(),
+      adminOverview()
+    ]);
     user.value = userRes.data.user
     userStats.value = userRes.data.stats
     overview.value = adminRes.data.stats

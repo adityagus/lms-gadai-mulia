@@ -11,19 +11,19 @@ class CreateCourseDetails extends Migration
      *
      * @return void
      */
-    public function up()
-    {
-        Schema::create('course_details', function (Blueprint $table) {
-            $table->id();
-            $table->unsignedBigInteger('course_id');
-            $table->string('title');
-            $table->enum('type', ['text', 'video', 'pdf', 'quiz']);
-            $table->text('content')->nullable();
-            $table->integer('order')->default(0);
-            $table->foreign('course_id')->references('id')->on('courses')->onDelete('cascade');
-            $table->timestamps();
-        });
-    }
+    // public function up()
+    // {
+    //     Schema::create('course_details', function (Blueprint $table) {
+    //         $table->id();
+    //         $table->unsignedBigInteger('course_id');
+    //         $table->string('title');
+    //         $table->enum('type', ['text', 'video', 'pdf', 'quiz']);
+    //         $table->text('content')->nullable();
+    //         $table->integer('order')->default(0);
+    //         $table->foreign('course_id')->references('id')->on('courses')->onDelete('cascade');
+    //         $table->timestamps();
+    //     });
+    // }
 
     /**
      * Reverse the migrations.

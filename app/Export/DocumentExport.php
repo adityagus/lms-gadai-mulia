@@ -1,9 +1,9 @@
 <?php
 
-namespace App\Exports;
+namespace App\Export;
 
 use App\Models\Document;
-use App\Models\DocumentRegion;
+use App\Models\AksesCabang;
 use App\Models\DocumentPosition;
 use Maatwebsite\Excel\Concerns\WithMultipleSheets;
 
@@ -32,9 +32,19 @@ class DocumentsSheetExport implements FromCollection, WithHeadings
     public function headings(): array
     {
         return [
-            'id', 'submenu_id', 'title', 'no_surat', 'url',
-            'tgl_berlaku', 'menu_order', 'created_by', 'created_at',
-            'updated_by', 'updated_at', 'deleted_by', 'deleted_at'
+            'id',
+            'submenu_id',
+            'title',
+            'no_surat',
+            'url',
+            'tgl_berlaku',
+            'menu_order',
+            'created_by',
+            'created_at',
+            'updated_by',
+            'updated_at',
+            'deleted_by',
+            'deleted_at'
         ];
     }
 }
@@ -43,11 +53,11 @@ class DocumentRegionsSheetExport implements FromCollection, WithHeadings
 {
     public function collection()
     {
-        return DocumentRegion::all();
+        return AksesCabang::all();
     }
     public function headings(): array
     {
-        return ['document_id', 'regional_id'];
+        return ['id', 'id_document', 'id_cabang', 'user', 'akses'];
     }
 }
 

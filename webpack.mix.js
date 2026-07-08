@@ -27,7 +27,8 @@ mix.js('resources/js/app.js', 'public/js')
             alias: {
                 '@': path.resolve('resources/js'),
                 '#': path.resolve(__dirname, 'node_modules'),
-                '&': path.resolve('public/assets')
+                '&': path.resolve('public/assets'),
+                '!': path.resolve('resources/css'),
             },
             extensions: ['.js', '.vue', '.json']
         }

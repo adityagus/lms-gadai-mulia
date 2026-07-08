@@ -304,11 +304,12 @@ const isAllCabangChecked = computed(() => {
   areas.value.forEach(area => {
     if (area.children && area.children.length > 0) {
       area.children.forEach(child => {
-        allChildIds.push(child.id_area);
+        allChildIds.push(String(child.id_area));
       });
     }
   });
-  return allChildIds.length > 0 && regionals_id.value.length === allChildIds.length;
+  const checkedStrings = (regionals_id.value || []).map(String);
+  return allChildIds.length > 0 && allChildIds.every(id => checkedStrings.includes(id));
 });
 
 function toggleAllCabang(e) {
@@ -318,7 +319,7 @@ function toggleAllCabang(e) {
     areas.value.forEach(area => {
       if (area.children && area.children.length > 0) {
         area.children.forEach(child => {
-          allIds.push(child.id_area);
+          allIds.push(String(child.id_area));
         });
       }
     });
@@ -335,12 +336,21 @@ const loadContentData = async () => {
   
   title.value = result.title;
   no_surat.value = result.no_surat;
-  tgl_berlaku.value = result.tgl_berlaku;
+  let dateVal = result.tgl_berlaku;
+  if (dateVal && dateVal.includes('-')) {
+    const parts = dateVal.split('-');
+    if (parts.length === 3 && parts[0].length === 2 && parts[2].length === 4) {
+      dateVal = `${parts[2]}-${parts[1]}-${parts[0]}`;
+    }
+  }
+  tgl_berlaku.value = dateVal;
   submenu_id.value = result.submenu_id;
   kd_jabatan.value = (result.document_position || [])
     .map(item => item.kd_jbt) || [];
+  // Ensure regionals_id values match the type used by AreaCheckbox (id_area from getCabang)
+  // Keep both number and string-compatible by storing as the original type
   regionals_id.value = (result.document_regional || [])
-    .map(item => String(item.regional_id)) || [];
+    .map(item => item.regional_id) || [];
   urlThumbnail.value = result.url;
   content.value = result.content;
   type.value = result.type;
@@ -476,7 +486,16 @@ onMounted(async () => {
     if (isEditMode.value) {
       await loadContentData();
       // karena createType berubah, reload types sesuai menu.id
-      areas.value = await getCabang();
+      const resCabangEdit = await getCabang();
+      areas.value = resCabangEdit.map(area => ({
+        id_area: area.id_area,
+        nm_area: area.nm_area,
+        children: area.children ? area.children.map(child => ({
+          id_area: child.id_area,
+          nm_area: child.nm_area,
+          children: []
+        })) : []
+      }));
       typeDocuments.value = await getTypesByIdMenu(createType.value);
     }else{
       createType.value = route.query.type || 1; // default 1 kalau gak ada

@@ -15,6 +15,15 @@ class AnnouncementService
      * @var FileUploadServiceInterface
      */
     protected $fileUploadService;
+    /**
+     * @var Menu
+     */
+    protected $menu;
+
+    /**
+     * @var DocumentRegion
+     */
+    protected $documentRegional;
 
     /**
      * AnnouncementService Constructor.
@@ -48,12 +57,12 @@ class AnnouncementService
             ->with(['announcements' => function ($q) use ($jbt, $cabang) {
                 if ($cabang !== null) {
                     $q
-                    ->whereHas('document_position', function ($qp) use ($jbt) {
-                        $qp->where('kd_jbt', $jbt);
-                    })
-                    ->whereHas('document_regional', function ($qr) use ($cabang) {
-                        $qr->where('regional_id', $cabang);
-                    });
+                        ->whereHas('document_position', function ($qp) use ($jbt) {
+                            $qp->where('kd_jbt', $jbt);
+                        })
+                        ->whereHas('document_regional', function ($qr) use ($cabang) {
+                            $qr->where('regional_id', $cabang);
+                        });
                 }
             }])
             ->get();
@@ -76,24 +85,24 @@ class AnnouncementService
     public function getAnnouncementDetails($menu_id, $jbt, $cabang)
     {
         $announcementTitle = Menu::select('id', 'name', 'icon')->findOrFail($menu_id);
-
+        // dd($announcementTitle);
         $query = Announcement::with('menu:id', 'document_regional')
             ->where('submenu_id', $menu_id)
             ->orderBy('tgl_berlaku', 'desc')
             ->distinct();
 
-        if ($cabang === null) {
+        if ($cabang == null) {
             $announcements = $query->select('id', 'submenu_id', 'title', 'no_surat', 'url', 'tgl_berlaku', 'created_at', 'created_by', 'updated_at', 'updated_by', 'content', 'type')
                 ->get();
         } else {
-            if ($cabang !== null) {
+            if ($cabang != null) {
                 $query
-                ->whereHas('document_position', function ($qp) use ($jbt) {
-                    $qp->where('kd_jbt', $jbt);
-                })
-                ->whereHas('document_regional', function ($qr) use ($cabang) {
-                    $qr->where('regional_id', $cabang);
-                });
+                    ->whereHas('document_position', function ($qp) use ($jbt) {
+                        $qp->where('kd_jbt', $jbt);
+                    })
+                    ->whereHas('document_regional', function ($qr) use ($cabang) {
+                        $qr->where('regional_id', $cabang);
+                    });
             }
             $announcements = $query->select('id', 'submenu_id', 'title', 'no_surat', 'url', 'tgl_berlaku', 'created_at', 'content', 'type')
                 ->get();
@@ -119,20 +128,20 @@ class AnnouncementService
     {
         $mainPath = $this->menu->getNameById($data['submenu_id']) ?: '';
         $fileName = time() . '_' . $file->getClientOriginalName();
-        
+
         $publicPath = $this->fileUploadService->upload($file, $mainPath, $fileName);
 
         $insertData = $data;
         $insertData['created_at'] = Carbon::now('Asia/Jakarta');
         $insertData['url'] = $publicPath;
-        
+
         unset($insertData['dokumen']);
         unset($insertData['regionals_id']);
         unset($insertData['kd_jabatan']);
 
         $announcement = Announcement::create($insertData);
 
-        $regions = $data['regionals_id'];
+        $regions = array_unique($data['regionals_id'] ?? []);
         $regionRows = [];
         foreach ($regions as $regionId) {
             $regionRows[] = [
@@ -141,7 +150,7 @@ class AnnouncementService
             ];
         }
 
-        $jabatan = $data['kd_jabatan'];
+        $jabatan = array_unique($data['kd_jabatan'] ?? []);
         $jabatanRows = [];
         foreach ($jabatan as $jbt) {
             $jabatanRows[] = [
@@ -195,10 +204,11 @@ class AnnouncementService
         unset($updateData['dokumen']);
         $updateData['updated_at'] = Carbon::now('Asia/Jakarta');
 
-        // $announcement->update($updateData);
+        $announcement->update($updateData);
 
         $this->documentRegional->where('document_id', $id)->delete();
-        $regions = $data['regionals_id'];
+
+        $regions = array_unique($data['regionals_id'] ?? []);
         $regionRows = [];
         foreach ($regions as $regionId) {
             $regionRows[] = [
@@ -211,7 +221,7 @@ class AnnouncementService
         }
 
         DB::table('document_position')->where('document_id', $announcement->id)->delete();
-        $jabatan = $data['kd_jabatan'];
+        $jabatan = array_unique($data['kd_jabatan'] ?? []);
         $jabatanRows = [];
         foreach ($jabatan as $jbt) {
             $jabatanRows[] = [

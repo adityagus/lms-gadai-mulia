@@ -11,20 +11,20 @@ class CreateCacheTable extends Migration
      *
      * @return void
      */
-    public function up()
-    {
-        Schema::create('cache', function (Blueprint $table) {
-            $table->string('key')->primary();
-            $table->mediumText('value');
-            $table->integer('expiration');
-        });
+    // public function up()
+    // {
+    //     Schema::create('cache', function (Blueprint $table) {
+    //         $table->string('key')->primary();
+    //         $table->mediumText('value');
+    //         $table->integer('expiration');
+    //     });
 
-        Schema::create('cache_locks', function (Blueprint $table) {
-            $table->string('key')->primary();
-            $table->string('owner');
-            $table->integer('expiration');
-        });
-    }
+    //     Schema::create('cache_locks', function (Blueprint $table) {
+    //         $table->string('key')->primary();
+    //         $table->string('owner');
+    //         $table->integer('expiration');
+    //     });
+    // }
 
     /**
      * Reverse the migrations.

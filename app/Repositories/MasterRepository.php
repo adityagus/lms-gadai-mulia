@@ -30,12 +30,11 @@ class MasterRepository implements MasterRepositoryInterface
     public function getJabatan()
     {
         return DB::connection('db2')
-            ->table('master.position as jb')
-            ->select('jb.position_code as kd_jabatan', 'jb.position_name as nm_jabatan', 'jb.employee_status as status_karyawan', 'jb.is_active as jabatan_active')
-            ->where('jb.is_active', 'true')
-            // enum
-            ->whereIn('jb.employee_status', ['INTERNAL'])
-            ->orderBy('jb.position_name', 'asc')
+            ->table('tbljabatan as jb')
+            ->select('jb.kd_jabatan', 'jb.nm_jabatan', 'jb.status_karyawan', 'jb.jabatan_active')
+            ->where('jb.jabatan_active', 'true')
+            ->where('jb.status_karyawan', '!=', 'Eksternal')
+            ->orderBy('jb.nm_jabatan', 'asc')
             ->get();
     }
 
@@ -45,10 +44,10 @@ class MasterRepository implements MasterRepositoryInterface
     public function getWilayah()
     {
         return DB::connection('db2')
-            ->table('master.company as w')
-            ->select('w.company_id as kd_wilayah', 'w.company_name as nm_wilayah')
-            ->orderBy('w.company_id', 'asc')
-            ->where('w.company_is_active', 'true')
+            ->table('tblwilayah as w')
+            ->select('w.kd_wilayah', 'w.nm_wilayah')
+            ->where('w.wilayah_active', 'true')
+            ->orderBy('w.kd_wilayah', 'asc')
             ->get();
     }
 
@@ -58,16 +57,16 @@ class MasterRepository implements MasterRepositoryInterface
     public function getCabang()
     {
         try {
-            // ->select('area.*', 'cb.branch_id as kd_cabang', 'cb.branch_name as nm_cabang', 'cb.branch_is_active as cabang_active', 'area.region_is_active as area_active')
-
             $query = DB::connection('db2')
-                ->table('master.branch as cb')
-                ->leftJoin('master.region as area', 'cb.region_id', '=', 'area.region_id')
-                ->select('area.region_id as kd_area', 'area.region_name as nm_area', DB::raw('RIGHT(cb.branch_code, 3) as kd_cabang'), 'cb.branch_name as nm_cabang', 'cb.is_active as cabang_active', 'area.is_active as area_active')
-                ->orderBy('area.region_id', 'asc')
-                ->orderBy('cb.branch_id', 'asc')
-                ->where('cb.is_active', 'true')
-                ->where('area.is_active', 'true')
+                ->table('tblcabang as cb')
+                ->leftJoin('tblarea as area', 'cb.fk_area', '=', 'area.kd_area')
+                ->select('area.*', 'cb.kd_cabang', 'cb.nm_cabang', 'cb.cabang_active', 'area.area_active')
+                ->orderBy('area.kd_area', 'asc')
+                ->orderBy('cb.kd_cabang', 'asc')
+                ->where([
+                    'cb.cabang_active' => 'true',
+                    'area.area_active' => 'true'
+                ])
                 ->get();
 
             $grouped = $query->groupBy('kd_area');
@@ -75,7 +74,6 @@ class MasterRepository implements MasterRepositoryInterface
             $result = [];
             foreach ($grouped as $kd_area => $items) {
                 $areaName = $items[0]->nm_area;
-                $areaKode = $items[0]->kd_area;
 
                 $children = [];
                 foreach ($items as $item) {
@@ -87,7 +85,7 @@ class MasterRepository implements MasterRepositoryInterface
                 }
 
                 $result[] = [
-                    "id_area" => $items[0]->kd_cabang, // keep it matching original logic
+                    "id_area" => $kd_area,
                     "nm_area" => $areaName,
                     "children" => $children
                 ];

@@ -11,17 +11,17 @@ class CreateRegions extends Migration
      *
      * @return void
      */
-    public function up()
-    {
-        Schema::create('regions', function (Blueprint $table) {
-            $table->id();
-            $table->string('code')->unique();
-            $table->string('name');
-            $table->boolean('is_active')->default(true); // 'active', 'inactive', 'deleted'
-            $table->integer('sort_order')->nullable(); // For sorting purposes
-            $table->timestamps();
-        });
-    }
+    // public function up()
+    // {
+    //     Schema::create('regions', function (Blueprint $table) {
+    //         $table->id();
+    //         $table->string('code')->unique();
+    //         $table->string('name');
+    //         $table->boolean('is_active')->default(true); // 'active', 'inactive', 'deleted'
+    //         $table->integer('sort_order')->nullable(); // For sorting purposes
+    //         $table->timestamps();
+    //     });
+    // }
 
     /**
      * Reverse the migrations.

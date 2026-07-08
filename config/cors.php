@@ -15,12 +15,18 @@ return [
     |
     */
 
-    'paths' => ['api/*', 'sanctum/csrf-cookie'],
+    'paths' => ['*'],
 
     'allowed_methods' => ['*'],
 
-    'allowed_origins' => ['*'], // Sesuaikan dengan port Vue.js
-    // 'allowed_origins' => ['*'], // jika pengen hanya origin tertentu bisa diubah ['http:/localhost:5173'],
+    'allowed_origins' => [
+        'http://lmsgadai.test',
+        'http://lmsgadai.test:3000',
+        'http://localhost:3000',
+        'http://localhost:8000',
+        'http://127.0.0.1:8000',
+        'http://127.0.0.1:3000',
+    ],
 
     'allowed_origins_patterns' => [],
 
@@ -30,6 +36,6 @@ return [
 
     'max_age' => 0,
 
-    'supports_credentials' => false,
+    'supports_credentials' => true,
 
 ];
