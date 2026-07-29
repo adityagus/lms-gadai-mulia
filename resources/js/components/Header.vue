@@ -210,7 +210,7 @@
             <a href="#">Settings</a>
           </li>
           <li class="font-semibold">
-            <a href="/sign-in" @click.prevent="logout">Logout</a>
+            <a href="#" @click.prevent="logout">Logout</a>
           </li>
         </ul>
       </div>
@@ -358,7 +358,7 @@ function logout() {
     },
     setTimeout: 1500
   }).then(() => {
-    router.push('/sign-in');
+    router.push({ name: 'sign-in' });
   });
 }
 

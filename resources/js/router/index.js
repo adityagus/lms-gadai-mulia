@@ -220,8 +220,24 @@ const routes = [
     },
 ];
 
+const getBaseUrl = () => {
+    const baseEl = document.querySelector("base");
+    if (baseEl && baseEl.getAttribute("href")) {
+        const href = baseEl.getAttribute("href");
+        try {
+            if (href.startsWith("http://") || href.startsWith("https://")) {
+                return new URL(href).pathname;
+            }
+            return href;
+        } catch (e) {
+            return href;
+        }
+    }
+    return process.env.MIX_BASE_URL || "/";
+};
+
 const router = createRouter({
-    history: createWebHistory(),
+    history: createWebHistory(getBaseUrl()),
     routes,
     scrollBehavior(to, from, savedPosition) {
         if (to.hash) {
@@ -253,26 +269,29 @@ router.beforeEach(async (to, from, next) => {
     // Jika tidak login dan bukan halaman public, redirect ke login
     const isPublic =
         ["/sign-in", "/", "/detail-course/" + to.params.id].includes(to.path) ||
-        to.name === "detailPage";
+        to.name === "detailPage" ||
+        to.name === "sign-in" ||
+        to.name === "landingpage";
+
     if (!auth && !isPublic) {
-        return next({ path: "/sign-in" });
+        return next({ name: "sign-in" });
     }
 
     // Jika sudah login dan akses /sign-in, redirect sesuai grup
-    if (to.path === "/sign-in" && auth && auth.idgrup) {
+    if ((to.name === "sign-in" || to.path === "/sign-in") && auth && auth.idgrup) {
         if (auth.idgrup === "JBT-032" || auth.idgrup === "JBT-038") {
-            return next({ path: "/lms" });
+            return next({ name: "lms" });
         } else {
-            return next({ path: "/student/lms" });
+            return next({ name: "studentCourses" });
         }
     }
 
     // Jika akses /courses, hanya admin
-    if (to.path.startsWith("/lms")) {
+    if (to.path.startsWith("/lms") || to.name === "lms") {
         if (auth && (auth.idgrup === "JBT-032" || auth.idgrup === "JBT-038")) {
             return next();
         } else {
-            return next({ path: "/student/lms" });
+            return next({ name: "studentCourses" });
         }
     }
 
