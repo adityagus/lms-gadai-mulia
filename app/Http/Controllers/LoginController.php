@@ -47,11 +47,9 @@ class LoginController extends Controller
         // dd($user);
         // dd($user);
         if ($user) {
-            if (crypt($password, $user->password) == $user->password) {
-                $nama = $user->nm_depan ?? ($user->nama ?? '');
-                if (!empty($user->nm_belakang)) {
-                    $nama .= ' ' . $user->nm_belakang;
-                }
+            if (Hash::check($password, $user->password_hash)) {
+
+                $nama = $user->full_name ?? '';
 
                 $datasession = [
                     'nama' => Str::title($nama),
@@ -64,6 +62,7 @@ class LoginController extends Controller
                 ];
 
                 session()->put('auth', $datasession);
+                // dd(Session::all());
 
                 $redirectUrl = '/lms';
                 return response()->json([

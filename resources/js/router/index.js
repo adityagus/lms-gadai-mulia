@@ -21,7 +21,7 @@ import courseStudent from "@/pages/Student/courses/index.vue";
 import DetailPengumuman from "@/pages/pengumuman/detail.vue";
 import PengumumanCreate from "@/pages/pengumuman/create.vue";
 import CategoryManagement from "@/pages/master/category.vue";
-import AuditLog from "@/pages/admin/AuditLog.vue";
+import AuditLog from "@/pages/Admin/AuditLog.vue";
 import DocumentReport from "@/pages/report/DocumentReport.vue";
 import { values } from "lodash";
 
