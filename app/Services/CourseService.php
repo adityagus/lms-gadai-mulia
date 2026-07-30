@@ -190,22 +190,28 @@ class CourseService
     public function search(string $query, $jbt, $cabang)
     {
         $courses = Course::with('category:id,name')
-            ->where('name', 'LIKE', "%{$query}%")
-            ->orWhere('tagline', 'LIKE', "%{$query}%")
-            ->orWhere('description', 'LIKE', "%{$query}%")
-            ->orWhereHas('category', function ($q) use ($query) {
-                $q->where('name', 'LIKE', "%{$query}%");
+            ->where(function ($q) use ($query) {
+                $q->where('name', 'LIKE', "%{$query}%")
+                  ->orWhere('tagline', 'LIKE', "%{$query}%")
+                  ->orWhere('description', 'LIKE', "%{$query}%")
+                  ->orWhereHas('category', function ($catQ) use ($query) {
+                      $catQ->where('name', 'LIKE', "%{$query}%");
+                  });
             })
-            ->limit(10)
+            ->limit(15)
             ->get();
 
         $docQuery = Announcement::with('menu')->where(function ($q) use ($query) {
             $q->where('title', 'LIKE', "%{$query}%")
-              ->orWhere('no_surat', 'LIKE', "%{$query}%");
+              ->orWhere('no_surat', 'LIKE', "%{$query}%")
+              ->orWhere('content', 'LIKE', "%{$query}%")
+              ->orWhereHas('menu', function ($menuQ) use ($query) {
+                  $menuQ->where('name', 'LIKE', "%{$query}%");
+              });
         });
 
-        if ($cabang === null) {
-            $documents = $docQuery->limit(10)->get();
+        if ($cabang === null || $cabang === '') {
+            $documents = $docQuery->orderBy('tgl_berlaku', 'desc')->limit(15)->get();
         } else {
             $documents = $docQuery->whereHas('document_position', function ($qp) use ($jbt) {
                 $qp->where('kd_jbt', $jbt);
@@ -214,7 +220,7 @@ class CourseService
                 $qr->where('regional_id', $cabang);
             })
             ->orderBy('tgl_berlaku', 'desc')
-            ->limit(10)
+            ->limit(15)
             ->get();
         }
 

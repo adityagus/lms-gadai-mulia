@@ -44,12 +44,30 @@ class MasterRepository implements MasterRepositoryInterface
      */
     public function getWilayah()
     {
-        return DB::connection('db2')
+        $companies = DB::connection('db2')
             ->table('master.company as w')
             ->select('w.company_id as kd_wilayah', 'w.company_name as nm_wilayah')
-            ->orderBy('w.company_id', 'asc')
             ->where('w.company_is_active', 'true')
+            ->orderBy('w.company_id', 'asc')
             ->get();
+
+        $branches = DB::connection('db2')
+            ->table('master.branch as cb')
+            ->select('cb.company_id', 'cb.branch_code as kd_cabang', 'cb.branch_name as nm_cabang')
+            ->where('cb.is_active', 'true')
+            ->orderBy('cb.company_id', 'asc')
+            ->orderBy('cb.branch_code', 'asc')
+            ->get()
+            ->groupBy('company_id');
+
+        return $companies->map(function ($comp) use ($branches) {
+            $compBranches = $branches->get($comp->kd_wilayah, collect());
+            return [
+                'kd_wilayah' => $comp->kd_wilayah,
+                'nm_wilayah' => $comp->nm_wilayah,
+                'branches' => $compBranches->pluck('kd_cabang')->toArray()
+            ];
+        });
     }
 
     /**
@@ -63,7 +81,7 @@ class MasterRepository implements MasterRepositoryInterface
             $query = DB::connection('db2')
                 ->table('master.branch as cb')
                 ->leftJoin('master.region as area', 'cb.region_id', '=', 'area.region_id')
-                ->select('area.region_id as kd_area', 'area.region_name as nm_area', DB::raw('RIGHT(cb.branch_code, 3) as kd_cabang'), 'cb.branch_name as nm_cabang', 'cb.is_active as cabang_active', 'area.is_active as area_active')
+                ->select('area.region_id as kd_area', 'area.region_name as nm_area', DB::raw('RIGHT(cb.branch_code, 4) as kd_cabang'), 'cb.branch_name as nm_cabang', 'cb.is_active as cabang_active', 'area.is_active as area_active')
                 ->orderBy('area.region_id', 'asc')
                 ->orderBy('cb.branch_id', 'asc')
                 ->where('cb.is_active', 'true')

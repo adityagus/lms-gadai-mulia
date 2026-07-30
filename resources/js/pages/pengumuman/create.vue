@@ -335,7 +335,25 @@ const loadContentData = async () => {
   
   title.value = result.title;
   no_surat.value = result.no_surat;
-  tgl_berlaku.value = result.tgl_berlaku;
+  
+  if (result.tgl_berlaku) {
+    const rawDate = String(result.tgl_berlaku).trim();
+    if (rawDate.includes('-')) {
+      const parts = rawDate.split('T')[0].split('-');
+      if (parts[0].length === 4) {
+        tgl_berlaku.value = `${parts[0]}-${parts[1].padStart(2, '0')}-${parts[2].padStart(2, '0')}`;
+      } else if (parts[2].length === 4) {
+        tgl_berlaku.value = `${parts[2]}-${parts[1].padStart(2, '0')}-${parts[0].padStart(2, '0')}`;
+      } else {
+        tgl_berlaku.value = rawDate;
+      }
+    } else {
+      tgl_berlaku.value = rawDate;
+    }
+  } else {
+    tgl_berlaku.value = '';
+  }
+
   submenu_id.value = result.submenu_id;
   kd_jabatan.value = (result.document_position || [])
     .map(item => item.kd_jbt) || [];

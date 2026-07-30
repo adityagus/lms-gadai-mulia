@@ -123,21 +123,23 @@ const onSubmit = handleSubmit(async () => {
       await mutateCreate.mutateAsync(formData);
     }
     
-    router.push('/lms');
     queryClient.invalidateQueries({ queryKey: ['courses'] });
-    Swal.fire({
-      title: "Success!",
-      text: `Course ${edit ? 'updated' : 'created'} successfully.`,
+    await Swal.fire({
+      title: "Berhasil!",
+      text: `Kelas berhasil ${edit ? 'diperbarui' : 'dibuat'}.`,
       icon: "success",
+      confirmButtonColor: '#662FFF',
       timer: 1500,
     });
+    router.push('/lms');
   } catch (err) {
     console.dir(err);
     Swal.fire({
-      title: "Error!",
-      text: err.message,
+      title: "Gagal!",
+      text: err.message || 'Terjadi kesalahan saat menyimpan kelas.',
       icon: "error",
-      timer: 1500,
+      confirmButtonColor: '#662FFF',
+      timer: 2000,
     });
   }
 });

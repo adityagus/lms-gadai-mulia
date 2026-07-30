@@ -8,6 +8,8 @@ import CourseCreate from "../pages/course-create/index";
 import CourseContentCreate from "@/pages/course-content-create/index";
 import ContentPreview from "@/pages/course-preview/index";
 import AnnonouncementInfo from "@/pages/pengumuman/statistikCard.vue";
+import PengumumanPage from "@/pages/pengumuman/index.vue";
+import FormulirPage from "@/pages/formulir/index.vue";
 import ArchivePengumuman from "@/pages/pengumuman/archive.vue";
 import SignIn from "@/pages/SignIn";
 import Main from "@/pages/landing-page/layouts/Main";
@@ -20,6 +22,7 @@ import DetailPengumuman from "@/pages/pengumuman/detail.vue";
 import PengumumanCreate from "@/pages/pengumuman/create.vue";
 import CategoryManagement from "@/pages/master/category.vue";
 import AuditLog from "@/pages/admin/AuditLog.vue";
+import DocumentReport from "@/pages/report/DocumentReport.vue";
 import { values } from "lodash";
 
 console.log("masuk route");
@@ -133,13 +136,13 @@ const routes = [
                 path: "/pengumuman",
                 name: "pengumuman",
                 meta: { values: 1 },
-                component: AnnonouncementInfo,
+                component: PengumumanPage,
             },
             {
                 path: "/formulir",
                 name: "formulir",
                 meta: { values: 2 },
-                component: AnnonouncementInfo,
+                component: FormulirPage,
             },
             {
                 path: "/report",
@@ -187,6 +190,22 @@ const routes = [
                 path: "/master/audit-logs",
                 name: "audit-logs",
                 component: AuditLog,
+            },
+        ],
+    },
+    {
+        path: "/report",
+        component: Layout,
+        children: [
+            {
+                path: "",
+                name: "report",
+                component: DocumentReport,
+            },
+            {
+                path: "documents",
+                name: "report-documents",
+                component: DocumentReport,
             },
         ],
     },

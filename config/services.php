@@ -36,7 +36,7 @@ return [
     ],
 
     'mix' => [
-        'url' => env('ENV_MIX_URL'),
+        'url' => env('MIX_IMG_URL', env('ENV_MIX_URL')),
         'img_url' => env('MIX_IMG_URL'),
     ],
 

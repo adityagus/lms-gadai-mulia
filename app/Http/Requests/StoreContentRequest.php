@@ -26,7 +26,7 @@ class StoreContentRequest extends FormRequest
         return [
             'course_id' => 'required|integer|exists:courses,id',
             'title' => 'required|string|max:255',
-            'type' => 'required|string|in:text,video,pdf,quiz',
+            'type' => 'required|string|in:text,video,pdf,quiz,form,google_form',
             // Jika type pdf, content harus file pdf. Jika bukan, content string (nullable)
             'content' => [
                 'nullable',
@@ -64,7 +64,7 @@ class StoreContentRequest extends FormRequest
             'course_id.exists' => 'The selected course does not exist.',
             'title.required' => 'Title is required.',
             'type.required' => 'Content type is required.',
-            'type.in' => 'Content type must be one of: text, video, pdf, quiz.',
+            'type.in' => 'Content type must be one of: text, video, pdf, quiz, form, google_form.',
             'order.required' => 'Order is required.',
             'order.integer' => 'Order must be a number.',
             'order.min' => 'Order must be at least 1.',

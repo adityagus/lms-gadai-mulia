@@ -195,7 +195,7 @@ class AnnouncementService
         unset($updateData['dokumen']);
         $updateData['updated_at'] = Carbon::now('Asia/Jakarta');
 
-        // $announcement->update($updateData);
+        $announcement->update($updateData);
 
         $this->documentRegional->where('document_id', $id)->delete();
         $regions = $data['regionals_id'];

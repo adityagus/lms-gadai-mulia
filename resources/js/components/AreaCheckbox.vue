@@ -35,22 +35,14 @@ function toggleParent(area) {
 <template>
   <div :style="{ marginLeft: '0.5rem' }">
     <label class="flex items-center gap-2">
-      <input
-        type="checkbox"
-        :checked="isParentChecked(props.area)"
+      <input type="checkbox" :checked="isParentChecked(props.area)"
         :indeterminate="!isParentChecked(props.area) && props.area.children && props.area.children.length > 0 && props.area.children.some(child => isParentChecked(child))"
-        @change="() => toggleParent(props.area)"
-      />
-      {{ props.area.nm_area }} {{ props.area.id_area }}
+        @change="() => toggleParent(props.area)" />
+      {{ props.area.nm_area }}
     </label>
     <div v-if="props.area.children && props.area.children.length > 0" :style="{ marginLeft: '1.5rem' }">
-      <AreaCheckbox
-        v-for="child in props.area.children"
-        :key="child.id_area"
-        :area="child"
-        :checked="props.checked"
-        @update:checked="$emit('update:checked', $event)"
-      />
+      <AreaCheckbox v-for="child in props.area.children" :key="child.id_area" :area="child" :checked="props.checked"
+        @update:checked="$emit('update:checked', $event)" />
     </div>
   </div>
 </template>

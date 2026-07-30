@@ -57,6 +57,7 @@ class LoginController extends Controller
                     'cabang' => $user->branch_code ?? null,
                     'jabatan' => $user->position_name ?? null,
                     'idgrup' => $user->position_code ?? null,
+                    'npk' => $user->npk ?? null,
                     'status' => 'login'
                 ];
 

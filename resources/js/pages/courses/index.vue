@@ -75,32 +75,37 @@ const fetchCourses = async (page = 1) => {
 
 // Fungsi untuk menghapus kursus
 const handleDelete = async (id) => {
-  // console.log('hapus');
   Swal.fire({
     title: "Apakah Anda yakin?",
     text: "Anda tidak dapat mengembalikan kursus ini!",
     icon: "warning",
     showCancelButton: true,
-    confirmButtonColor: "#3085d6",
-    cancelButtonColor: "#d33",
-    confirmButtonText: "Ya, hapus!"
+    confirmButtonColor: "#662FFF",
+    cancelButtonColor: "#838C9D",
+    confirmButtonText: "Ya, Hapus",
+    cancelButtonText: "Batal"
   }).then(async (result) => {
     if (result.isConfirmed) {
       try {
-        const result = await deleteCourse(id)
-        // console.log("result", result);
-        if(result.status == 200){
+        const res = await deleteCourse(id);
+        if(res && (res.status == 200 || res.success)){
           Swal.fire({
             title: "Berhasil dihapus!",
             text: "Kursus telah dihapus.",
             icon: "success",
+            confirmButtonColor: "#662FFF",
             timer: 1500
           });
           fetchCourses(pagination.value);
         }
-        throw new Error({'message': "Tidak dapat dikirim"});
       } catch (error) {
         console.log("Terjadi kesalahan:", error);
+        Swal.fire({
+          title: "Gagal!",
+          text: "Gagal menghapus kursus.",
+          icon: "error",
+          confirmButtonColor: "#662FFF"
+        });
       } 
     }
   });

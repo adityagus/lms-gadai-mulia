@@ -21,26 +21,25 @@ use App\Http\Controllers\api\DocumentViewController;
 
 Route::prefix('v1')->group(function () {
 
-// 🔹 Route test session
-Route::get('/set-session', function () {
-    session(['tes_db' => 'ini dari database']);
-    return 'Session di-set';
-});
-
-Route::get('/get-session', function () {
-    return session()->all();
-});
-
-Route::get('/session', function () {
-    return response()->json([
-        'auth' => session('auth'),
-    ]);
-});
-
-// 🔹 Auth
+// 🔹 Session & Auth
 Route::middleware(['web', 'api'])->group(function () {
-  Route::post('/login', [LoginController::class, 'aksiLogin']);
-  Route::post('/logout', [LoginController::class, 'logout']);
+    Route::get('/set-session', function () {
+        session(['tes_db' => 'ini dari database']);
+        return 'Session di-set';
+    });
+
+    Route::get('/get-session', function () {
+        return session()->all();
+    });
+
+    Route::get('/session', function () {
+        return response()->json([
+            'auth' => session('auth'),
+        ]);
+    });
+
+    Route::post('/login', [LoginController::class, 'aksiLogin']);
+    Route::post('/logout', [LoginController::class, 'logout']);
 });
 
 // 🔹 Information
@@ -101,7 +100,16 @@ Route::middleware(['web', 'api'])->group(function () {
     Route::get('/document-views/document/{document_id}/viewed', [DocumentViewController::class, 'viewedUsers']);
 });
 
+// 🔹 Report
+Route::middleware(['web', 'api'])->group(function () {
+    Route::get('/report/documents', [\App\Http\Controllers\api\DocumentReportController::class, 'getReport']);
+    Route::post('/report/documents/export-excel', [\App\Http\Controllers\api\DocumentReportController::class, 'exportExcel']);
 });
+
+});
+
+// Fallback search route outside v1 prefix
+Route::middleware(['web', 'api'])->get('/search', [CourseController::class, 'search']);
 
 // migrasi data
 Route::get('/migrasi-data', [MigrasiDataController::class, 'export']);
