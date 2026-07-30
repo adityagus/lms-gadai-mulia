@@ -103,9 +103,25 @@
             <li :class="{ 'active': $route.path === '/master/audit-logs' }" class="transition-all duration-200">
               <div @click="handleMainMenuClick('/master/audit-logs')"
                 class="flex items-center gap-3 w-full py-3 px-5 rounded-lg transition-all duration-200 hover:bg-[#7F33FF33] cursor-pointer group">
-                <img src="/assets/images/icons/note-favorite-white.svg" class="w-6 h-6" alt="icon" />
+                <img src="/assets/images/icons/log-document.png" class="w-6 h-6" alt="icon" />
                 <span class="font-semibold text-white group-hover:text-[#7F33FF] transition">
                   Aktivitas Log
+                </span>
+              </div>
+            </li>
+          </ul>
+          <ul class="flex flex-col gap-4"
+            v-if='auth && (auth.idgrup === "JBT-032" || auth.idgrup === "JBT-037" || auth.idgrup === "JBT-019" || auth.idgrup === "JBT-020" || auth.idgrup === "042")'>
+            <p class="font-semibold text-xs leading-[18px] text-white">
+              Laporan
+            </p>
+            <li :class="{ 'active': $route.path === '/report/documents' || $route.path === '/report' }"
+              class="transition-all duration-200">
+              <div @click="handleMainMenuClick('/report')"
+                class="flex items-center gap-3 w-full py-3 px-5 rounded-lg transition-all duration-200 hover:bg-[#7F33FF33] cursor-pointer group">
+                <img src="/assets/images/icons/report-icon.png" class="w-6 h-6" alt="icon" />
+                <span class="font-semibold text-white group-hover:text-[#7F33FF] transition">
+                  Laporan Dokumen
                 </span>
               </div>
             </li>

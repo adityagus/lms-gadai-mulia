@@ -26,7 +26,7 @@ class UpdateContentRequest extends FormRequest
         return [
             'course_id' => 'sometimes|integer|exists:courses,id', // sometimes = optional but validated if present
             'title' => 'sometimes|string|max:255',
-            'type' => 'sometimes|string|in:text,video,pdf,quiz',
+            'type' => 'sometimes|string|in:text,video,pdf,quiz,form,google_form',
             'content' => 'nullable|string',
             'order' => 'sometimes|integer|min:1',
             // 'created_by' => 'sometimes|integer|exists:users,id',
@@ -42,7 +42,7 @@ class UpdateContentRequest extends FormRequest
             'course_id.exists' => 'The selected course does not exist.',
             'title.required' => 'Title is required.',
             'type.required' => 'Content type is required.',
-            'type.in' => 'Content type must be one of: text, video, pdf, quiz.',
+            'type.in' => 'Content type must be one of: text, video, pdf, quiz, form, google_form.',
             'order.integer' => 'Order must be a number.',
             'order.min' => 'Order must be at least 1.',
         ];

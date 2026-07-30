@@ -171,32 +171,52 @@ class CourseController extends Controller
         $result = $this->courseService->search($query, $jbt, $cabang);
 
         $courseResults = $result['courses']->map(function ($course) {
+            $mixImg = config('services.mix.img_url');
+            $thumbUrl = $course->thumbnail
+                ? ($mixImg ? ($mixImg . ltrim($course->thumbnail, '/')) : asset('storage/' . ltrim($course->thumbnail, '/')))
+                : null;
+
             return [
                 'id' => $course->id,
                 'title' => $course->name,
                 'tagline' => $course->tagline,
                 'description' => $course->description,
                 'category' => $course->category ? $course->category->name : null,
-                'thumbnail_url' => config('services.mix.img_url') . $course->thumbnail,
+                'thumbnail_url' => $thumbUrl,
                 'type' => 'course',
             ];
         });
 
         $documentResults = $result['documents']->map(function ($doc) {
+            $mixUrl = config('services.mix.url');
+            $contentUrl = $doc->url
+                ? ($mixUrl ? ($mixUrl . ltrim($doc->url, '/')) : asset('storage/aktif/' . ltrim($doc->url, '/')))
+                : null;
+
+            $dateLastUpdate = $doc->updated_at
+                ? $doc->updated_at->format('d M Y H:i:s') . ' WIB'
+                : ($doc->created_at ? $doc->created_at->format('d M Y H:i:s') . ' WIB' : null);
+
+            $tglBerlaku = $doc->tgl_berlaku
+                ? (\Illuminate\Support\Carbon::parse($doc->tgl_berlaku)->format('d-m-Y'))
+                : null;
+
             return [
                 'id' => $doc->id,
                 'title' => $doc->title,
                 'tagline' => $doc->no_surat ?? '',
                 'description' => $doc->content ?? '',
                 'submenu_id' => $doc->submenu_id,
-                'tgl_berlaku' => $doc->tgl_berlaku,
+                'tgl_berlaku' => $tglBerlaku,
                 'url' => $doc->url,
+                'content_url' => $contentUrl,
                 'no_surat' => $doc->no_surat,
                 'content' => $doc->content,
+                'dateLastUpdate' => $dateLastUpdate,
                 'menu' => $doc->menu ? $doc->menu->name : null,
                 'category' => $doc->menu ? $doc->menu->name : null,
                 'thumbnail_url' => $doc->menu ? $doc->menu->icon : null,
-                'type' => $doc->type,
+                'type' => $doc->type ?? 'pdf',
             ];
         });
 
@@ -205,6 +225,10 @@ class CourseController extends Controller
             'courses' => $courseResults,
             'documents' => $documentResults,
             'total' => $courseResults->count() + $documentResults->count(),
+            'data' => [
+                'courses' => $courseResults,
+                'documents' => $documentResults,
+            ]
         ]);
     }
 }

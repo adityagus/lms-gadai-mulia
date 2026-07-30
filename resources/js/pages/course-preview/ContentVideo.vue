@@ -9,7 +9,6 @@
         :title="content.title || 'Video Player'"
         frameBorder="0"
         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-        sandbox="allow-scripts allow-same-origin"
         allowFullScreen="true"
       ></iframe>
       
@@ -39,19 +38,22 @@
     
     <!-- Download Attachment if available -->
     <div class="flex justify-end" v-if="content.attachment">
-      <a 
-        :href="content.attachment" 
-        target="_blank"
-        class="btn bg-blue-500 py-2 px-5 rounded-lg text-white hover:bg-blue-400 transition-colors"
+      <button 
+        @click="handleDownloadAttachment"
+        class="btn bg-purple-600 py-2 px-5 rounded-lg text-white hover:bg-purple-700 transition-colors inline-flex items-center gap-2 text-sm font-medium cursor-pointer"
       >
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3" />
+        </svg>
         Download Resource
-      </a>
+      </button>
     </div>
   </div>
 </template>
 
 <script setup>
 import { defineProps, computed, onMounted } from 'vue';
+import { downloadWatermarkedPdf } from '@/utils/pdfWatermark';
 
 const props = defineProps({
   content: {
@@ -60,6 +62,23 @@ const props = defineProps({
   }
 });
 
+function handleDownloadAttachment() {
+  const url = props.content.attachment;
+  if (!url) return;
+  const filename = url.split('/').pop() || 'resource.pdf';
+  if (url.toLowerCase().includes('.pdf')) {
+    downloadWatermarkedPdf(url, filename);
+  } else {
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    a.target = '_blank';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+  }
+}
+
 // Debug content data
 onMounted(() => {
   console.log('ContentVideo received content:', props.content);
@@ -67,58 +86,54 @@ onMounted(() => {
 
 // Function to extract video URL and convert to embeddable format
 const videoUrl = computed(() => {
-  // Try different possible fields for video URL
-  const url = props.content.video_url || props.content.url || props.content.content;
-  
+  let url = props.content.video_url || props.content.url || props.content.content || props.content.body;
+
   console.log('Processing video URL:', url);
-  
+
   if (!url) return null;
-  
-  // YouTube URL conversion
-  if (url.includes('youtube.com/watch?v=')) {
-    const videoId = url.split('v=')[1]?.split('&')[0];
-    return `https://www.youtube.com/embed/${videoId}`;
+  url = String(url).trim();
+
+  // If input is an oembed tag like <oembed url="https://..."></oembed>
+  const oembedMatch = url.match(/url=["']([^"']+)["']/i);
+  if (oembedMatch) {
+    url = oembedMatch[1];
+  } else {
+    // If input is an HTML string containing a URL
+    const hrefMatch = url.match(/https?:\/\/[^\s<>"']+/i);
+    if (hrefMatch && !url.startsWith('http')) {
+      url = hrefMatch[0];
+    }
   }
-  
-  // YouTube short URL conversion
-  if (url.includes('youtu.be/')) {
-    const videoId = url.split('youtu.be/')[1]?.split('?')[0];
-    return `https://www.youtube.com/embed/${videoId}`;
+
+  // 1. YouTube watch, youtu.be, embed, or shorts URL
+  const ytMatch = url.match(/(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/)|youtu\.be\/)([\w-]{11})/i);
+  if (ytMatch && ytMatch[1]) {
+    return `https://www.youtube.com/embed/${ytMatch[1]}`;
   }
-  
-  // Vimeo URL conversion
+
+  // 2. Direct 11-character YouTube Video ID (e.g. dQw4w9WgXcQ)
+  if (/^[\w-]{11}$/.test(url)) {
+    return `https://www.youtube.com/embed/${url}`;
+  }
+
+  // 3. Vimeo URL conversion
   if (url.includes('vimeo.com/')) {
-    const videoId = url.split('vimeo.com/')[1]?.split('?')[0];
-    return `https://player.vimeo.com/video/${videoId}`;
+    const vimeoMatch = url.match(/vimeo\.com\/(?:video\/)?(\d+)/i);
+    if (vimeoMatch && vimeoMatch[1]) {
+      return `https://player.vimeo.com/video/${vimeoMatch[1]}`;
+    }
   }
-  
-  // Check if it's already an embed URL
+
+  // 4. Check if it's already an embed URL
   if (url.includes('/embed/') || url.includes('player.vimeo.com')) {
     return url;
   }
-  
-  // If it looks like a video URL, return it as is
-  if (url.includes('http') && (url.includes('.mp4') || url.includes('.webm') || url.includes('.ogg'))) {
+
+  // 5. Direct video file URL (.mp4, .webm, .ogg)
+  if (url.startsWith('http')) {
     return url;
   }
-  
-  // For API content field that might contain HTML or text, check if it contains a URL
-  const urlMatch = url.match(/https?:\/\/[^\s<>"]+/);
-  if (urlMatch) {
-    const extractedUrl = urlMatch[0];
-    console.log('Extracted URL from content:', extractedUrl);
-    // Process the extracted URL recursively
-    if (extractedUrl.includes('youtube.com/watch?v=')) {
-      const videoId = extractedUrl.split('v=')[1]?.split('&')[0];
-      return `https://www.youtube.com/embed/${videoId}`;
-    }
-    if (extractedUrl.includes('youtu.be/')) {
-      const videoId = extractedUrl.split('youtu.be/')[1]?.split('?')[0];
-      return `https://www.youtube.com/embed/${videoId}`;
-    }
-    return extractedUrl;
-  }
-  
+
   return null;
 });
 </script>

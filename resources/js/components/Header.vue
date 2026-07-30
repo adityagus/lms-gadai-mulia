@@ -279,9 +279,9 @@ async function handleSearch() {
     isSearching.value = true;
     try {
       const response = await searchContent(encodeURIComponent(query));
-      if (response.data.success) {
-        searchResultsCourse.value = response.data.courses || [];
-        searchResultsDocument.value = response.data.documents || [];
+      if (response.data && response.data.success !== false) {
+        searchResultsCourse.value = response.data.courses || response.data.data?.courses || [];
+        searchResultsDocument.value = response.data.documents || response.data.data?.documents || [];
         console.log('Search results:', response.data);
       } else {
         searchResultsCourse.value = [];

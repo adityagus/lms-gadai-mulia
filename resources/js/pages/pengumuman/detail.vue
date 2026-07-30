@@ -11,139 +11,191 @@
       Back to Pengumuman
     </router-link>
   </div>
-  <h1 class="text-2xl font-bold text-sidebar">{{ detail.name }}</h1>
-  <!-- Baris filter area dan layout menu -->
-  <div class="flex items-center justify-between mb-4">
-    <!-- Filter Area Tabs -->
-    <div class="flex gap-2" v-if="auth?.cabang === '' || !auth?.cabang">
-      <!-- START: AREA TAB DYNAMIC -->
-      <button v-for="tab in memoTabs" :key="tab.kd_wilayah" @click="activeMemoTab = tab.kd_wilayah"
-        :class="['px-3 py-1 rounded-lg font-semibold text-xs transition', activeMemoTab === tab.kd_wilayah ? 'bg-sidebar text-white shadow' : 'bg-white text-sidebar hover:bg-purple-100']">
-        <span>{{ formatWilayahName(tab.nm_wilayah) }}</span>
-      </button>
-      <!-- END: AREA TAB DYNAMIC -->
-    </div>
-    <!-- Layout Menu Icon -->
-    <div class="flex gap-2" v-if="auth?.cabang === ''">
-      <button @click="viewMode = 'card'"
-        :class="['px-3 py-1 rounded-lg font-semibold text-xs transition flex items-center gap-1', viewMode === 'card' ? 'bg-sidebar text-white shadow' : 'bg-white text-sidebar hover:bg-purple-100']">
-        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <rect x="3" y="3" width="7" height="7" rx="1.5" stroke-width="2" />
-          <rect x="14" y="3" width="7" height="7" rx="1.5" stroke-width="2" />
-          <rect x="14" y="14" width="7" height="7" rx="1.5" stroke-width="2" />
-          <rect x="3" y="14" width="7" height="7" rx="1.5" stroke-width="2" />
-        </svg>
-        Card
-      </button>
-      <button @click="viewMode = 'table'"
-        :class="['px-3 py-1 rounded-lg font-semibold text-xs transition flex items-center gap-1', viewMode === 'table' ? 'bg-sidebar text-white shadow' : 'bg-white text-sidebar hover:bg-purple-100']">
-        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <rect x="3" y="6" width="18" height="2" rx="1" stroke-width="2" />
-          <rect x="3" y="11" width="18" height="2" rx="1" stroke-width="2" />
-          <rect x="3" y="16" width="18" height="2" rx="1" stroke-width="2" />
-        </svg>
-        Table
-      </button>
-    </div>
-  </div>
 
-  <!-- Card Layout -->
-  <div v-if="viewMode === 'card'" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
-    <div v-for="(item, idx) in filteredCards" :key="item.submenu_id"
-      class="relative rounded-2xl bg-white shadow-xl p-0 flex flex-col justify-between overflow-hidden group announcement-card border border-gray-200 hover:border-sidebar transition"
-      @click="openDetail(item)">
-      <div class="absolute inset-0 opacity-10 pointer-events-none pattern-bg"></div>
-      <div class="flex flex-col gap-2 z-10 p-6">
-        <div class="flex items-center gap-3 mb-3">
-          <div
-            class="rounded-tr-lg rounded-bl-3xl bg-sidebar p-2 absolute -top-1 -right-0 flex items-center justify-center flex-shrink-0">
-            <img :src="detail.icon" class="w-8 h-8 filter-white-svg" alt="icon" />
-            <!-- <img :src="item.icon" class="w-8 h-8 filter-white-svg" alt="icon" /> -->
+  <!-- Skeleton Loading State for Detail Page (Presisi 100% dengan Layout Asli) -->
+  <div v-if="isLoading" class="space-y-4 mt-6">
+    <!-- Title Skeleton -->
+    <div class="h-8 bg-gray-200 rounded-lg w-64 animate-pulse mb-4"></div>
+
+    <!-- Filter & View Mode Skeleton -->
+    <div class="flex items-center justify-between mb-4">
+      <div class="flex gap-2">
+        <div class="w-12 h-7 bg-gray-200 rounded-lg animate-pulse"></div>
+        <div class="w-16 h-7 bg-gray-200 rounded-lg animate-pulse"></div>
+        <div class="w-16 h-7 bg-gray-200 rounded-lg animate-pulse"></div>
+        <div class="w-16 h-7 bg-gray-200 rounded-lg animate-pulse"></div>
+      </div>
+      <div class="flex gap-2">
+        <div class="w-16 h-7 bg-gray-200 rounded-lg animate-pulse"></div>
+        <div class="w-16 h-7 bg-gray-200 rounded-lg animate-pulse"></div>
+      </div>
+    </div>
+
+    <!-- Skeleton Cards Grid (Desain, Badge & Tombol Absolute Presisi dengan Card Asli) -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
+      <div v-for="n in 6" :key="n"
+        class="relative rounded-2xl bg-white shadow-xl p-0 flex flex-col justify-between overflow-hidden border border-gray-200 animate-pulse min-h-[260px]">
+        <!-- Badge Icon Top Right Skeleton -->
+        <div class="rounded-tr-lg rounded-bl-3xl bg-gray-200 w-12 h-12 absolute -top-1 -right-0"></div>
+
+        <div class="flex flex-col gap-2 z-10 p-6">
+          <!-- Title Placeholder -->
+          <div class="h-6 bg-gray-200 rounded-md w-3/4 mt-3 mb-3"></div>
+
+          <!-- Info Box Placeholder (Nomor Surat & Tanggal Berlaku) -->
+          <div class="bg-gray-50 rounded-lg p-3 flex flex-col gap-2 mb-2 border border-gray-100 space-y-2">
+            <div class="flex justify-between items-center">
+              <div class="h-3 bg-gray-200 rounded w-20"></div>
+              <div class="h-3 bg-gray-200 rounded w-24"></div>
+            </div>
+            <div class="flex justify-between items-center">
+              <div class="h-3 bg-gray-200 rounded w-20"></div>
+              <div class="h-3 bg-gray-200 rounded w-16"></div>
+            </div>
           </div>
-          <span
-            class="text-sidebar text-lg font-bold transition-all duration-300 mt-3 hover:line-clamp-none cursor-pointer"
-            :title="item.title">{{ item.title }}</span>
+
+          <!-- Terakhir Update Placeholder -->
+          <div class="h-3 bg-gray-200 rounded w-36 mb-16"></div>
         </div>
-        <div class="bg-gray-50 rounded-lg p-3 flex flex-col gap-2 mb-2 border border-gray-100">
-          <div class="flex justify-between items-center">
-            <span class="text-xs font-semibold text-gray-500">Nomor Surat</span>
-            <span class="text-xs font-bold text-sidebar line-clamp-1 relative group">
-              {{ item.no_surat }}
-              <span v-if="item.no_surat && item.no_surat.length > 20"
-                class="absolute left-0 top-full mt-1 w-max bg-white border border-gray-300 shadow-lg rounded px-2 py-1 text-xs text-sidebar opacity-0 group-hover:opacity-100 transition pointer-events-none z-30">
-                {{ item.no_surat }}
-              </span>
-            </span>
-          </div>
-          <div class="flex justify-between items-center">
-            <span class="text-xs font-semibold text-gray-500">Tanggal Berlaku</span>
-            <span class="text-xs font-bold text-sidebar">{{ item.tgl_berlaku }}</span>
-          </div>
-        </div>
-        <div class="text-xs text-gray-500 mb-16">Terakhir update: <br><span class="font-semibold text-sidebar">{{
-          item.dateLastUpdate
-        }}</span></div>
-        <!-- Tombol aksi di tengah bawah -->
-        <div class="absolute bottom-8 left-1/2 -translate-x-1/2 flex gap-4 mt-2 justify-center items-center w-max"
-          v-if='auth && (auth.idgrup == "JBT-032" || auth.idgrup === "JBT-037" || auth.idgrup === "JBT-039" || auth.idgrup === "JBT-040")'>
-          <router-link :to="{ name: 'information-document-update', params: { id: item.id } }" @click.stop
-            class="bg-white rounded-full px-4 py-2 shadow hover:bg-purple-100 transition group/edit flex items-center gap-2">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
-              stroke="currentColor" class="w-5 h-5 text-sidebar group-hover/edit:text-purple-700">
-              <path stroke-linecap="round" stroke-linejoin="round"
-                d="M16.862 3.487a2.1 2.1 0 1 1 2.97 2.97L8.91 17.38a2.1 2.1 0 0 1-.88.53l-3.07.92a.525.525 0 0 1-.65-.65l.92-3.07a2.1 2.1 0 0 1 .53-.88L16.862 3.487z" />
-            </svg>
-            <span class="text-xs font-semibold text-sidebar">Edit</span>
-          </router-link>
-          <button @click.stop="deleteAnnouncement(item)"
-            class="bg-red-100 rounded-full px-4 py-2 shadow hover:bg-red-200 transition group/delete flex items-center gap-2">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
-              stroke="currentColor" class="w-5 h-5 text-red-600 group-hover/delete:text-red-800">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-            </svg>
-            <span class="text-xs font-semibold text-red-600">Archive</span>
-          </button>
+
+        <!-- Action Buttons Bottom Absolute Skeleton (Edit & Archive) -->
+        <div class="absolute bottom-8 left-1/2 -translate-x-1/2 flex gap-4 mt-2 justify-center items-center w-max">
+          <div class="w-20 h-8 bg-gray-200 rounded-full"></div>
+          <div class="w-24 h-8 bg-gray-200 rounded-full"></div>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- Table/List Layout -->
-  <div v-else>
-    <div class="datatable bg-white mb-16">
-      <vue3-datatable :rows="tableRows" :columns="tableCols" :totalRows="tableRows.length" :search="search"
-        :sortable="true" :selectRowOnClick="true" @row-click='handleRowClick'>
-        <template #tglBerlaku="{ value }">
-          <div class="text-xs text-gray-700 text-center">{{ value?.tglBerlakuFormatted || '-' }}</div>
-        </template>
-        <template #lastUpdate="{ value }">
-          <span class="text-xs font-medium text-gray-700">{{ value?.dateLastUpdate || '-' }}</span>
-        </template>
-        <template #action="{ value }">
-          <div class="flex gap-2 justify-center items-center" v-if="value">
-            <button @click.stop="router.push({ name: 'information-document-update', params: { id: value?.id } })"
-              class="bg-white border border-sidebar text-sidebar px-2 py-1 rounded shadow hover:bg-purple-100 transition text-xs font-semibold inline-flex items-center gap-1">
+  <!-- Real Content when loaded -->
+  <template v-else>
+    <h1 class="text-2xl font-bold text-sidebar">{{ detail.name }}</h1>
+    <!-- Baris filter area dan layout menu -->
+    <div class="flex items-center justify-between mb-4">
+      <!-- Filter Area Tabs -->
+      <div class="flex gap-2">
+        <!-- START: AREA TAB STATIC -->
+        <button v-for="tab in memoTabs" :key="tab.kd_wilayah" @click="activeMemoTab = tab.kd_wilayah"
+          :class="['px-3 py-1 rounded-lg font-semibold text-xs transition cursor-pointer', activeMemoTab === tab.kd_wilayah ? 'bg-sidebar text-white shadow' : 'bg-white text-sidebar hover:bg-purple-100']">
+          <span>{{ tab.nm_wilayah || (tab.kd_wilayah === 'all' ? 'All' : tab.kd_wilayah) }}</span>
+        </button>
+
+        <!-- END: AREA TAB STATIC -->
+      </div>
+      <!-- Layout Menu Icon -->
+      <div class="flex gap-2">
+        <button @click="viewMode = 'card'"
+          :class="['px-3 py-1 rounded-lg font-semibold text-xs transition flex items-center gap-1 cursor-pointer', viewMode === 'card' ? 'bg-sidebar text-white shadow' : 'bg-white text-sidebar hover:bg-purple-100']">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <rect x="3" y="3" width="7" height="7" rx="1.5" stroke-width="2" />
+            <rect x="14" y="3" width="7" height="7" rx="1.5" stroke-width="2" />
+            <rect x="14" y="14" width="7" height="7" rx="1.5" stroke-width="2" />
+            <rect x="3" y="14" width="7" height="7" rx="1.5" stroke-width="2" />
+          </svg>
+          Card
+        </button>
+        <button @click="viewMode = 'table'"
+          :class="['px-3 py-1 rounded-lg font-semibold text-xs transition flex items-center gap-1 cursor-pointer', viewMode === 'table' ? 'bg-sidebar text-white shadow' : 'bg-white text-sidebar hover:bg-purple-100']">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <rect x="3" y="6" width="18" height="2" rx="1" stroke-width="2" />
+            <rect x="3" y="11" width="18" height="2" rx="1" stroke-width="2" />
+            <rect x="3" y="16" width="18" height="2" rx="1" stroke-width="2" />
+          </svg>
+          Table
+        </button>
+      </div>
+    </div>
+
+    <div v-if="viewMode === 'card'" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
+      <div v-for="(item, idx) in filteredCards" :key="item.id || idx"
+        class="relative rounded-2xl bg-white shadow-xl p-0 flex flex-col justify-between overflow-hidden group announcement-card border border-gray-200 hover:border-sidebar transition cursor-pointer"
+        @click="openDetail(item)">
+        <div class="absolute inset-0 opacity-10 pointer-events-none pattern-bg"></div>
+        <div class="flex flex-col gap-2 z-10 p-6">
+          <div class="flex items-center gap-3 mb-3">
+            <div
+              class="rounded-tr-lg rounded-bl-3xl bg-sidebar p-2 absolute -top-1 -right-0 flex items-center justify-center flex-shrink-0">
+              <img :src="detail.icon" class="w-8 h-8 filter-white-svg" alt="icon" />
+              <!-- <img :src="item.icon" class="w-8 h-8 filter-white-svg" alt="icon" /> -->
+            </div>
+            <span
+              class="text-sidebar text-lg font-bold transition-all duration-300 mt-3 hover:line-clamp-none cursor-pointer"
+              :title="item.title">{{ item.title }}</span>
+          </div>
+          <div class="bg-gray-50 rounded-lg p-3 flex flex-col gap-2 mb-2 border border-gray-100">
+            <div class="flex justify-between items-center">
+              <span class="text-xs font-semibold text-gray-500">Nomor Surat</span>
+              <span class="text-xs font-bold text-sidebar line-clamp-1 relative group">
+                {{ item.no_surat }}
+                <span v-if="item.no_surat && item.no_surat.length > 20"
+                  class="absolute left-0 top-full mt-1 w-max bg-white border border-gray-300 shadow-lg rounded px-2 py-1 text-xs text-sidebar opacity-0 group-hover:opacity-100 transition pointer-events-none z-30">
+                  {{ item.no_surat }}
+                </span>
+              </span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-xs font-semibold text-gray-500">Tanggal Berlaku</span>
+              <span class="text-xs font-bold text-sidebar">{{ item.tgl_berlaku }}</span>
+            </div>
+          </div>
+          <div class="text-xs text-gray-500 mb-16">Terakhir update: <br><span class="font-semibold text-sidebar">{{
+            item.dateLastUpdate
+              }}</span></div>
+          <!-- Tombol aksi di tengah bawah -->
+          <div class="absolute bottom-8 left-1/2 -translate-x-1/2 flex gap-4 mt-2 justify-center items-center w-max"
+            v-if='auth && (auth.idgrup == "JBT-032" || auth.idgrup === "JBT-037" || auth.idgrup === "JBT-039" || auth.idgrup === "JBT-040")'>
+            <router-link :to="{ name: 'information-document-update', params: { id: item.id } }" @click.stop
+              class="bg-white rounded-full px-4 py-2 shadow hover:bg-purple-100 transition group/edit flex items-center gap-2">
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
-                stroke="currentColor" class="w-3 h-3">
+                stroke="currentColor" class="w-5 h-5 text-sidebar group-hover/edit:text-purple-700">
                 <path stroke-linecap="round" stroke-linejoin="round"
                   d="M16.862 3.487a2.1 2.1 0 1 1 2.97 2.97L8.91 17.38a2.1 2.1 0 0 1-.88.53l-3.07.92a.525.525 0 0 1-.65-.65l.92-3.07a2.1 2.1 0 0 1 .53-.88L16.862 3.487z" />
               </svg>
-              Edit
-            </button>
-            <button @click.stop="deleteAnnouncementFromTable(value?.id)"
-              class="bg-red-100 border border-red-300 text-red-600 px-2 py-1 rounded shadow hover:bg-red-200 transition text-xs font-semibold inline-flex items-center gap-1">
+              <span class="text-xs font-semibold text-sidebar">Edit</span>
+            </router-link>
+            <button @click.stop="deleteAnnouncement(item)"
+              class="bg-red-100 rounded-full px-4 py-2 shadow hover:bg-red-200 transition group/delete flex items-center gap-2">
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
-                stroke="currentColor" class="w-3 h-3">
+                stroke="currentColor" class="w-5 h-5 text-red-600 group-hover/delete:text-red-800">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
               </svg>
-              Archive
+              <span class="text-xs font-semibold text-red-600">Archive</span>
             </button>
           </div>
-        </template>
-      </vue3-datatable>
+        </div>
+      </div>
     </div>
-  </div>
-  <!-- ...existing code... -->
+
+    <!-- Table/List Layout -->
+    <div v-else>
+      <div class="datatable bg-white mb-16">
+        <vue3-datatable :rows="tableRows" :columns="tableCols" :totalRows="tableRows.length" :search="search"
+          :sortable="true" :selectRowOnClick="true" @row-click='handleRowClick'>
+          <template #action="{ row, value }">
+            <div class="flex gap-2 justify-center items-center">
+              <button @click.stop="router.push({ name: 'information-document-update', params: { id: value.id } })"
+                class="bg-white border border-sidebar text-sidebar px-2 py-1 rounded shadow hover:bg-purple-100 transition text-xs font-semibold inline-flex items-center gap-1">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
+                  stroke="currentColor" class="w-3 h-3">
+                  <path stroke-linecap="round" stroke-linejoin="round"
+                    d="M16.862 3.487a2.1 2.1 0 1 1 2.97 2.97L8.91 17.38a2.1 2.1 0 0 1-.88.53l-3.07.92a.525.525 0 0 1-.65-.65l.92-3.07a2.1 2.1 0 0 1 .53-.88L16.862 3.487z" />
+                </svg>
+                Edit
+              </button>
+              <button @click.stop="deleteAnnouncementFromTable(value.id)"
+                class="bg-red-100 border border-red-300 text-red-600 px-2 py-1 rounded shadow hover:bg-red-200 transition text-xs font-semibold inline-flex items-center gap-1">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
+                  stroke="currentColor" class="w-3 h-3">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+                Archive
+              </button>
+            </div>
+          </template>
+        </vue3-datatable>
+      </div>
+    </div>
+  </template>
 </template>
 
 <script setup>
@@ -169,6 +221,7 @@ const memoTabs = ref([]);
 const activeMemoTab = ref('all')
 const modalRef = ref(null);
 const auth = ref(null);
+const isLoading = ref(true);
 
 
 const cards = ref([]);
@@ -195,22 +248,39 @@ const formatWilayahName = (name) => {
 };
 
 const filteredCards = computed(() => {
-  const tab = activeMemoTab.value;
+  const currentTabVal = activeMemoTab.value;
   const allCards = cards.value || [];
 
-  if (tab === 'all') return allCards;
+  if (currentTabVal === 'all') return allCards;
+
+  const selectedTab = memoTabs.value.find(t => String(t.kd_wilayah) === String(currentTabVal));
+  if (!selectedTab) return allCards;
+
+  const validBranchCodes = Array.isArray(selectedTab.branches) ? selectedTab.branches.map(b => String(b)) : [];
 
   return allCards.filter(card => {
-    if (!Array.isArray(card.document_regional)) return false;
-    return card.document_regional.some(dr => {
-      if (dr.regional_id === undefined || dr.regional_id === null) return false;
-      const regionalStr = dr.regional_id.toString();
-      // 1. Direct match with region ID (e.g. 2 === 2)
-      if (regionalStr === tab.toString()) return true;
+    // Documents without specific regional restriction apply to all areas
+    if (!Array.isArray(card.document_regional) || card.document_regional.length === 0) {
+      return true;
+    }
 
-      // 2. Pad branch/area code to 4 digits and check the region digit (e.g. 509 -> "0509" -> matches region 5)
-      const padded = regionalStr.padStart(4, '0');
-      return padded.length === 4 && padded.charAt(1) === tab.toString();
+    return card.document_regional.some(dr => {
+      const regId = dr.regional_id ? String(dr.regional_id).trim() : '';
+      if (!regId) return true;
+
+      // 1. Direct match with company_id (kd_wilayah)
+      if (regId === String(selectedTab.kd_wilayah)) return true;
+
+      // 2. Match with branch_code in table master.branch
+      if (validBranchCodes.includes(regId)) return true;
+
+      // 3. Match 2nd char of 4-digit code e.g. "0201" -> '2'
+      if (regId.length >= 2 && regId.charAt(1) === String(selectedTab.kd_wilayah)) return true;
+
+      // 4. Substring match
+      if (regId.includes(String(selectedTab.kd_wilayah))) return true;
+
+      return false;
     });
   });
 });
@@ -377,6 +447,7 @@ watch(showModal, (val) => {
 
 
 onMounted(async () => {
+  isLoading.value = true;
   try {
     const [result, resultAreas, resSession] = await Promise.all([
       getDetailAnnouncement(route.params.id),
@@ -384,7 +455,7 @@ onMounted(async () => {
       getSession()
     ]);
 
-    auth.value = resSession.auth
+    auth.value = resSession ? resSession.auth : null;
     console.log('areas', resultAreas)
     let items = [];
     if (Array.isArray(result)) {
@@ -420,14 +491,16 @@ onMounted(async () => {
     };
 
     memoTabs.value = [
-      { kd_wilayah: 'all', nm_wilayah: 'All' },
+      { kd_wilayah: 'all', nm_wilayah: 'All', kd_cabang: 'All' },
       ...resultAreas,
     ]
     console.log("result areas", memoTabs);
     console.log("result announcement", cards.value, detail.value);
     console.log("detail announcement", detail.value);
   } catch (error) {
-    console.log(error);
+    console.error(error);
+  } finally {
+    isLoading.value = false;
   }
 });
 

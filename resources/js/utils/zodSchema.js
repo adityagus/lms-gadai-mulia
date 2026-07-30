@@ -62,10 +62,11 @@ export const AnnouncementInfoSchema = z.object({
 export const mutateContentSchema = z
     .object({
         title: z.string().min(5),
-        type: z.enum(["text", "video", "pdf"], {
+        type: z.enum(["text", "video", "pdf", "form", "google_form", "quiz"], {
             errorMap: () => ({ message: "Required content type" }),
         }),
         youtubeId: z.string().optional(),
+        formUrl: z.string().optional(),
         text: z.string().optional(),
         pdf: z.any().optional(),
         quiz: z.any().optional(),
@@ -74,6 +75,7 @@ export const mutateContentSchema = z
     })
     .superRefine((val, ctx) => {
         const parseVideoId = z.string().min(4).safeParse(val.youtubeId);
+        const parseFormUrl = z.string().min(4).safeParse(val.formUrl);
         const parseText = z.string().min(4).safeParse(val.text);
         const parsePdf = z.any().safeParse(val.pdf);
 
@@ -88,6 +90,16 @@ export const mutateContentSchema = z
                 });
             }
         }
+
+        if (val.type === "form" || val.type === "google_form" || val.type === "quiz") {
+            if (!parseFormUrl.success) {
+                ctx.addIssue({
+                    code: z.ZodIssueCode.custom,
+                    message: "URL / Embed Google Form wajib diisi",
+                    path: ["formUrl"],
+                });
+            }
+        }   
 
         if (val.type === "text") {
             if (!parseText.success) {
@@ -110,16 +122,6 @@ export const mutateContentSchema = z
 
         if (val.type === "pdf") {
             if (!parsePdf.success) {
-                ctx.addIssue({
-                    code: z.ZodIssueCode.custom,
-                    message: "Upload PDF is required",
-                    path: ["pdf"],
-                });
-            }
-        }
-        
-        if (val.type === "quiz") {
-            if (!parseText.success) {
                 ctx.addIssue({
                     code: z.ZodIssueCode.custom,
                     message: "Upload PDF is required",

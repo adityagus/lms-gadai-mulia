@@ -22,7 +22,15 @@ class AnnouncementResource extends JsonResource
                 : null);
 
         $tgl_berlaku = $this->tgl_berlaku
-            ? Carbon::parse($this->tgl_berlaku)->format('d-m-Y')
+            ? Carbon::parse($this->tgl_berlaku)->format('Y-m-d')
+            : null;
+
+        $tgl_berlaku_formatted = $this->tgl_berlaku
+            ? Carbon::parse($this->tgl_berlaku)->format('d M Y')
+            : null;
+
+        $tgl_dibuka = $this->created_at
+            ? Carbon::parse($this->created_at)->format('d M Y H:i') . ' WIB'
             : null;
 
         return [
@@ -32,7 +40,8 @@ class AnnouncementResource extends JsonResource
             'no_surat' => $this->no_surat,
             'url' => $this->url,
             'tgl_berlaku' => $tgl_berlaku,
-            'tgl_berlaku_raw' => $this->tgl_berlaku,
+            'tgl_berlaku_formatted' => $tgl_berlaku_formatted,
+            'tgl_dibuka' => $tgl_dibuka,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
             'deleted_at' => $this->deleted_at,

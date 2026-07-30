@@ -13,8 +13,11 @@ class ContentController extends Controller
 {
     public function index(Request $request, $courseId)
     {
-        // Fetch contents related to the course
-        $contents = Content::where('course_id', $courseId)->get();
+        // Fetch contents related to the course ordered by sequence
+        $contents = Content::where('course_id', $courseId)
+            ->orderBy('order', 'asc')
+            ->orderBy('id', 'asc')
+            ->get();
 
         $contents->transform(function ($content) {
             $content->user_name = $content->user ? $content->user->name : 'Unknown';
@@ -26,7 +29,10 @@ class ContentController extends Controller
     
     public function getContentByCourseId($courseId)
     {
-        $content = Content::where('course_id', $courseId)->get();
+        $content = Content::where('course_id', $courseId)
+            ->orderBy('order', 'asc')
+            ->orderBy('id', 'asc')
+            ->get();
 
         return response()->json($content);
     }

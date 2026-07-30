@@ -58,6 +58,7 @@
           <option value="text">Text</option>
           <option value="video">Video</option>
           <option value="pdf">PDF</option>
+          <option value="quiz">Google Form (Embed / WebView)</option>
         </select>
         <img src="/assets/images/icons/arrow-down.svg" class="w-6 h-6" alt="icon" />
       </div>
@@ -77,29 +78,29 @@
           placeholder="Write tagline for better copy" />
       </div>
     </div>
-        <div class="flex flex-col gap-[10px]" v-if='type === "text"'>
+    <div class="flex flex-col gap-[10px]" v-if='type === "form" || type === "google_form" || type === "quiz"'>
+      <label for="formUrl" class="font-semibold">
+        URL / Embed Code Google Form
+      </label>
+      <div
+        class="flex items-center w-full rounded-full border border-[#CFDBEF] gap-3 px-5 transition-all duration-300 focus-within:ring-2 focus-within:ring-[#662FFF]">
+        <img src="/assets/images/icons/bill-black.svg" class="w-6 h-6" alt="icon" />
+        <input type="text" name="formUrl" v-model="formUrl" id="formUrl"
+          class="appearance-none outline-none w-full py-3 font-semibold placeholder:font-normal placeholder:text-[#838C9D] !bg-transparent"
+          placeholder="Tempelkan link Google Form (https://docs.google.com/forms/...) atau kode iframe" />
+      </div>
+      <p class="text-xs text-gray-500 ml-2">
+        Tempelkan link Google Form atau kode embed &lt;iframe&gt;. Sistem akan otomatis merender Web View di halaman
+        kursus.
+      </p>
+      <span class="error-message text-[#FF435A]">
+        {{ errors?.formUrl }}
+      </span>
+    </div>
+    <div class="flex flex-col gap-[10px]" v-if='type === "text"'>
       <label class="font-semibold">Content Text</label>
-      <!-- <ckeditor :editor="editor" v-model="data" /> -->
-      <ckeditor :editor="ClassicEditor" v-model="text" :config="editorConfig" @change="() =>{
-        const data = editor.getData();
-        console.log('data adalah', data);
-        // Update the text field with the editor content
-        text.value = data;
-        console.log('Editor content changed:', text);
-      }" />
-      <!-- <ckeditor
-        v-if="editor"
-        v-model="data"
-        :editor="editor"
-        :config="config"
-    /> -->
-      <!-- {/* <div id="editor"></div> */} -->
-      <!-- <CKEditor
-            editor={ClassicEditor}
-            config={}
-          /> -->
-          
-          <span class="error-message text-[#FF435A]">
+      <ckeditor :editor="ClassicEditor" v-model="text" :config="editorConfig" />
+      <span class="error-message text-[#FF435A]">
         {{ errors?.text }}
       </span>
     </div>
@@ -112,7 +113,7 @@
         <img src="/assets/images/icons/bill-black.svg" class="w-6 h-6" alt="icon" />
         <input type='file' name="pdf" id="pdf" v-bind='pdf'
           class="appearance-none outline-none w-full py-3 font-semibold placeholder:font-normal placeholder:text-[#838C9D] !bg-transparent"
-          placeholder="Write tagline for better copy" @change='onFileChange'/>
+          placeholder="Write tagline for better copy" @change='onFileChange' />
       </div>
       <span class="error-message text-[#FF435A]">
         {{ errors?.pdf }}
@@ -133,10 +134,12 @@
       <router-link :to="{
         name: 'courseDetail',
         params: { id: courseId }
-      }" class="w-full rounded-full border border-[#060A23] p-[14px_20px] font-semibold text-nowrap flex items-center justify-center">
+      }"
+        class="w-full rounded-full border border-[#060A23] p-[14px_20px] font-semibold text-nowrap flex items-center justify-center">
         Cancel
       </router-link>
-      <button type="submit" class="w-full rounded-full p-[14px_20px] font-semibold text-[#FFFFFF] bg-[#662FFF] text-nowrap">
+      <button type="submit"
+        class="w-full rounded-full p-[14px_20px] font-semibold text-[#FFFFFF] bg-[#662FFF] text-nowrap">
         {{ isEditMode ? 'Update Content Now' : 'Add Content Now' }}
       </button>
     </div>
@@ -154,6 +157,7 @@ import { mutateContentSchema } from '@/utils/zodSchema';
 import { useForm } from 'vee-validate';
 import { toTypedSchema } from '@vee-validate/zod';
 import { useRoute, useRouter } from 'vue-router';
+import Swal from 'sweetalert2';
 
 const editorData = ref('<p>Isi awal editor</p>');
 // const content = reactive({
@@ -170,6 +174,7 @@ const { handleSubmit, isSubmitting, values, errors, defineField } = useForm({
     type: '',
     text: '',
     youtubeId: '',
+    formUrl: '',
     pdf: null,
     quiz: ''
   }
@@ -184,6 +189,7 @@ const [type] = defineField('type');
 const [pdf] = defineField('pdf');
 const [text] = defineField('text');
 const [youtubeId] = defineField('youtubeId');
+const [formUrl] = defineField('formUrl');
 const [quiz] = defineField('quiz');
 const [route, router] = [useRoute(), useRouter()];
 console.log('Route params:', route.params);
@@ -191,6 +197,7 @@ const courseId = route.params.courseId;
 const contentId = route.params.contentId; // For update mode
 const contentById = ref([]);
 const isEditMode = ref(!!contentId);
+const existingOrder = ref(null);
 
 const countContent = async () => {
   contentById.value = await getContentsByCourseId(courseId);
@@ -202,20 +209,22 @@ const loadContentData = async () => {
   if (isEditMode.value) {
     try {
       const content = await getContentById(contentId);
-      
+      existingOrder.value = content.order;
+
       // Update form values based on content type
       title.value = content.title;
       type.value = content.type || '';
-      
+
       if (content.type === 'text') {
         text.value = content.content;
       } else if (content.type === 'video') {
         youtubeId.value = content.content;
+      } else if (content.type === 'form' || content.type === 'google_form' || content.type === 'quiz') {
+        formUrl.value = content.content;
       } else if (content.type === 'pdf') {
-        // For PDF, you might need to handle file differently
-        // This depends on how your API returns the PDF data
+        // For PDF, handle file if needed
       }
-      
+
     } catch (error) {
       console.error('Error loading content:', error);
     }
@@ -238,26 +247,26 @@ const mutateUpdate = useMutation({
 
 
 const editorConfig = {
-              toolbar: [
-                "undo",
-                "redo",
-                "|",
-                "heading",
-                "|",
-                "bold",
-                "italic",
-                "|",
-                "link",
-                "insertTable",
-                "mediaEmbed",
-                "|",
-                "bulletedList",
-                "numberedList",
-                "indent",
-                "outdent",
-              ],
-              initialData: content == null ? "" : content.text,
-            };
+  toolbar: [
+    "undo",
+    "redo",
+    "|",
+    "heading",
+    "|",
+    "bold",
+    "italic",
+    "|",
+    "link",
+    "insertTable",
+    "mediaEmbed",
+    "|",
+    "bulletedList",
+    "numberedList",
+    "indent",
+    "outdent",
+  ],
+  initialData: content == null ? "" : content.text,
+};
 
 const onFileChange = (event) => {
   console.log("File changed:", event.target.files[0]);
@@ -289,7 +298,7 @@ const onFileChange = (event) => {
 const onSubmit = handleSubmit(async () => {
   const formData = new FormData();
   try {
-    
+
     console.log('Submitting form with values:', values);
     formData.append('title', values.title);
     formData.append('type', values.type);
@@ -299,41 +308,56 @@ const onSubmit = handleSubmit(async () => {
       formData.append('lampiran', file.value);
     } else if (values.type === 'video') {
       formData.append('content', values.youtubeId);
+    } else if (values.type === 'form' || values.type === 'google_form' || values.type === 'quiz') {
+      formData.append('content', values.formUrl || values.quiz || '');
     } else if (values.type === 'pdf' && file.value) {
       formData.append('content', file.value);
-    } else if (values.type === 'quiz') {
-      formData.append('content', values.quiz);
     }
-    formData.append('order', await countContent());
-    
-
-    // Debug: Log data yang akan dikirim
-    console.log('Is Edit Mode:', isEditMode.value);
-    console.log('Content ID:', contentId);
-
 
     if (isEditMode.value) {
-      // Update existing content - gunakan POST + _method=PUT agar FormData diterima backend
+      // Update existing content - preserve existing order
+      if (existingOrder.value !== null && existingOrder.value !== undefined) {
+        formData.append('order', existingOrder.value);
+      }
       formData.append('_method', 'PUT');
       await mutateUpdate.mutateAsync(formData);
       console.log('Content updated successfully');
+      Swal.fire({
+        title: 'Berhasil!',
+        text: 'Materi kursus berhasil diperbarui.',
+        icon: 'success',
+        confirmButtonColor: '#662FFF',
+        timer: 1500
+      });
     } else {
-      // Create new content - perlu order
-      formData.order = await countContent();
+      // Create new content - assign next order
+      formData.append('order', await countContent());
       console.log('Creating content with data:', formData);
       await mutateCreate.mutateAsync(formData);
       console.log('Content created successfully');
+      Swal.fire({
+        title: 'Berhasil!',
+        text: 'Materi kursus berhasil ditambahkan.',
+        icon: 'success',
+        confirmButtonColor: '#662FFF',
+        timer: 1500
+      });
     }
 
     // Redirect back to course detail
     router.push({
-        name: 'courseDetail',
-        params: { id: courseId }
+      name: 'courseDetail',
+      params: { id: courseId }
     });
   } catch (error) {
     console.error('Error saving content:', error);
     console.error('Error response:', error.response?.data);
-    // Handle error, e.g., show an error message
+    Swal.fire({
+      title: 'Gagal!',
+      text: error.response?.data?.message || 'Terjadi kesalahan saat menyimpan materi kursus.',
+      icon: 'error',
+      confirmButtonColor: '#662FFF'
+    });
   }
 });
 

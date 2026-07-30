@@ -27,7 +27,9 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onUpdated, defineProps } from 'vue';    
+import { ref, computed, onMounted, onUpdated, defineProps } from 'vue';
+import { getSession } from '@/services/authService';
+import { downloadWatermarkedPdf } from '@/utils/pdfWatermark';
 
 const props = defineProps({
   content: {
@@ -42,43 +44,43 @@ const contentWrapper = ref(null);
 
 
 function replaceOembedWithIframe() {
-    if (!contentWrapper.value) return;
-    const oembeds = contentWrapper.value.querySelectorAll('oembed[url]');
-    oembeds.forEach(el => {
-        const url = el.getAttribute('url');
-        if (url && (url.includes('youtube.com') || url.includes('youtu.be'))) {
-            // Support various YouTube URL formats
-            let videoId = null;
-            // youtube.com/watch?v=xxxx
-            const match1 = url.match(/[?&]v=([\w-]{11})/);
-            // youtu.be/xxxx
-            const match2 = url.match(/youtu\.be\/([\w-]{11})/);
-            // youtube.com/embed/xxxx
-            const match3 = url.match(/embed\/([\w-]{11})/);
-            if (match1) videoId = match1[1];
-            else if (match2) videoId = match2[1];
-            else if (match3) videoId = match3[1];
-            if (videoId) {
-                const iframe = document.createElement('iframe');
-                iframe.style.aspectRatio = '16/9';
-                iframe.style.height = 'auto';
-                iframe.style.maxWidth = '100%';
-                iframe.style.display = 'block';
-                iframe.src = `https://www.youtube.com/embed/${videoId}`;
-                iframe.frameBorder = '0';
-                iframe.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture';
-                iframe.allowFullscreen = true;
-                el.parentNode.replaceChild(iframe, el);
-            }
-        }
-    });
+  if (!contentWrapper.value) return;
+  const oembeds = contentWrapper.value.querySelectorAll('oembed[url]');
+  oembeds.forEach(el => {
+    const url = el.getAttribute('url');
+    if (url && (url.includes('youtube.com') || url.includes('youtu.be'))) {
+      // Support various YouTube URL formats
+      let videoId = null;
+      // youtube.com/watch?v=xxxx
+      const match1 = url.match(/[?&]v=([\w-]{11})/);
+      // youtu.be/xxxx
+      const match2 = url.match(/youtu\.be\/([\w-]{11})/);
+      // youtube.com/embed/xxxx
+      const match3 = url.match(/embed\/([\w-]{11})/);
+      if (match1) videoId = match1[1];
+      else if (match2) videoId = match2[1];
+      else if (match3) videoId = match3[1];
+      if (videoId) {
+        const iframe = document.createElement('iframe');
+        iframe.style.aspectRatio = '16/9';
+        iframe.style.height = 'auto';
+        iframe.style.maxWidth = '100%';
+        iframe.style.display = 'block';
+        iframe.src = `https://www.youtube.com/embed/${videoId}`;
+        iframe.frameBorder = '0';
+        iframe.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture';
+        iframe.allowFullscreen = true;
+        el.parentNode.replaceChild(iframe, el);
+      }
+    }
+  });
 }
 
 onMounted(() => {
-    replaceOembedWithIframe();
+  replaceOembedWithIframe();
 });
 onUpdated(() => {
-    replaceOembedWithIframe();
+  replaceOembedWithIframe();
 });
 </script>
 
@@ -87,16 +89,16 @@ onUpdated(() => {
 
 
 body{
-    font-family: "Poppins";
-    color: #060A23;
-    display: flex;
-    flex-direction: column;
-    min-height: 100vh;
+  font-family: "Poppins";
+  color: #060A23;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
 }
 
 /* Hide scrollbar for Chrome, Safari, and Opera */
 .hide-scrollbar::-webkit-scrollbar {
-    display: none;
+  display: none;
 }
 
 /* Hide scrollbar for IE, Edge, and Firefox */
@@ -106,197 +108,206 @@ body{
 }
 
 .ck-content blockquote {
-    display: block;
-    margin-block-start: 1__qem;
-    margin-block-end: 1em;
-    margin-inline-start: 40px;
-    margin-inline-end: 40px;
+  display: block;
+  margin-block-start: 1__qem;
+  margin-block-end: 1em;
+  margin-inline-start: 40px;
+  margin-inline-end: 40px;
 }
 
-.ck-content strong, .ck-content b {
-    font-weight: bold;
+.ck-content strong,
+.ck-content b {
+  font-weight: bold;
 }
 
-.ck-content i, .ck-content address {
-    font-style: italic;
+.ck-content i,
+.ck-content address {
+  font-style: italic;
 }
 
 /* heading elements */
 
 .ck-content h1 {
-    display: block;
-    font-size: 2em;
-    margin-block-start: 0.67__qem;
-    margin-block-end: 0.67em;
-    margin-inline-start: 0;
-    margin-inline-end: 0;
-    font-weight: bold;
+  display: block;
+  font-size: 2em;
+  margin-block-start: 0.67__qem;
+  margin-block-end: 0.67em;
+  margin-inline-start: 0;
+  margin-inline-end: 0;
+  font-weight: bold;
 }
 
 .ck-content h2 {
-    display: block;
-    font-size: 1.5em;
-    margin-block-start: 0.83__qem;
+  display: block;
+  font-size: 1.5em;
+  margin-block-start: 0.83__qem;
 
-    margin-block-end: 0.83em;
-    margin-inline-start: 0;
-    margin-inline-end: 0;
-    font-weight: bold;
+  margin-block-end: 0.83em;
+  margin-inline-start: 0;
+  margin-inline-end: 0;
+  font-weight: bold;
 }
 
 .ck-content h3 {
-    display: block;
-    font-size: 1.17em;
-    margin-block-start: 1__qem;
-    margin-block-end: 1em;
-    margin-inline-start: 0;
-    margin-inline-end: 0;
-    font-weight: bold;
+  display: block;
+  font-size: 1.17em;
+  margin-block-start: 1__qem;
+  margin-block-end: 1em;
+  margin-inline-start: 0;
+  margin-inline-end: 0;
+  font-weight: bold;
 }
 
 .ck-content h4 {
-    display: block;
-    margin-block-start: 1.33__qem;
-    margin-block-end: 1.33em;
-    margin-inline-start: 0;
-    margin-inline-end: 0;
-    font-weight: bold;
+  display: block;
+  margin-block-start: 1.33__qem;
+  margin-block-end: 1.33em;
+  margin-inline-start: 0;
+  margin-inline-end: 0;
+  font-weight: bold;
 }
 
 .ck-content h5 {
-    display: block;
-    font-size: .83em;
-    margin-block-start: 1.67__qem;
-    margin-block-end: 1.67em;
-    margin-inline-start: 0;
-    margin-inline-end: 0;
-    font-weight: bold;
+  display: block;
+  font-size: .83em;
+  margin-block-start: 1.67__qem;
+  margin-block-end: 1.67em;
+  margin-inline-start: 0;
+  margin-inline-end: 0;
+  font-weight: bold;
 }
 
 .ck-content h6 {
-    display: block;
-    font-size: .67em;
-    margin-block-start: 2.33__qem;
-    margin-block-end: 2.33em;
-    margin-inline-start: 0;
-    margin-inline-end: 0;
-    font-weight: bold;
+  display: block;
+  font-size: .67em;
+  margin-block-start: 2.33__qem;
+  margin-block-end: 2.33em;
+  margin-inline-start: 0;
+  margin-inline-end: 0;
+  font-weight: bold;
 }
 
 /* tables */
 
 .ck-content table {
-    display: table;
-    border-collapse: separate;
-    border-spacing: 2px;
-    border-color: gray;
+  display: table;
+  border-collapse: separate;
+  border-spacing: 2px;
+  border-color: gray;
 }
 
-.ck-content .table table td{
-    border: 1px solid #bfbfbf !important;
+.ck-content .table table td {
+  border: 1px solid #bfbfbf !important;
 }
 
 .ck-content thead {
-    display: table-header-group;
-    vertical-align: middle;
-    border-color: inherit;
+  display: table-header-group;
+  vertical-align: middle;
+  border-color: inherit;
 }
 
 .ck-content tbody {
-    display: table-row-group;
-    vertical-align: middle;
-    border-color: inherit;
+  display: table-row-group;
+  vertical-align: middle;
+  border-color: inherit;
 }
 
 .ck-content tfoot {
-    display: table-footer-group;
-    vertical-align: middle;
-    border-color: inherit;
+  display: table-footer-group;
+  vertical-align: middle;
+  border-color: inherit;
 }
 
 /* for tables without table section elements (can happen with XHTML or dynamically created tables) */
-.ck-content table > tr {
-    vertical-align: middle;
+.ck-content table>tr {
+  vertical-align: middle;
 }
 
 .ck-content col {
-    display: table-column;
+  display: table-column;
 }
 
 .ck-content colgroup {
-    display: table-column-group;
+  display: table-column-group;
 }
 
 .ck-content tr {
-    display: table-row;
-    vertical-align: inherit;
-    border-color: inherit;
+  display: table-row;
+  vertical-align: inherit;
+  border-color: inherit;
 }
 
-.ck-content td, .ck-content th {
-    display: table-cell;
-    vertical-align: inherit;
+.ck-content td,
+.ck-content th {
+  display: table-cell;
+  vertical-align: inherit;
 }
 
 .ck-content th {
-    font-weight: bold;
+  font-weight: bold;
 }
 
 .ck-content caption {
-    display: table-caption;
-    text-align: center;
+  display: table-caption;
+  text-align: center;
 }
 
 /* lists */
 
-.ck-content ul, .ck-content menu, .ck-content dir {
-    display: block;
-    list-style-type: disc;
-    margin-block-start: 1__qem;
-    margin-block-end: 1em;
-    margin-inline-start: 0;
-    margin-inline-end: 0;
-    padding-inline-start: 40px;
+.ck-content ul,
+.ck-content menu,
+.ck-content dir {
+  display: block;
+  list-style-type: disc;
+  margin-block-start: 1__qem;
+  margin-block-end: 1em;
+  margin-inline-start: 0;
+  margin-inline-end: 0;
+  padding-inline-start: 40px;
 }
 
 .ck-content ol {
-    display: block;
-    list-style-type: decimal;
-    margin-block-start: 1__qem;
-    margin-block-end: 1em;
-    margin-inline-start: 0;
-    margin-inline-end: 0;
-    padding-inline-start: 40px;
+  display: block;
+  list-style-type: decimal;
+  margin-block-start: 1__qem;
+  margin-block-end: 1em;
+  margin-inline-start: 0;
+  margin-inline-end: 0;
+  padding-inline-start: 40px;
 }
 
 .ck-content li {
-    display: list-item;
-    text-align: match-parent;
+  display: list-item;
+  text-align: match-parent;
 }
 
 .ck-content ::marker {
-    unicode-bidi: isolate;
-    font-variant-numeric: tabular-nums;
-    white-space: pre;
-    text-transform: none;
+  unicode-bidi: isolate;
+  font-variant-numeric: tabular-nums;
+  white-space: pre;
+  text-transform: none;
 }
 
-.ck-content ul ul, .ck-content ol ul {
-    list-style-type: circle;
+.ck-content ul ul,
+.ck-content ol ul {
+  list-style-type: circle;
 }
 
-.ck-content ol ol ul, .ck-content ol ul ul, .ck-content ul ol ul, .ck-content ul ul ul {
-    list-style-type: square;
+.ck-content ol ol ul,
+.ck-content ol ul ul,
+.ck-content ul ol ul,
+.ck-content ul ul ul {
+  list-style-type: square;
 }
 
 .ck-content a:any-link {
-    color: blue;
-    text-decoration: underline;
-    cursor: auto;
+  color: blue;
+  text-decoration: underline;
+  cursor: auto;
 }
 
 .ck-content a:any-link:active {
-    color: red;
+  color: red;
 }
 
 .btn {

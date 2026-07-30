@@ -11,17 +11,19 @@ if (tokenMeta) {
   axios.defaults.headers.common["X-CSRF-TOKEN"] = tokenMeta.getAttribute("content")
 }
 
-const baseURL = process.env.APP_URL
-console.log("baseURL new", baseURL);
+const currentOrigin = typeof window !== 'undefined' ? window.location.origin : (process.env.APP_URL || '');
+console.log("Axios currentOrigin:", currentOrigin);
+
 export const apiInstance = axios.create({
-  baseURL,
+  baseURL: currentOrigin,
   timeout: 10000,
+  withCredentials: true,
 })
 
-const authURL = process.env.APP_URL
 export const apiInstanceAuth = axios.create({
-  baseURL: authURL,
+  baseURL: currentOrigin,
   timeout: 10000,
+  withCredentials: true,
 })
 
 

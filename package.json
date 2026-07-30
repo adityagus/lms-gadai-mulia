@@ -31,6 +31,7 @@
         "@vuepic/vue-datepicker": "^11.0.2",
         "aos": "^2.3.4",
         "ckeditor5": "^42.0.2",
+        "pdf-lib": "^1.17.1",
         "primevue": "^4.3.5",
         "secure-ls": "^2.0.0",
         "sweetalert2": "^11.22.2",

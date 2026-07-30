@@ -56,9 +56,10 @@ class LoginController extends Controller
                 $datasession = [
                     'nama' => Str::title($nama),
                     'user' => $user->username,
-                    'cabang' => $user->fk_cabang_user ?? null,
-                    'jabatan' => $user->nm_jabatan ?? null,
-                    'idgrup' => $user->kd_jabatan ?? null,
+                    'cabang' => $user->branch_code ?? null,
+                    'jabatan' => $user->position_name ?? null,
+                    'idgrup' => $user->position_code ?? null,
+                    'npk' => $user->npk ?? null,
                     'status' => 'login'
                 ];
 
