@@ -15,30 +15,27 @@ class Master extends Model
   public static function getJabatan()
   {
     $query = DB::connection('db2')
-      ->table('tbljabatan as jb')
-      ->select('jb.kd_jabatan', 'jb.nm_jabatan', 'jb.status_karyawan', 'jb.jabatan_active')
-      ->where('jabatan_active', 'true')
-      ->where('jb.status_karyawan', '!=', 'Eksternal')
-      ->orderBy('jb.nm_jabatan', 'asc')
+      ->table('master.position as jb')
+      ->select('jb.position_code as kd_jabatan', 'jb.position_name as nm_jabatan', 'jb.employee_status as status_karyawan', 'jb.is_active as jabatan_active')
+      ->where('jb.is_active', true)
+      ->whereIn('jb.employee_status', ['INTERNAL'])
+      ->orderBy('jb.position_name', 'asc')
       ->get();
 
     return $query;
   }
 
-
   public static function getCabang()
   {
     try {
       $query = DB::connection('db2')
-        ->table('tblcabang as cb')
-        ->leftJoin('tblarea as area', 'cb.fk_area', '=', 'area.kd_area')
-        ->select('area.*', 'cb.kd_cabang', 'cb.nm_cabang', 'cb.cabang_active', 'area.area_active')
-        ->orderBy('area.kd_area', 'asc')
-        ->orderBy('cb.kd_cabang', 'asc')
-        ->where([
-          'cabang_active' => 'true',
-          'area_active' => 'true'
-        ])
+        ->table('master.branch as cb')
+        ->leftJoin('master.region as area', 'cb.region_id', '=', 'area.region_id')
+        ->select('area.region_id as kd_area', 'area.region_name as nm_area', DB::raw('RIGHT(cb.branch_code, 4) as kd_cabang'), 'cb.branch_name as nm_cabang', 'cb.is_active as cabang_active', 'area.is_active as area_active')
+        ->orderBy('area.region_id', 'asc')
+        ->orderBy('cb.branch_id', 'asc')
+        ->where('cb.is_active', 'true')
+        ->where('area.is_active', 'true')
         ->get();
 
 

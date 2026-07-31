@@ -48,11 +48,9 @@ class OverviewController extends Controller
         if (!empty($usernames)) {
             try {
                 $uploaderNames = DB::connection('db2')
-                    ->table('tbluser as a')
-                    ->join('tblkaryawan as b', 'a.fk_karyawan', '=', 'b.npk')
+                    ->table('auth.users as a')
                     ->whereIn('a.username', $usernames)
-                    ->select('a.username', DB::raw("CONCAT(b.nm_depan, ' ', b.nm_belakang) as full_name"))
-                    ->pluck('full_name', 'username')
+                    ->pluck('a.full_name', 'a.username')
                     ->toArray();
             } catch (\Exception $e) {
                 \Log::warning('Could not fetch user names from db2: ' . $e->getMessage());

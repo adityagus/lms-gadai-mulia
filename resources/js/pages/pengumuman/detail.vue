@@ -33,7 +33,7 @@
 
     <!-- Skeleton Cards Grid (Desain, Badge & Tombol Absolute Presisi dengan Card Asli) -->
     <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
-      <div v-for="n in 6" :key="n"
+      <div v-for="n in 8" :key="n"
         class="relative rounded-2xl bg-white shadow-xl p-0 flex flex-col justify-between overflow-hidden border border-gray-200 animate-pulse min-h-[260px]">
         <!-- Badge Icon Top Right Skeleton -->
         <div class="rounded-tr-lg rounded-bl-3xl bg-gray-200 w-12 h-12 absolute -top-1 -right-0"></div>
@@ -171,6 +171,12 @@
       <div class="datatable bg-white mb-16">
         <vue3-datatable :rows="tableRows" :columns="tableCols" :totalRows="tableRows.length" :search="search"
           :sortable="true" :selectRowOnClick="true" @row-click='handleRowClick'>
+          <template #tglBerlakuRaw="data">
+            <span>{{ data.value.tglBerlakuDisplay }}</span>
+          </template>
+          <template #lastUpdateRaw="data">
+            <span>{{ data.value.lastUpdateDisplay }}</span>
+          </template>
           <template #action="{ row, value }">
             <div class="flex gap-2 justify-center items-center">
               <button @click.stop="router.push({ name: 'information-document-update', params: { id: value.id } })"
@@ -302,8 +308,8 @@ const tableCols = computed(() => {
     { field: 'id', title: 'ID', isUnique: true },
     { field: 'title', title: 'Judul' },
     { field: 'nomorSurat', title: 'Nomor Surat' },
-    { field: 'tglBerlaku', title: 'Tanggal Berlaku', cellClass: 'text-center', headerClass: 'text-center justify-center' },
-    { field: 'lastUpdate', title: 'Terakhir Diperbarui' }
+    { field: 'tglBerlakuRaw', title: 'Tanggal Berlaku', cellClass: 'text-center', headerClass: 'text-center justify-center' },
+    { field: 'lastUpdateRaw', title: 'Terakhir Diperbarui' }
   ];
   if (isAdmin.value) {
     cols.push({
@@ -317,24 +323,46 @@ const tableCols = computed(() => {
   return cols;
 });
 
+const formatDateDDMMYYYY = (dateStr) => {
+  if (!dateStr || dateStr === '-') return '-';
+  if (typeof dateStr === 'string' && /^\d{2}-\d{2}-\d{4}$/.test(dateStr.trim())) return dateStr.trim();
+  const date = new Date(dateStr);
+  if (isNaN(date.getTime())) return dateStr;
+  const day = String(date.getDate()).padStart(2, '0');
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const year = date.getFullYear();
+  return `${day}-${month}-${year}`;
+};
+
+const formatDateTimeWib = (dateStr) => {
+  if (!dateStr || dateStr === '-') return '-';
+  if (typeof dateStr === 'string' && dateStr.includes('WIB')) return dateStr;
+  const date = new Date(dateStr);
+  if (isNaN(date.getTime())) return dateStr;
+  const day = String(date.getDate()).padStart(2, '0');
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const year = date.getFullYear();
+  const hours = String(date.getHours()).padStart(2, '0');
+  const minutes = String(date.getMinutes()).padStart(2, '0');
+  return `${day}-${month}-${year} ${hours}:${minutes} WIB`;
+};
+
 const tableRows = computed(() => {
   console.log('Generating tableRows from filteredCards:', filteredCards.value);
   return filteredCards.value.map((item, index) => {
-    const row = {
+    // Raw YYYY-MM-DD format used for true chronological sorting (ASC / DESC)
+    const rawTglBerlakuIso = item.tgl_berlaku || item.tgl_berlaku_raw || '';
+    const rawLastUpdateIso = item.updated_at || item.created_at || '';
+
+    return {
       id: item.id || item.id_pengumuman || item.submenu_id || index,
       title: item.title,
       nomorSurat: item.no_surat,
-      tglBerlaku: item.tgl_berlaku_raw || '', // gunakan raw date (YYYY-MM-DD) untuk sorting kronologis
-      tglBerlakuFormatted: item.tgl_berlaku || '-', // tampilkan format human-readable di tabel
-      lastUpdate: item.updated_at || item.created_at || '', // gunakan raw timestamp/ISO date untuk sorting kronologis
-      dateLastUpdate: item.dateLastUpdate || '-' // tampilkan format human-readable di tabel
+      tglBerlakuRaw: rawTglBerlakuIso,
+      tglBerlakuDisplay: formatDateDDMMYYYY(item.tgl_berlaku_formatted || item.tgl_berlaku),
+      lastUpdateRaw: rawLastUpdateIso,
+      lastUpdateDisplay: formatDateTimeWib(item.dateLastUpdate || item.updated_at || item.created_at)
     };
-
-    // Tambahkan field action untuk admin (tombol HTML)
-
-
-    console.log('Row created:', row);
-    return row;
   });
 });
 

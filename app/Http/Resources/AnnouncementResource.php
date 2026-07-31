@@ -15,22 +15,21 @@ class AnnouncementResource extends JsonResource
      */
     public function toArray($request)
     {
-        $dateLastUpdate = $this->updated_at
-            ? Carbon::parse($this->updated_at)->format('d M Y H:i:s') . ' WIB'
-            : ($this->created_at
-                ? Carbon::parse($this->created_at)->format('d M Y H:i:s') . ' WIB'
-                : null);
+        $last_update_datetime = $this->updated_at ?? $this->created_at;
+        $dateLastUpdate = $last_update_datetime
+            ? Carbon::parse($last_update_datetime)->format('d-m-Y H:i') . ' WIB'
+            : '-';
 
         $tgl_berlaku = $this->tgl_berlaku
             ? Carbon::parse($this->tgl_berlaku)->format('Y-m-d')
             : null;
 
         $tgl_berlaku_formatted = $this->tgl_berlaku
-            ? Carbon::parse($this->tgl_berlaku)->format('d M Y')
-            : null;
+            ? Carbon::parse($this->tgl_berlaku)->format('d-m-Y')
+            : '-';
 
         $tgl_dibuka = $this->created_at
-            ? Carbon::parse($this->created_at)->format('d M Y H:i') . ' WIB'
+            ? Carbon::parse($this->created_at)->format('d-m-Y H:i') . ' WIB'
             : null;
 
         return [

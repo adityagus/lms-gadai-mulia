@@ -30,11 +30,11 @@ class MasterRepository implements MasterRepositoryInterface
     public function getJabatan()
     {
         return DB::connection('db2')
-            ->table('tbljabatan as jb')
-            ->select('jb.kd_jabatan', 'jb.nm_jabatan', 'jb.status_karyawan', 'jb.jabatan_active')
-            ->where('jb.jabatan_active', 'true')
-            ->where('jb.status_karyawan', '!=', 'Eksternal')
-            ->orderBy('jb.nm_jabatan', 'asc')
+            ->table('master.position as jb')
+            ->select('jb.position_code as kd_jabatan', 'jb.position_name as nm_jabatan', 'jb.employee_status as status_karyawan', 'jb.is_active as jabatan_active')
+            ->where('jb.is_active', true)
+            ->whereIn('jb.employee_status', ['INTERNAL'])
+            ->orderBy('jb.position_name', 'asc')
             ->get();
     }
 

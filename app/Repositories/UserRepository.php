@@ -29,10 +29,10 @@ class UserRepository implements UserRepositoryInterface
     public function getUserRole(string $username)
     {
         return DB::connection('db2')
-            ->table('tbluser as a')
-            ->select('c.kd_jabatan', 'c.nm_jabatan')
-            ->join('tblkaryawan as b', 'a.fk_karyawan', '=', 'b.npk')
-            ->join('tbljabatan as c', 'b.fk_jabatan', '=', 'c.kd_jabatan')
+            ->table('auth.users as a')
+            ->select('c.position_code as kd_jabatan', 'c.position_name as nm_jabatan')
+            ->leftJoin('master.employee as b', 'a.employee_id', '=', 'b.employee_id')
+            ->leftJoin('master.position as c', 'b.position_id', '=', 'c.position_id')
             ->where('a.username', '=', $username)
             ->get();
     }
@@ -43,9 +43,9 @@ class UserRepository implements UserRepositoryInterface
     public function getUserProfile(string $username)
     {
         return DB::connection('db2')
-            ->table('tbluser as a')
-            ->select('a.username', 'b.nm_depan', 'b.nm_belakang', 'a.fk_cabang_user')
-            ->join('tblkaryawan as b', 'a.fk_karyawan', '=', 'b.npk')
+            ->table('auth.users as a')
+            ->select('a.username', 'a.full_name', 'b.branch_id as fk_cabang_user')
+            ->leftJoin('master.employee as b', 'a.employee_id', '=', 'b.employee_id')
             ->where('a.username', '=', $username)
             ->get();
     }

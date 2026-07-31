@@ -5,8 +5,6 @@ namespace App\Http\Controllers\api;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Cache;
-use App\Models\Announcement;
 use App\Contracts\Repositories\MasterRepositoryInterface;
 
 class DocumentReportController extends Controller
@@ -20,18 +18,42 @@ class DocumentReportController extends Controller
 
     public function getReport(Request $request)
     {
-        $jabatans = Cache::remember('report_master_jabatans', 1800, function () {
-            return collect($this->masterRepository->getJabatan())->keyBy('kd_jabatan');
-        });
+        // 1. Fetch Master Jabatan
+        $rawJabatans = $this->masterRepository->getJabatan();
+        $jabatansMap = [];
+        foreach ($rawJabatans as $j) {
+            $jArr = (array) $j;
+            $kd = (string) ($jArr['kd_jabatan'] ?? $jArr['position_code'] ?? '');
+            if ($kd !== '') {
+                $jabatansMap[$kd] = $jArr['nm_jabatan'] ?? $jArr['position_name'] ?? $kd;
+            }
+        }
 
-        $wilayahs = Cache::remember('report_master_wilayahs', 1800, function () {
-            return collect($this->masterRepository->getWilayah())->keyBy('kd_wilayah');
-        });
+        // 2. Fetch Master Wilayah & Cabang
+        $wilayahList = $this->masterRepository->getWilayah();
+        $wilayahMap = [];
+        $branchToWilayahName = [];
 
+        foreach ($wilayahList as $w) {
+            $wArr = (array) $w;
+            $kdW = (string) ($wArr['kd_wilayah'] ?? '');
+            $nmW = $wArr['nm_wilayah'] ?? '';
+            if ($kdW !== '') {
+                $wilayahMap[$kdW] = $nmW;
+            }
+            if (isset($wArr['branches']) && is_array($wArr['branches'])) {
+                foreach ($wArr['branches'] as $bCode) {
+                    $branchToWilayahName[(string) $bCode] = $nmW;
+                }
+            }
+        }
+
+        // 3. Group Regional Document mappings
         $regionsGrouped = DB::table('document_region')
             ->get()
             ->groupBy('document_id');
 
+        // 4. Fetch Documents
         $rows = DB::table('documents as d')
             ->leftJoin('submenu as sm', 'd.submenu_id', '=', 'sm.id')
             ->leftJoin('document_position as dp', 'd.id', '=', 'dp.document_id')
@@ -44,51 +66,66 @@ class DocumentReportController extends Controller
             ->orderBy('dp.id', 'asc')
             ->get();
 
+        // 5. Map Regional PT names
         $ptsCache = [];
         foreach ($regionsGrouped as $docId => $regs) {
             $mappedPts = [];
             foreach ($regs as $reg) {
-                $regId = (string) $reg->regional_id;
-                $wilayahId = $regId;
+                $regId = trim((string) $reg->regional_id);
+                if (empty($regId)) continue;
 
-                if (!isset($wilayahs[$wilayahId]) && strlen(str_pad($regId, 4, '0', STR_PAD_LEFT)) === 4) {
-                    $padded = str_pad($regId, 4, '0', STR_PAD_LEFT);
-                    $wilayahId = $padded[1];
-                }
-
-                $name = isset($wilayahs[$wilayahId]) ? $wilayahs[$wilayahId]->nm_wilayah : $regId;
-                if (!$name || is_numeric($name)) {
+                $lower = strtolower($regId);
+                if ($lower === 'all') {
+                    $mappedPts[] = 'All';
                     continue;
                 }
 
-                $lower = strtolower($name);
-                if ($lower === 'all') {
+                $name = $wilayahMap[$regId] ?? null;
+
+                if (!$name && isset($branchToWilayahName[$regId])) {
+                    $name = $branchToWilayahName[$regId];
+                }
+
+                if (!$name && strlen($regId) >= 2) {
+                    $secondChar = $regId[1];
+                    if (isset($wilayahMap[$secondChar])) {
+                        $name = $wilayahMap[$secondChar];
+                    }
+                }
+
+                if (!$name) {
+                    $name = $regId;
+                }
+
+                $nameLower = strtolower($name);
+                if ($nameLower === 'all') {
                     $mappedPts[] = 'All';
-                } elseif ($lower === 'jakarta') {
+                } elseif ($nameLower === 'jakarta' || strpos($nameLower, 'jaya') !== false) {
                     $mappedPts[] = 'Jaya';
-                } elseif ($lower === 'jawa barat') {
+                } elseif ($nameLower === 'jawa barat' || strpos($nameLower, 'jabar') !== false) {
                     $mappedPts[] = 'Jabar';
-                } elseif ($lower === 'kepri') {
+                } elseif ($nameLower === 'kepri' || strpos($nameLower, 'kepri') !== false) {
                     $mappedPts[] = 'Kepri';
                 } else {
-                    $mappedPts[] = ucwords($lower);
+                    $mappedPts[] = ucwords($nameLower);
                 }
             }
             $ptsCache[$docId] = implode(', ', array_filter(array_unique($mappedPts)));
         }
 
+        // 6. Format Response
         $formattedDocs = [];
         foreach ($rows as $row) {
             $docId = $row->id;
             $pts = $ptsCache[$docId] ?? '';
             if (empty($pts)) {
-                $pts = '-';
+                $pts = 'All';
             }
 
-            $kdJbt = $row->kd_jbt;
+            $kdJbt = (string) $row->kd_jbt;
             $position = '-';
-            if ($kdJbt) {
-                $position = isset($jabatans[$kdJbt]) ? $jabatans[$kdJbt]->nm_jabatan : $kdJbt;
+            if ($kdJbt !== '') {
+                $position = $jabatansMap[$kdJbt] ?? $kdJbt;
             }
 
             $formattedDocs[] = [
@@ -108,6 +145,7 @@ class DocumentReportController extends Controller
             'data' => $formattedDocs
         ]);
     }
+
     public function exportExcel(Request $request)
     {
         $data = $request->input('data', []);

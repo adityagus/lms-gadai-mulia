@@ -61,10 +61,9 @@ class DocumentViewRepository implements DocumentViewRepositoryInterface
         // 1. Ambil semua user aktif dari database eksternal (db2) dengan cache 30 menit (1800 detik)
         $allUsers = Cache::remember('db2_active_users', 1800, function () {
             return DB::connection('db2')
-                ->table('tbluser as a')
-                ->select('a.username', DB::raw("CONCAT(b.nm_depan, ' ', b.nm_belakang) as full_name"))
-                ->join('tblkaryawan as b', 'a.fk_karyawan', '=', 'b.npk')
-                ->where('a.active', '=', 't')
+                ->table('auth.users as a')
+                ->select('a.username', 'a.full_name')
+                ->where('a.is_active', '=', true)
                 ->get();
         });
 
@@ -93,22 +92,15 @@ class DocumentViewRepository implements DocumentViewRepositoryInterface
         // 2. Gunakan cache mapping username -> full_name dari db2 (30 menit)
         $userMap = Cache::remember('db2_user_fullname_map', 1800, function () {
             return DB::connection('db2')
-                ->table('tbluser as a')
-                ->select('a.username', DB::raw("CONCAT(b.nm_depan, ' ', b.nm_belakang) as full_name"))
-                ->join('tblkaryawan as b', 'a.fk_karyawan', '=', 'b.npk')
-                ->get()
-                ->pluck('full_name', 'username');
+                ->table('auth.users as a')
+                ->pluck('a.full_name', 'a.username');
         });
 
         // 3. Gabungkan info tracking view (first_viewed_at, last_viewed_at, view_count)
         return $views->map(function ($view) use ($userMap) {
-            if (!$userMap->has($view->username)) {
-                return null;
-            }
-
             $user = new \stdClass();
             $user->username = $view->username;
-            $user->full_name = $userMap->get($view->username);
+            $user->full_name = $userMap->get($view->username, $view->username);
             $user->first_viewed_at = $view->first_viewed_at ? $view->first_viewed_at->toDateTimeString() : null;
             $user->last_viewed_at = $view->last_viewed_at ? $view->last_viewed_at->toDateTimeString() : null;
             $user->view_count = $view->view_count;

@@ -25,7 +25,7 @@
 
   <!-- Loading Skeleton Cards (Menyesuaikan desain card asli) -->
   <div v-if="isLoading" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
-    <div v-for="n in 6" :key="n"
+    <div v-for="n in 7" :key="n"
       class="relative rounded-2xl bg-white shadow-xl p-0 flex flex-col justify-between overflow-hidden border border-gray-200 animate-pulse min-h-[220px]">
       <div class="flex flex-col gap-2 p-6">
         <div class="flex items-center gap-3 mb-3">
